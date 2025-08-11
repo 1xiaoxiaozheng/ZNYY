@@ -1,7 +1,7 @@
 package com.springbootTz.ZNYY.Equipment.service;
 
 import com.springbootTz.ZNYY.Equipment.mapper.seeyon.LexmisN6_AssetCardMapper;
-import com.springbootTz.ZNYY.Equipment.mapper.znyy.UnitInfoToolMapper;
+import com.springbootTz.ZNYY.Equipment.mapper.seeyon.UnitInfoToolMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

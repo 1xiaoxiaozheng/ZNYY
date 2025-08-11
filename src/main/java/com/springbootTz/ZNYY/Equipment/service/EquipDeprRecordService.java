@@ -3,10 +3,10 @@ package com.springbootTz.ZNYY.Equipment.service;
 import com.springbootTz.ZNYY.Equipment.entity.znyy.EquipDeprRecord;
 import com.springbootTz.ZNYY.Equipment.entity.seeyon.LexmisN6_Depreciation;
 import com.springbootTz.ZNYY.Equipment.entity.seeyon.LexmisN6_AssetCard;
+import com.springbootTz.ZNYY.Equipment.mapper.seeyon.UnitInfoToolMapper;
 import com.springbootTz.ZNYY.Equipment.mapper.znyy.EquipDeprRecordMapper;
 import com.springbootTz.ZNYY.Equipment.mapper.seeyon.LexmisN6_DepreciationMapper;
 import com.springbootTz.ZNYY.Equipment.mapper.seeyon.LexmisN6_AssetCardMapper;
-import com.springbootTz.ZNYY.Equipment.mapper.znyy.UnitInfoToolMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

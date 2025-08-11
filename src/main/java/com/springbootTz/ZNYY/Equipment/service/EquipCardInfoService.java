@@ -1,7 +1,7 @@
 package com.springbootTz.ZNYY.Equipment.service;
 
 import com.springbootTz.ZNYY.Equipment.mapper.seeyon.LexmisN6_DepreciationMapper;
-import com.springbootTz.ZNYY.Equipment.mapper.znyy.UnitInfoToolMapper;
+import com.springbootTz.ZNYY.Equipment.mapper.seeyon.UnitInfoToolMapper;
 import com.springbootTz.ZNYY.Equipment.mapper.znyy.EquipCardInfoMapper;
 import com.springbootTz.ZNYY.Equipment.mapper.seeyon.AssetCardDepreciationQueryMapper;
 import com.springbootTz.ZNYY.Equipment.entity.znyy.EquipCardInfo;
@@ -31,8 +31,9 @@ public class EquipCardInfoService {
 
     /**
      * 设备卡片信息映射关系
-     * 厂商名称的判断逻辑是，如果单位名称是周宁县总医院，类型是车辆 / 房屋土地 / 家居设备 / 医疗专用设备 / 无形资产；以及单位名称是周宁县医院，类型是 家居设备 / 网络信息设备 / 医疗专用设备 / 无形资产 / 车辆 /
-     *  房屋土地，就用字段ev_field6的值，如果是周宁县总医院类型是： 网络信息设备那就用字段ev_field7的值，否则用“无”
+     * 厂商名称的判断逻辑是，如果单位名称是周宁县总医院，类型是车辆 / 房屋土地 / 家居设备 / 医疗专用设备 / 无形资产；以及单位名称是周宁县医院，类型是
+     * 家居设备 / 网络信息设备 / 医疗专用设备 / 无形资产 / 车辆 /
+     * 房屋土地，就用字段ev_field6的值，如果是周宁县总医院类型是： 网络信息设备那就用字段ev_field7的值，否则用“无”
      *
      * sysPrdrCode=FJZZZYKJGS
      *
@@ -116,20 +117,42 @@ public class EquipCardInfoService {
         List<AssetCardWithDepreciationDTO> assetCardList = assetCardDepreciationQueryMapper
                 .selectAssetCardWithDepreciation();
 
+        System.out.println("=== 推送数据统计 ===");
+        System.out.println("从 seeyon 查询到的总数据量: " + assetCardList.size());
+
+        int insertCount = 0;
+        int updateCount = 0;
+        int skipCount = 0;
+        int errorCount = 0;
+
         for (AssetCardWithDepreciationDTO assetCard : assetCardList) {
-            EquipCardInfo equipCardInfo = mapToEquipCardInfo(assetCard);
+            try {
+                EquipCardInfo equipCardInfo = mapToEquipCardInfo(assetCard);
 
-            // 检查是否已存在
-            int exists = equipCardInfoMapper.checkEquipCardExists(equipCardInfo.getEquipCardNo());
+                // 检查是否已存在
+                int exists = equipCardInfoMapper.checkEquipCardExists(equipCardInfo.getEquipCardNo());
 
-            if (exists > 0) {
-                // 存在则更新
-                equipCardInfoMapper.updateEquipCardInfoActive(equipCardInfo);
-            } else {
-                // 不存在则插入
-                equipCardInfoMapper.insertEquipCardInfo(equipCardInfo);
+                if (exists > 0) {
+                    // 存在则更新 - 使用 RID 进行更新，避免数据覆盖
+                    equipCardInfoMapper.updateEquipCardInfo(equipCardInfo);
+                    updateCount++;
+                } else {
+                    // 不存在则插入
+                    equipCardInfoMapper.insert(equipCardInfo);
+                    insertCount++;
+                }
+            } catch (Exception e) {
+                System.out.println("处理资产卡片失败，AC_NO: " + assetCard.getAcNo() + ", 错误: " + e.getMessage());
+                errorCount++;
             }
         }
+
+        System.out.println("=== 推送完成统计 ===");
+        System.out.println("新增: " + insertCount + " 条");
+        System.out.println("更新: " + updateCount + " 条");
+        System.out.println("跳过: " + skipCount + " 条");
+        System.out.println("错误: " + errorCount + " 条");
+        System.out.println("总计处理: " + (insertCount + updateCount + skipCount + errorCount) + " 条");
     }
 
     /**
@@ -167,12 +190,16 @@ public class EquipCardInfoService {
         equipCardInfo.setStartUseDate(getStartUseDate(assetCard));
 
         // 设置到期日期
-        equipCardInfo.setExpireDate(getExpireDate(assetCard, unitName));
+        // 设置到期日期，如果为null则使用当前时间
+        Date expireDate = getExpireDate(assetCard, unitName);
+        equipCardInfo.setExpireDate(expireDate != null ? expireDate : getCurrentTime());
 
         // 设置科室信息
         equipCardInfo.setUseDeptCode(assetCard.getAcUseDeptNo());
         equipCardInfo.setUseDeptName(assetCard.getAcUseDeptNm());
-        equipCardInfo.setUsefulLife(null);
+        // 计算使用年限
+        equipCardInfo
+                .setUsefulLife(calculateUsefulLife(getStartUseDate(assetCard), getExpireDate(assetCard, unitName)));
         equipCardInfo.setManufacturerCode("");
 
         // 设置厂商名称
@@ -194,14 +221,17 @@ public class EquipCardInfoService {
         equipCardInfo.setMeasureCode(" ");
         equipCardInfo.setRetestPeriod(" ");
         equipCardInfo.setRetestUnit(" ");
-        equipCardInfo.setFinanceFund(null);
-        equipCardInfo.setScienceFund(null);
-        equipCardInfo.setSelfFund(null);
+        equipCardInfo.setFinanceFund(BigDecimal.ZERO);
+        equipCardInfo.setScienceFund(BigDecimal.ZERO);
+        equipCardInfo.setSelfFund(BigDecimal.ZERO);
+        equipCardInfo.setHouseAreaSquare(BigDecimal.ZERO);
+        equipCardInfo.setNetSalvageRate(BigDecimal.ZERO);
+        equipCardInfo.setNetSalvageCost(BigDecimal.ZERO);
         equipCardInfo.setReceiveNo(" ");
-        equipCardInfo.setReceiveDate(null);
+        equipCardInfo.setReceiveDate(getCurrentTime()); // 使用当前时间而不是null
         equipCardInfo.setReceiveOperator(" ");
-        equipCardInfo.setHouseAreaSquare(null);
-        equipCardInfo.setDeprecStartDate(null);
+        equipCardInfo.setHouseAreaSquare(BigDecimal.ZERO);
+        equipCardInfo.setDeprecStartDate(getCurrentTime()); // 使用当前时间而不是null
         equipCardInfo.setDeprecFlag("1");
         equipCardInfo.setDeprecTypeCode(assetCard.getAcDeprKind().toString());
         equipCardInfo.setDeprecTypeName(getDeprecTypeName(assetCard.getAcDeprKind()));
@@ -211,8 +241,8 @@ public class EquipCardInfoService {
         BigDecimal totalDeprAmount = lexmisN6_DepreciationMapper.sumDeprAmountByAssetNo(assetCard.getAcNo());
         equipCardInfo.setMonDerpAmt(totalDeprAmount != null ? totalDeprAmount : BigDecimal.ZERO);
 
-        equipCardInfo.setNetSalvageRate(null);
-        equipCardInfo.setNetSalvageCost(null);
+        equipCardInfo.setNetSalvageRate(BigDecimal.ZERO);
+        equipCardInfo.setNetSalvageCost(BigDecimal.ZERO);
         equipCardInfo.setEquipStatusCode(assetCard.getAcBvCode2());
         equipCardInfo.setEquipStatusName(assetCard.getAcBvName2());
         equipCardInfo.setAuditFlag("0");
@@ -222,7 +252,7 @@ public class EquipCardInfoService {
         equipCardInfo.setCrteTime(parseDate("2025-08-06 00:00:00"));
         equipCardInfo.setUpdtTime(assetCard.getAcUpdateTime());
         equipCardInfo.setDeleted("0");
-        equipCardInfo.setDeletedTime(null);
+        equipCardInfo.setDeletedTime(getCurrentTime()); // 使用当前时间而不是null
 
         return equipCardInfo;
     }
@@ -238,12 +268,12 @@ public class EquipCardInfoService {
                 assetType.contains("网络信息设备") ||
                 assetType.contains("医疗专用设备") ||
                 assetType.contains("固定资产"))) {
-            // 若acBvDate1不为null，格式化后返回；否则返回null
-            return formatDate(assetCard.getEvField101() != null ? assetCard.getEvField101() : null);
+            // 若acBvDate1不为null，格式化后返回；否则返回当前时间
+            return formatDate(assetCard.getEvField101() != null ? assetCard.getEvField101() : getCurrentTime());
         }
         // 2. 不满足上述类型，使用扩展字段ev_field101/102
         else {
-            return formatDate(assetCard.getEvField102() != null ? assetCard.getEvField102() : null);
+            return formatDate(assetCard.getEvField102() != null ? assetCard.getEvField102() : getCurrentTime());
         }
     }
 
@@ -277,7 +307,7 @@ public class EquipCardInfoService {
                 }
             }
             // 周宁总医院的固定资产(财政拨款)
-            else if (orgName.contains("周宁总医院") && assetType.contains("固定资产") ) {
+            else if (orgName.contains("周宁总医院") && assetType.contains("固定资产")) {
                 depreciationYears = assetCard.getEvField81() != null ? assetCard.getEvField81().intValue() : null;
             }
         }
@@ -314,12 +344,16 @@ public class EquipCardInfoService {
                 LocalDate expireDate = startDate.plusYears(depreciationYears);
                 return Date.from(expireDate.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant());
             } catch (Exception e) {
-                return null;
+                // 如果计算失败，返回当前时间加1年作为默认值
+                return Date
+                        .from(LocalDate.now().plusYears(1).atStartOfDay(java.time.ZoneId.systemDefault()).toInstant());
             }
         }
 
-        return null;
+        // 如果无法计算到期日期，返回当前时间加1年作为默认值
+        return Date.from(LocalDate.now().plusYears(1).atStartOfDay(java.time.ZoneId.systemDefault()).toInstant());
     }
+
     /**
      * 获取厂商名称
      */
@@ -438,6 +472,50 @@ public class EquipCardInfoService {
             return sdf.parse(dateStr);
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    /**
+     * 计算使用年限
+     * 规则：
+     * 1. 如果当前时间小于到期日期：使用年限 = 当前年份 - 开始使用日期的年份
+     * 2. 如果当前时间大于等于到期日期：使用年限 = 到期日期年份 - 开始使用日期的年份
+     * 3. 如果无法计算：使用年限 = 1（默认值）
+     */
+    private Integer calculateUsefulLife(Date startUseDate, Date expireDate) {
+        try {
+            if (startUseDate == null || expireDate == null) {
+                return 1; // 默认值
+            }
+
+            // 获取当前时间
+            Date currentTime = getCurrentTime();
+
+            // 转换为LocalDate以便计算年份
+            LocalDate startDate = startUseDate.toInstant()
+                    .atZone(java.time.ZoneId.systemDefault())
+                    .toLocalDate();
+            LocalDate expireLocalDate = expireDate.toInstant()
+                    .atZone(java.time.ZoneId.systemDefault())
+                    .toLocalDate();
+            LocalDate currentLocalDate = currentTime.toInstant()
+                    .atZone(java.time.ZoneId.systemDefault())
+                    .toLocalDate();
+
+            int startYear = startDate.getYear();
+            int expireYear = expireLocalDate.getYear();
+            int currentYear = currentLocalDate.getYear();
+
+            // 如果当前时间小于到期日期
+            if (currentLocalDate.isBefore(expireLocalDate)) {
+                return currentYear - startYear;
+            } else {
+                // 如果当前时间大于等于到期日期
+                return expireYear - startYear;
+            }
+        } catch (Exception e) {
+            // 异常时返回默认值
+            return 1;
         }
     }
 }

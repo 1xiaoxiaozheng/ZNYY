@@ -56,7 +56,7 @@ public class EquipCardInfo {
     private String billSubNo;
 
     /** 批次 */
-    @TableField("batch_no")
+    @TableField(value = "batch_no", jdbcType = JdbcType.DATE)
     private Date batchNo;
 
     /** 设备代码 系统中标识一个设备唯一代码 */
@@ -68,11 +68,11 @@ public class EquipCardInfo {
     private String equipName;
 
     /** 购入金额 */
-    @TableField("buy_cost")
+    @TableField(value = "buy_cost", jdbcType = JdbcType.NUMERIC)
     private BigDecimal buyCost;
 
     /** 当前金额 */
-    @TableField("now_cost")
+    @TableField(value = "now_cost", jdbcType = JdbcType.NUMERIC)
     private BigDecimal nowCost;
 
     /** 购买日期 */
@@ -144,15 +144,15 @@ public class EquipCardInfo {
     private String retestUnit;
 
     /** 财政资金 */
-    @TableField("finance_fund")
+    @TableField(value = "finance_fund", jdbcType = JdbcType.NUMERIC)
     private BigDecimal financeFund;
 
     /** 科教资金 */
-    @TableField("science_fund")
+    @TableField(value = "science_fund", jdbcType = JdbcType.NUMERIC)
     private BigDecimal scienceFund;
 
     /** 自有资金 */
-    @TableField("self_fund")
+    @TableField(value = "self_fund", jdbcType = JdbcType.NUMERIC)
     private BigDecimal selfFund;
 
     /** 领用单号 */
@@ -168,7 +168,7 @@ public class EquipCardInfo {
     private String receiveOperator;
 
     /** 房屋面积 */
-    @TableField("house_area_square")
+    @TableField(value = "house_area_square", jdbcType = JdbcType.DECIMAL)
     private BigDecimal houseAreaSquare;
 
     /** 折旧起始日期 */
@@ -188,19 +188,19 @@ public class EquipCardInfo {
     private String deprecTypeName;
 
     /** 月折旧率 */
-    @TableField("deprec_rate")
+    @TableField(value = "deprec_rate", jdbcType = JdbcType.NUMERIC)
     private BigDecimal deprecRate;
 
     /** 月折旧金额 */
-    @TableField("mon_derp_amt")
+    @TableField(value = "mon_derp_amt", jdbcType = JdbcType.NUMERIC)
     private BigDecimal monDerpAmt;
 
     /** 净残值率 */
-    @TableField("net_salvage_rate")
+    @TableField(value = "net_salvage_rate", jdbcType = JdbcType.DECIMAL)
     private BigDecimal netSalvageRate;
 
     /** 净残值金额 */
-    @TableField("net_salvage_cost")
+    @TableField(value = "net_salvage_cost", jdbcType = JdbcType.DECIMAL)
     private BigDecimal netSalvageCost;
 
     /** 设备状态代码 */

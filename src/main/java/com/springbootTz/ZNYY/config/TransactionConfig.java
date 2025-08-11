@@ -70,26 +70,8 @@ public class TransactionConfig {
 
     @Configuration
     @MapperScan(basePackages = "com.springbootTz.ZNYY.Equipment.mapper.seeyon", sqlSessionFactoryRef = "sqlserverSqlSessionFactory")
-    public class SQLServerConfig {
-        @Bean(name = "sqlserverTransactionManager")
-        public PlatformTransactionManager sqlserverTransactionManager(
-                @Qualifier("sqlserverDataSource") DataSource dataSource) {
-            return new DataSourceTransactionManager(dataSource);
-        }
-
-        @Bean(name = "sqlserverSqlSessionFactory")
-        public SqlSessionFactory sqlserverSqlSessionFactory(@Qualifier("sqlserverDataSource") DataSource dataSource)
-                throws Exception {
-            MybatisSqlSessionFactoryBean bean = new MybatisSqlSessionFactoryBean();
-            bean.setDataSource(dataSource);
-            return bean.getObject();
-        }
-
-        @Bean(name = "sqlserverSqlSessionTemplate")
-        public SqlSessionTemplate sqlserverSqlSessionTemplate(
-                @Qualifier("sqlserverSqlSessionFactory") SqlSessionFactory sqlSessionFactory) {
-            return new SqlSessionTemplate(sqlSessionFactory);
-        }
+    public class SQLServerMapperScanConfig {
+        // SQL Server的Mapper扫描配置，具体的Bean定义在SQLServerConfig.java中
     }
 
     @Configuration

@@ -1,4 +1,4 @@
-package com.springbootTz.ZNYY.Equipment.mapper.znyy;
+package com.springbootTz.ZNYY.Equipment.mapper.seeyon;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -23,11 +23,11 @@ public interface UnitInfoToolMapper {
     /**
      * 根据单位ID查询单位code
      *
-     * @param unitId 单位名称
+     * @param unitId 单位ID
      * @return 单位code
      */
     @Select("SELECT code FROM ORG_UNIT WHERE ID = #{unitId}")
-    Long selectUnitCodeByName(@Param("unitId") Long unitId);
+    String selectUnitCodeByName(@Param("unitId") Long unitId);
 
     /**
      * 查询所有单位信息

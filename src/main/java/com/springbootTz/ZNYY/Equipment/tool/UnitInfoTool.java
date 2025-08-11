@@ -1,6 +1,6 @@
 package com.springbootTz.ZNYY.Equipment.tool;
 
-import com.springbootTz.ZNYY.Equipment.mapper.znyy.UnitInfoToolMapper;
+import com.springbootTz.ZNYY.Equipment.mapper.seeyon.UnitInfoToolMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -23,7 +23,7 @@ public class UnitInfoTool {
      * 方法二，接收单位ID，查询统一社会信用代码
      */
     public Long getUnitCreditCode(Long unitId) {
-        Long code = unitInfoToolMapper.selectUnitCodeByName(unitId);
+        Long code = Long.valueOf(unitInfoToolMapper.selectUnitCodeByName(unitId));
         return code;
     }
 
