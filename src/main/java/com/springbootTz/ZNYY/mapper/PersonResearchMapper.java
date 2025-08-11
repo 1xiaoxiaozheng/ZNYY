@@ -149,7 +149,8 @@ public class PersonResearchMapper {
 
     public void setOracleField(OraclePersonResearch oracle, String fieldName, String fieldValue) {
         try {
-            Field field = OraclePersonResearch.class.getDeclaredField(fieldName);
+            String javaFieldName = underlineToCamel(fieldName); // 新增：字段名转换
+            Field field = OraclePersonResearch.class.getDeclaredField(javaFieldName);
             field.setAccessible(true);
             if (field.getType() == Date.class && fieldValue != null && !fieldValue.trim().isEmpty()
                     && !" ".equals(fieldValue.trim())) {
@@ -163,5 +164,19 @@ public class PersonResearchMapper {
         } catch (Exception e) {
             logger.error("字段设置失败: {} - {}", fieldName, e.getMessage());
         }
+    }
+
+    public static String underlineToCamel(String name) {
+        StringBuilder result = new StringBuilder();
+        boolean nextUpper = false;
+        for (char c : name.toCharArray()) {
+            if (c == '_') {
+                nextUpper = true;
+            } else {
+                result.append(nextUpper ? Character.toUpperCase(c) : Character.toLowerCase(c));
+                nextUpper = false;
+            }
+        }
+        return result.toString();
     }
 }

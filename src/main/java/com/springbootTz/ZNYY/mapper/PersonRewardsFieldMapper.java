@@ -61,70 +61,76 @@ public class PersonRewardsFieldMapper {
      */
     public final Map<String, Function<PostgresPersonDetailCustom, String>> FIELD_MAPPING = new LinkedHashMap<String, Function<PostgresPersonDetailCustom, String>>() {
         {
-            put("RID", toSafeString(p -> {
+            put("rid", toSafeString(p -> {
                 String orgName = getOrgNameByPersonId(p.getPersonId());
                 if (orgName == null || orgName.isEmpty())
                     return " ";
                 return orgCodeConcatTool.concatCodeAndParams(orgName, SYS_PRDR_CODE, p.getId());
             }));
-            put("ORG_NAME", toSafeString(p -> {
+            put("orgName", toSafeString(p -> {
                 String orgName = getOrgNameByPersonId(p.getPersonId());
                 return orgName == null ? " " : orgName;
             }));
-            put("USCID", toSafeString(p -> {
+            put("uscid", toSafeString(p -> {
                 String orgName = getOrgNameByPersonId(p.getPersonId());
                 if (orgName == null || orgName.isEmpty())
                     return " ";
                 String uscid = orgCodeQueryTool.getCodeByDisplay(orgName);
                 return uscid == null ? " " : uscid;
             }));
-            put("UPLOAD_TIME",
+            put("uploadTime",
                     toSafeString(p -> new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())));
-            put("SYS_PRDR_CODE", toSafeString(p -> SYS_PRDR_CODE));
-            put("SYS_PRDR_NAME", toSafeString(p -> SYS_PRDR_NAME));
-            put("DATA_CLCT_PRDR_NAME", toSafeString(p -> DATA_CLCT_PRDR_NAME));
-            put("ORIGINAL_ID", toSafeString(p -> p.getId() == null ? " " : p.getId()));
-            put("STAFF_ID", toSafeString(p -> p.getPersonId() == null ? " " : p.getPersonId()));
-            put("STAFF_NO", toSafeString(p -> {
+            put("sysPrdrCode", toSafeString(p -> SYS_PRDR_CODE));
+            put("sysPrdrName", toSafeString(p -> SYS_PRDR_NAME));
+            put("dataClctPrdrName", toSafeString(p -> DATA_CLCT_PRDR_NAME));
+            put("originalId", toSafeString(p -> p.getId() == null ? " " : p.getId()));
+            put("staffId", toSafeString(p -> p.getPersonId() == null ? " " : p.getPersonId()));
+            put("staffNo", toSafeString(p -> {
                 PostgresPerson person = postgresPersonMapper.selectById(p.getPersonId());
                 return person == null ? " " : person.getNumber();
             }));
-            put("STAFF_NAME", toSafeString(p -> {
+            put("staffName", toSafeString(p -> {
                 PostgresPerson person = postgresPersonMapper.selectById(p.getPersonId());
                 return person == null ? " " : person.getName();
             }));
-            put("CRTE_TIME", toSafeString(p -> p.getCreateTime() == null ? " " : p.getCreateTime().toString()));
-            put("UPDT_TIME", toSafeString(p -> p.getModifyTime() == null ? " " : p.getModifyTime().toString()));
-            put("DELETED", toSafeString(p -> {
+            put("crteTime",
+                    toSafeString(p -> p.getCreateTime() == null
+                            ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
+                            : p.getCreateTime().toString()));
+            put("updtTime",
+                    toSafeString(p -> p.getModifyTime() == null
+                            ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
+                            : p.getModifyTime().toString()));
+            put("deleted", toSafeString(p -> {
                 Integer delFlag = p.getDelFlag();
                 return (delFlag != null && delFlag == 1) ? "0" : "1";
             }));
-            put("DELETED_TIME", toSafeString(p -> " "));
-            put("SUBJECT", toSafeString(p -> {
+            put("deletedTime", toSafeString(p -> new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())));
+            put("subject", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_B5ksxjsx");
                 return v == null ? " " : v;
             }));
-            put("AWARDS_ITEM_CODE", toSafeString(p -> {
+            put("awardsItemCode", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_K2QY7IwE");
                 return v == null ? " " : v;
             }));
-            put("AWARDS_ITEM_NAME", toSafeString(p -> {
+            put("awardsItemName", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_K2QY7IwE");
                 return v == null ? " " : v;
             }));
-            put("AWARDS_DATE", toSafeString(p -> {
+            put("awardsDate", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_qdKqLV3F");
                 return v == null ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) : v;
             }));
-            put("AWARDS_UNIT", toSafeString(p -> {
+            put("awardsUnit", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_VcziFtzn");
                 return v == null ? " " : v;
             }));
-            put("AWARDS_GRADE_CODE", toSafeString(p -> {
+            put("awardsGradeCode", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_FnIv3tfj");
                 return v == null ? " " : v;
             }));
-            put("AWARDS_GRADE_NAME", toSafeString(p -> {
+            put("awardsGradeName", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_FnIv3tfj");
                 return v == null ? " " : v;
             }));

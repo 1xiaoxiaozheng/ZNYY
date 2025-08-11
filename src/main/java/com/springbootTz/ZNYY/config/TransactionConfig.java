@@ -67,4 +67,38 @@ public class TransactionConfig {
             return new SqlSessionTemplate(sqlSessionFactory);
         }
     }
+
+    @Configuration
+    @MapperScan(basePackages = "com.springbootTz.ZNYY.Equipment.mapper.seeyon", sqlSessionFactoryRef = "sqlserverSqlSessionFactory")
+    public class SQLServerConfig {
+        @Bean(name = "sqlserverTransactionManager")
+        public PlatformTransactionManager sqlserverTransactionManager(
+                @Qualifier("sqlserverDataSource") DataSource dataSource) {
+            return new DataSourceTransactionManager(dataSource);
+        }
+
+        @Bean(name = "sqlserverSqlSessionFactory")
+        public SqlSessionFactory sqlserverSqlSessionFactory(@Qualifier("sqlserverDataSource") DataSource dataSource)
+                throws Exception {
+            MybatisSqlSessionFactoryBean bean = new MybatisSqlSessionFactoryBean();
+            bean.setDataSource(dataSource);
+            return bean.getObject();
+        }
+
+        @Bean(name = "sqlserverSqlSessionTemplate")
+        public SqlSessionTemplate sqlserverSqlSessionTemplate(
+                @Qualifier("sqlserverSqlSessionFactory") SqlSessionFactory sqlSessionFactory) {
+            return new SqlSessionTemplate(sqlSessionFactory);
+        }
+    }
+
+    @Configuration
+    @MapperScan(basePackages = "com.springbootTz.ZNYY.Equipment.mapper.znyy", sqlSessionFactoryRef = "oracleSqlSessionFactory")
+    public class EquipmentOracleConfig {
+        @Bean(name = "equipmentOracleTransactionManager")
+        public PlatformTransactionManager equipmentOracleTransactionManager(
+                @Qualifier("oracleDataSource") DataSource dataSource) {
+            return new DataSourceTransactionManager(dataSource);
+        }
+    }
 }
