@@ -29,7 +29,8 @@ public interface AssetCardDepreciationQueryMapper {
                         "d.D_DeprMonthTotal, d.D_FundNo, d.D_FundNm, d.D_UseDeptNo, d.D_UseDeptNm, " +
                         "d.D_DeprAmount, d.D_CreateName, d.D_VoucherDate, d.D_DeprKind, d.D_CreateDate " +
                         "FROM LexmisN6_AssetCard ac " +
-                        "LEFT JOIN LexmisN6_Depreciation d ON ac.AC_NO = d.D_NO")
+                        "LEFT JOIN LexmisN6_Depreciation d ON ac.AC_NO = d.D_NO " +
+                        "WHERE ac.AC_BudgetOrg NOT IN (SELECT ID FROM ORG_UNIT WHERE NAME LIKE '%周宁总医院%')")
         @Results({
                         // 资产卡片字段映射
                         @Result(property = "acId", column = "AC_ID"),

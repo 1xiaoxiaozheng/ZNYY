@@ -27,20 +27,21 @@ public class ZnyyApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        logger.info("开始执行推送seeyon卡片信息到znyy的任务...");
+//        logger.info("开始执行推送seeyon卡片信息到znyy的任务...");
 
         try {
             // 执行推送操作
-            pushZNYYService.pushEquipCardInfoToZnyy();
-            logger.info("推送seeyon卡片信息到znyy成功！");
+//            pushZNYYService.pushEquipCardInfoToZnyy();
+            pushZNYYService.pushEquipDepreciationRecordToZnyy();
+//            logger.info("推送seeyon卡片信息到znyy成功！");
         } catch (Exception e) {
             // 捕获所有可能的异常，记录详细错误信息但不中断应用启动
-            logger.error("推送seeyon卡片信息到znyy失败，应用将继续启动", e);
+            logger.error("推送seeyon信息到znyy失败，应用将继续启动", e);
 
             // 可选：如果需要在失败时执行特定操作（如发送告警通知），可以在这里添加
             // sendAlertNotification(e.getMessage());
         }
 
-        logger.info("推送任务处理完毕，应用将继续完成启动流程");
+//        logger.info("推送任务处理完毕，应用将继续完成启动流程");
     }
 }

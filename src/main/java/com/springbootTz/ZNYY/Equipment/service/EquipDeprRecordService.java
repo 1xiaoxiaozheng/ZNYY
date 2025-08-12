@@ -35,6 +35,18 @@ public class EquipDeprRecordService {
         // 获取所有折旧记录
         List<LexmisN6_Depreciation> depreciationList = lexmisN6_DepreciationMapper.selectAll();
 
+        System.out.println("=== 折旧记录推送统计 ===");
+        System.out.println("从 seeyon 查询到的折旧记录总数: " + depreciationList.size());
+
+        if (depreciationList.isEmpty()) {
+            System.out.println("警告: 没有查询到任何折旧记录！");
+            return;
+        }
+
+        int insertCount = 0;
+        int updateCount = 0;
+        int errorCount = 0;
+
         for (LexmisN6_Depreciation depreciation : depreciationList) {
             try {
                 // 映射数据
@@ -46,15 +58,24 @@ public class EquipDeprRecordService {
                 if (exists > 0) {
                     // 存在则更新
                     equipDeprRecordMapper.updateEquipDeprRecord(equipDeprRecord);
+                    updateCount++;
                 } else {
                     // 不存在则插入
                     equipDeprRecordMapper.insertEquipDeprRecord(equipDeprRecord);
+                    insertCount++;
                 }
             } catch (Exception e) {
                 // 记录错误日志，继续处理下一条
                 System.err.println("处理折旧记录失败: " + depreciation.getDId() + ", 错误: " + e.getMessage());
+                errorCount++;
             }
         }
+
+        System.out.println("=== 推送完成统计 ===");
+        System.out.println("新增: " + insertCount + " 条");
+        System.out.println("更新: " + updateCount + " 条");
+        System.out.println("错误: " + errorCount + " 条");
+        System.out.println("总计处理: " + (insertCount + updateCount + errorCount) + " 条");
     }
 
     /**
@@ -87,30 +108,34 @@ public class EquipDeprRecordService {
         equipDeprRecord.setUseDeptCode(String.valueOf(depreciation.getDUseDeptNo())); // Long转String
         equipDeprRecord.setUseDeptName(depreciation.getDUseDeptNm());
         equipDeprRecord.setCurrentDepr(depreciation.getDDeprAmount());
-        equipDeprRecord.setDeprCumAmt(null); // 无对应字段
+        equipDeprRecord.setDeprCumAmt(BigDecimal.ZERO); // 无对应字段
         equipDeprRecord.setOperatorName(depreciation.getDCreateName());
-        equipDeprRecord.setDealDate(depreciation.getDVoucherDate());
-        equipDeprRecord.setCreateCertFlag(""); // 无对应字段，设为空字符串
-        equipDeprRecord.setCreateCertDate(null); // 无对应字段
-        equipDeprRecord.setAccruedCostFlag(""); // 无对应字段，设为空字符串
-        equipDeprRecord.setAccruedCostDate(null); // 无对应字段
+        if(depreciation.getDVoucherDate() == null){
+            equipDeprRecord.setDealDate(parseDate("1900-01-01 00:00:00")); // 无对应字段
+        }else{
+            equipDeprRecord.setDealDate(depreciation.getDVoucherDate());//如果为空那就使用默认值，
+        }
+        equipDeprRecord.setCreateCertFlag("无"); // 无对应字段，设为空字符串
+        equipDeprRecord.setCreateCertDate(parseDate("1900-01-01 00:00:00")); // 无对应字段
+        equipDeprRecord.setAccruedCostFlag("无"); // 无对应字段，设为空字符串
+        equipDeprRecord.setAccruedCostDate(parseDate("1900-01-01 00:00:00")); // 无对应字段
         equipDeprRecord.setDeprMean(depreciation.getDDeprKind().toString());
         equipDeprRecord.setDeprMeanName(getDeprMeanName(depreciation.getDDeprKind()));
-        equipDeprRecord.setStroomCode(""); // 无对应字段，设为空字符串
-        equipDeprRecord.setStroomName(""); // 无对应字段，设为空字符串
+        equipDeprRecord.setStroomCode("无"); // 无对应字段，设为空字符串
+        equipDeprRecord.setStroomName("无"); // 无对应字段，设为空字符串
 
         // 查询折旧率：D_NO=A_NO，查询LexmisN6_AssetCard的AC_DeprRate
         BigDecimal deprecRate = getDeprecRate(depreciation.getDNo());
         equipDeprRecord.setDeprecRate(deprecRate);
 
         equipDeprRecord.setState("0");
-        equipDeprRecord.setReserve1("");
-        equipDeprRecord.setReserve2("");
+        equipDeprRecord.setReserve1("无");
+        equipDeprRecord.setReserve2("无");
         equipDeprRecord.setDataClctPrdrName("福建众智政友有限公司");
         equipDeprRecord.setCrteTime(depreciation.getDCreateDate());
-        equipDeprRecord.setUpdtTime(parseDate("2025-08-06 00:00:00"));
+        equipDeprRecord.setUpdtTime(parseDate("1900-01-01 00:00:00"));
         equipDeprRecord.setDeleted("0");
-        equipDeprRecord.setDeletedTime(null);
+        equipDeprRecord.setDeletedTime(parseDate("1900-01-01 00:00:00"));
 
         return equipDeprRecord;
     }

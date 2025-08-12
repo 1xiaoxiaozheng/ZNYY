@@ -28,7 +28,7 @@ public class EquipCardInfo {
     private String uscid;
 
     /** 数据上传时间 复合主键，唯一索引，见公共字段【数据上传时间】说明 */
-    @TableField(value = "upload_time", jdbcType = JdbcType.DATE)
+    @TableField(value = "upload_time", jdbcType = JdbcType.TIMESTAMP)
     private Date uploadTime;
 
     /** 系统建设厂商代码 复合主键，系统建设厂商名称首字母大写 */
@@ -56,7 +56,7 @@ public class EquipCardInfo {
     private String billSubNo;
 
     /** 批次 */
-    @TableField(value = "batch_no", jdbcType = JdbcType.DATE)
+    @TableField(value = "batch_no", jdbcType = JdbcType.TIMESTAMP)
     private Date batchNo;
 
     /** 设备代码 系统中标识一个设备唯一代码 */
@@ -76,15 +76,15 @@ public class EquipCardInfo {
     private BigDecimal nowCost;
 
     /** 购买日期 */
-    @TableField(value = "buy_date", jdbcType = JdbcType.DATE)
+    @TableField(value = "buy_date", jdbcType = JdbcType.TIMESTAMP)
     private Date buyDate;
 
     /** 启用日期 */
-    @TableField(value = "start_use_date", jdbcType = JdbcType.DATE)
+    @TableField(value = "start_use_date", jdbcType = JdbcType.TIMESTAMP)
     private Date startUseDate;
 
     /** 到期日期 */
-    @TableField(value = "expire_date", jdbcType = JdbcType.DATE)
+    @TableField(value = "expire_date", jdbcType = JdbcType.TIMESTAMP)
     private Date expireDate;
 
     /** 使用科室代码 */
@@ -172,7 +172,7 @@ public class EquipCardInfo {
     private BigDecimal houseAreaSquare;
 
     /** 折旧起始日期 */
-    @TableField(value = "deprec_start_date", jdbcType = JdbcType.DATE)
+    @TableField(value = "deprec_start_date", jdbcType = JdbcType.TIMESTAMP)
     private Date deprecStartDate;
 
     /** 折旧标志 1是，0否 */
@@ -228,11 +228,11 @@ public class EquipCardInfo {
     private String dataClctPrdrName;
 
     /** 数据创建时间 见公共字段【数据创建时间】说明 */
-    @TableField(value = "crte_time", jdbcType = JdbcType.DATE)
+    @TableField(value = "crte_time", jdbcType = JdbcType.TIMESTAMP)
     private Date crteTime;
 
     /** 数据更新时间 见公共字段【数据更新时间】说明 */
-    @TableField(value = "updt_time", jdbcType = JdbcType.DATE)
+    @TableField(value = "updt_time",jdbcType = JdbcType.TIMESTAMP)
     private Date updtTime;
 
     /** 数据删除状态 见公共字段【数据删除状态】说明 */
@@ -240,6 +240,6 @@ public class EquipCardInfo {
     private String deleted;
 
     /** 数据删除时间 见公共字段【数据删除时间】说明 */
-    @TableField(value = "deleted_time", jdbcType = JdbcType.DATE)
+    @TableField(value = "deleted_time", jdbcType = JdbcType.TIMESTAMP)
     private Date deletedTime;
 }

@@ -98,6 +98,12 @@ public interface EquipDiscardedRecordMapper extends BaseMapper<EquipDiscardedRec
         List<EquipDiscardedRecord> selectByApplyerName(String applyerName);
 
         /**
+         * 检查设备报废记录是否存在
+         */
+        @Select("SELECT COUNT(*) FROM equip_discarded_record WHERE rid = #{rid}")
+        int checkEquipDiscardedRecordExists(String rid);
+
+        /**
          * 根据审核人查询
          */
         @Select("SELECT * FROM equip_discarded_record WHERE audit_operator_name = #{auditOperatorName}")
