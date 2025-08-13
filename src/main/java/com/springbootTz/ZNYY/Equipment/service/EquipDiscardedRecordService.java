@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.List;
 import java.time.LocalDate;
@@ -128,7 +129,7 @@ public class EquipDiscardedRecordService {
             }
         }
 
-        System.out.println("=== 推送完成统计 ===");
+        System.out.println("=== 报废记录推送完成统计 ===");
         System.out.println("新增: " + insertCount + " 条");
         System.out.println("更新: " + updateCount + " 条");
         System.out.println("跳过: " + skipCount + " 条");
@@ -166,21 +167,37 @@ public class EquipDiscardedRecordService {
         equipDiscardedRecord.setEquipModel(disposal.getField0013() != null ? disposal.getField0013() : "无");
         equipDiscardedRecord.setUnit("1");
         equipDiscardedRecord.setUnitName("个");
-        equipDiscardedRecord.setUseDep(disposal.getField0019() != null ? disposal.getField0019() : "");
+        equipDiscardedRecord.setUseDep(disposal.getField0019() != null ? disposal.getField0019() : "无");
 
         // 处理设备价格，如果为null则使用0
         BigDecimal equipPric = disposal.getField0015();
         equipDiscardedRecord.setEquipPric(equipPric != null ? equipPric : BigDecimal.ZERO);
 
-        // 处理购买日期，如果为null则使用当前时间
+        // 处理购买日期，如果为null则使用默认时间
         String dateStr = disposal.getField0014();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        Date purcDate = null;
 
-        // 先转换为LocalDateTime
-        LocalDateTime localDateTime = LocalDateTime.parse(dateStr, formatter);
-        // 再转换为Date（如果需要传统的Date类型）
-        Date purcDate = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
-        equipDiscardedRecord.setPurcDate(purcDate != null ? purcDate : getCurrentTime());
+        if (dateStr != null && !dateStr.trim().isEmpty()) {
+            // 去除首尾空格
+            dateStr = dateStr.trim();
+            // 如果是纯日期格式（长度为10，格式 yyyy-MM-dd），补充时间部分
+            if (dateStr.length() == 10 && dateStr.contains("-")) {
+                dateStr += " 00:00:00";
+            }
+            try {
+                // 使用带时间的格式解析
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                LocalDateTime localDateTime = LocalDateTime.parse(dateStr, formatter);
+                purcDate = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+            } catch (DateTimeParseException e) {
+                // 解析失败时使用默认日期
+                purcDate = parseDate("1900-01-01 00:00:00");
+            }
+        } else {
+            // 日期字符串为null或空时使用默认日期
+            purcDate = parseDate("1900-01-01 00:00:00");
+        }
+        equipDiscardedRecord.setPurcDate(purcDate);
 
         // 计算已用年限
         Integer usedLife = calculateUsedLife(purcDate);
@@ -191,9 +208,9 @@ public class EquipDiscardedRecordService {
         equipDiscardedRecord.setDiscardedRea(disposal.getField0009() != null ? disposal.getField0009() : "");
         equipDiscardedRecord.setApplyerName("无");
         equipDiscardedRecord.setApplyDate(getCurrentTime()); // 使用当前时间
-        equipDiscardedRecord.setAuditOperatorName("");
+        equipDiscardedRecord.setAuditOperatorName("无");
         equipDiscardedRecord.setAuditDate(disposal.getStartDate() != null ? disposal.getStartDate() : getCurrentTime());
-        equipDiscardedRecord.setManufacturerCode("");
+        equipDiscardedRecord.setManufacturerCode("无");
 
         // 获取厂商名称
         String manufacturerName = getManufacturerName(disposal.getField0023());
@@ -206,7 +223,7 @@ public class EquipDiscardedRecordService {
         equipDiscardedRecord.setCrteTime(disposal.getStartDate() != null ? disposal.getStartDate() : getCurrentTime());
         equipDiscardedRecord.setUpdtTime(disposal.getStartDate() != null ? disposal.getStartDate() : getCurrentTime());
         equipDiscardedRecord.setDeleted("0");
-        equipDiscardedRecord.setDeletedTime(parseDate("2025-08-06 00:00:00"));
+        equipDiscardedRecord.setDeletedTime(parseDate("1900-01-01 00:00:00"));
 
         return equipDiscardedRecord;
     }

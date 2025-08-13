@@ -32,7 +32,8 @@ public class ZnyyApplication implements CommandLineRunner {
         try {
             // 执行推送操作
 //            pushZNYYService.pushEquipCardInfoToZnyy();
-            pushZNYYService.pushEquipDepreciationRecordToZnyy();
+//            pushZNYYService.pushEquipDepreciationRecordToZnyy();
+            pushZNYYService.pushEquipDepreciationRecordToZnyyBySeeyon();
 //            logger.info("推送seeyon卡片信息到znyy成功！");
         } catch (Exception e) {
             // 捕获所有可能的异常，记录详细错误信息但不中断应用启动

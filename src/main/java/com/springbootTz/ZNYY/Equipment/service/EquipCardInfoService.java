@@ -148,7 +148,7 @@ public class EquipCardInfoService {
             }
         }
 
-        System.out.println("=== 推送完成统计 ===");
+        System.out.println("=== 设备卡片信息推送完成统计 ===");
         System.out.println("新增: " + insertCount + " 条");
         System.out.println("更新: " + updateCount + " 条");
         System.out.println("跳过: " + skipCount + " 条");

@@ -71,7 +71,7 @@ public class EquipDeprRecordService {
             }
         }
 
-        System.out.println("=== 推送完成统计 ===");
+        System.out.println("=== 设备折旧记录推送完成统计 ===");
         System.out.println("新增: " + insertCount + " 条");
         System.out.println("更新: " + updateCount + " 条");
         System.out.println("错误: " + errorCount + " 条");
