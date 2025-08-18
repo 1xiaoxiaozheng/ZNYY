@@ -99,8 +99,8 @@ public class EquipRegInfoService_WX {
                 EquipRegInfo equipRegInfo = mapToEquipRegInfo(dto);
 
                 // 若rid为null则跳过当前记录
-                if (equipRegInfo.getRid() == null) {
-                    System.out.println("跳过rid为null的数据，单据编号: " + dto.getField0017());
+                if (dto.getField0017() == null) {
+                    System.out.println("跳过单据编号为空: " + dto.getField0017());
                     skipCount++;
                     continue;
                 }

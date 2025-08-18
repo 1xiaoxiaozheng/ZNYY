@@ -103,8 +103,8 @@ public class EquipRegInfoService_CL {
                 EquipRegInfo equipRegInfo = mapToEquipRegInfo(vehicle);
 
                 // 如果rid为null则跳过
-                if (equipRegInfo.getRid() == null) {
-//                    System.out.println("跳过rid为null的数据，单据编号: " + vehicle.getField0001());
+                if (vehicle.getField0001() == null) {
+//                    System.out.println("跳过单据编号为空的内容: " + vehicle.getField0001());
                     skipCount++;
                     continue;
                 }

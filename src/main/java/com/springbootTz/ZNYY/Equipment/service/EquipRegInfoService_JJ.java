@@ -98,8 +98,8 @@ public class EquipRegInfoService_JJ {
                 EquipRegInfo equipRegInfo = mapToEquipRegInfo(Home);
 
                 // 如果rid为null则跳过
-                if (equipRegInfo.getRid() == null) {
-//                    System.out.println("跳过rid为null的数据，单据编号: " + Home.getField0017());
+                if (Home.getField0017() == null) {
+//                    System.out.println("跳过单据编号为空: " + Home.getField0017());
                     skipCount++;
                     continue;
                 }
