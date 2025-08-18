@@ -2,10 +2,12 @@ package com.springbootTz.ZNYY.Equipment.tool;
 
 import com.springbootTz.ZNYY.Equipment.mapper.seeyon.UnitInfoToolMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * 用于单位信息的查询的方法
  */
+@Service
 public class UnitInfoTool {
 
     @Autowired

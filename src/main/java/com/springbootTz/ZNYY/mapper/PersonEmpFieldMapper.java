@@ -39,9 +39,9 @@ public class PersonEmpFieldMapper {
     private PostgresPersonDetailWorkExperienceMapper postgresPersonDetailWorkExperienceMapper;
 
     // 直接定义常量，避免配置文件中文乱码
-    private static final String SYS_PRDR_CODE = "FJZZZYKJGS";
-    private static final String SYS_PRDR_NAME = "福建众智政友科技公司";
-    private static final String DATA_CLCT_PRDR_NAME = "福建众智政友科技公司";
+    private static final String SYS_PRDR_CODE = "FJZZZYKJYXGS";
+    private static final String SYS_PRDR_NAME = "福建众智政友科技有限公司";
+    private static final String DATA_CLCT_PRDR_NAME = "福建众智政友科技有限公司";
 
     private static <T> Function<T, String> toSafeString(Function<T, ?> func) {
         return t -> {
@@ -74,8 +74,8 @@ public class PersonEmpFieldMapper {
      * ORG_NAME → 根据personId查询机构名称 USCID → 根据机构名称查询对应的统一社会信用代码
      *
      * 系统固定值： UPLOAD_TIME → 当前系统时间（格式：yyyy-MM-dd HH:mm:ss） SYS_PRDR_CODE →
-     * 固定值"1" SYS_PRDR_NAME → 固定值"福建众智政友科技公司" DATA_CLCT_PRDR_NAME →
-     * 固定值"福建众智政友科技公司"
+     * 固定值"1" SYS_PRDR_NAME → 固定值"福建众智政友科技有限公司" DATA_CLCT_PRDR_NAME →
+     * 固定值"福建众智政友科技有限公司"
      *
      * 人员信息： ORIGINAL_ID → ehr_org_person_detail_work_experience表的id字段 STAFF_ID
      * → person_id字段 STAFF_NO → 关联PostgresPerson表的number字段 STAFF_NAME →

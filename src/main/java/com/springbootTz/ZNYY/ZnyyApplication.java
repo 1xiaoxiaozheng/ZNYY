@@ -33,16 +33,20 @@ public class ZnyyApplication implements CommandLineRunner {
             // 执行推送操作
 //            pushZNYYService.pushEquipCardInfoToZnyy();
 //            pushZNYYService.pushEquipDepreciationRecordToZnyy();
-            pushZNYYService.pushEquipDepreciationRecordToZnyyBySeeyon();
+//            pushZNYYService.pushEquipDepreciationRecordToZnyyBySeeyon();
+
+              pushZNYYService.pushVehicleRegisterToZnyy();
+              pushZNYYService.pushHomeApplianceRegisterToZnyy();
+              pushZNYYService.pushLandRegisterToZnyy();
+              pushZNYYService.pushNetworkRegisterToZnyy();
+              pushZNYYService.pushIntangibleAssetRegisterToZnyy();
+              pushZNYYService.pushMedicalRegisterToZnyy();
+
 //            logger.info("推送seeyon卡片信息到znyy成功！");
+
         } catch (Exception e) {
             // 捕获所有可能的异常，记录详细错误信息但不中断应用启动
             logger.error("推送seeyon信息到znyy失败，应用将继续启动", e);
-
-            // 可选：如果需要在失败时执行特定操作（如发送告警通知），可以在这里添加
-            // sendAlertNotification(e.getMessage());
         }
-
-//        logger.info("推送任务处理完毕，应用将继续完成启动流程");
     }
 }

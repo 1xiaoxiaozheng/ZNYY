@@ -88,16 +88,16 @@ public class EquipDeprRecordService {
         String unitCode = String.valueOf(unitInfoToolMapper.selectUnitCodeByName(depreciation.getDBudgetOrg()));
         String unitName = unitInfoToolMapper.selectUnitNameById(depreciation.getDBudgetOrg());
 
-        // 生成RID: uscid+FJZZZYKJGS+depr_month+equip_card_no
-        String rid = unitCode + "FJZZZYKJGS" + depreciation.getDDeprBeginMonth() + depreciation.getDId();
+        // 生成RID: uscid+FJZZZYKJYXGS+depr_month+equip_card_no
+        String rid = unitCode + "FJZZZYKJYXGS" + depreciation.getDDeprBeginMonth() + depreciation.getDId();
 
         // 设置基本信息
         equipDeprRecord.setRid(rid);
         equipDeprRecord.setOrgName(unitName);
         equipDeprRecord.setUscid(unitCode);
         equipDeprRecord.setUploadTime(getCurrentTime());
-        equipDeprRecord.setSysPrdrCode("FJZZZYKJGS");
-        equipDeprRecord.setSysPrdrName("福建众智政友有限公司");
+        equipDeprRecord.setSysPrdrCode("FJZZZYKJYXGS");
+        equipDeprRecord.setSysPrdrName("福建众智政友科技有限公司");
         equipDeprRecord.setDeprMonth(String.valueOf(depreciation.getDDeprBeginMonth())); // Integer转String
         equipDeprRecord.setEquipCardNo(String.valueOf(depreciation.getDId())); // Long转String
         equipDeprRecord.setEquipCode(depreciation.getDNo());
@@ -110,10 +110,10 @@ public class EquipDeprRecordService {
         equipDeprRecord.setCurrentDepr(depreciation.getDDeprAmount());
         equipDeprRecord.setDeprCumAmt(BigDecimal.ZERO); // 无对应字段
         equipDeprRecord.setOperatorName(depreciation.getDCreateName());
-        if(depreciation.getDVoucherDate() == null){
+        if (depreciation.getDVoucherDate() == null) {
             equipDeprRecord.setDealDate(parseDate("1900-01-01 00:00:00")); // 无对应字段
-        }else{
-            equipDeprRecord.setDealDate(depreciation.getDVoucherDate());//如果为空那就使用默认值，
+        } else {
+            equipDeprRecord.setDealDate(depreciation.getDVoucherDate());// 如果为空那就使用默认值，
         }
         equipDeprRecord.setCreateCertFlag("无"); // 无对应字段，设为空字符串
         equipDeprRecord.setCreateCertDate(parseDate("1900-01-01 00:00:00")); // 无对应字段
@@ -131,7 +131,7 @@ public class EquipDeprRecordService {
         equipDeprRecord.setState("0");
         equipDeprRecord.setReserve1("无");
         equipDeprRecord.setReserve2("无");
-        equipDeprRecord.setDataClctPrdrName("福建众智政友有限公司");
+        equipDeprRecord.setDataClctPrdrName("福建众智政友科技有限公司");
         equipDeprRecord.setCrteTime(depreciation.getDCreateDate());
         equipDeprRecord.setUpdtTime(parseDate("1900-01-01 00:00:00"));
         equipDeprRecord.setDeleted("0");

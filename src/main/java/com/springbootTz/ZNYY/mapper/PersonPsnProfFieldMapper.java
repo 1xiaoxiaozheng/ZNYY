@@ -41,9 +41,9 @@ public class PersonPsnProfFieldMapper {
     @Autowired
     private PostgresPersonDetailCustomMapper postgresPersonDetailCustomMapper;
 
-    private static final String SYS_PRDR_CODE = "FJZZZYKJGS";
-    private static final String SYS_PRDR_NAME = "福建众智政友科技公司";
-    private static final String DATA_CLCT_PRDR_NAME = "福建众智政友科技公司";
+    private static final String SYS_PRDR_CODE = "FJZZZYKJYXGS";
+    private static final String SYS_PRDR_NAME = "福建众智政友科技有限公司";
+    private static final String DATA_CLCT_PRDR_NAME = "福建众智政友科技有限公司";
 
     private static <T> Function<T, String> toSafeString(Function<T, ?> func) {
         return t -> {
@@ -130,7 +130,6 @@ public class PersonPsnProfFieldMapper {
                 return v == null ? " " : v;
             }));
 
-
             put("SKILL_GRADE_CODE", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_xp9DuAvb");
                 return v == null ? " " : v;
@@ -139,7 +138,6 @@ public class PersonPsnProfFieldMapper {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_xp9DuAvb");
                 return v == null ? " " : v;
             }));
-
 
             put("GET_DATE", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_JaN9bnJf");
@@ -157,7 +155,6 @@ public class PersonPsnProfFieldMapper {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_1m7qNAon");
                 return v == null ? " " : v;
             }));
-
 
         }
     };

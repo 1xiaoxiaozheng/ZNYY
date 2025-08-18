@@ -35,9 +35,9 @@ public class PersonHeightFieldMapper {
     @Autowired
     private PostgresPersonDetailCustomMapper postgresPersonDetailCustomMapper;
 
-    private static final String SYS_PRDR_CODE = "FJZZZYKJGS";
-    private static final String SYS_PRDR_NAME = "福建众智政友科技公司";
-    private static final String DATA_CLCT_PRDR_NAME = "福建众智政友科技公司";
+    private static final String SYS_PRDR_CODE = "FJZZZYKJYXGS";
+    private static final String SYS_PRDR_NAME = "福建众智政友科技有限公司";
+    private static final String DATA_CLCT_PRDR_NAME = "福建众智政友科技有限公司";
 
     private static <T> Function<T, String> toSafeString(Function<T, ?> func) {
         return t -> {
@@ -116,7 +116,7 @@ public class PersonHeightFieldMapper {
             }));
             put("HEIGTH_TIME", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_s165rnZo");
-                return v == null ?  LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) : v;
+                return v == null ? LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) : v;
             }));
             put("HEIGTH_DEMO", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_Jduog8eJ");

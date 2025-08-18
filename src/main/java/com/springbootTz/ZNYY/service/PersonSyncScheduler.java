@@ -169,7 +169,7 @@ public class PersonSyncScheduler implements CommandLineRunner {
     public void run(String... args) {
         logger.info("项目启动，开始执行所有同步任务测试...");
 
-        // 依次调用所有同步方法，与定时任务逻辑一致
+//         依次调用所有同步方法，与定时任务逻辑一致
 //        try {
 //            logger.info("开始同步人员基本信息");
 //            personSyncService.syncAll();
@@ -183,7 +183,7 @@ public class PersonSyncScheduler implements CommandLineRunner {
 //        } catch (Exception e) {
 //            logger.error("教育信息同步失败", e);
 //        }
-
+//
 //        try {
 //            logger.info("开始同步工作履历信息");
 //            personSyncService.syncWorkInfoAll();
@@ -197,7 +197,7 @@ public class PersonSyncScheduler implements CommandLineRunner {
 //        } catch (Exception e) {
 //            logger.error("人员岗位聘任信息同步失败", e);
 //        }
-
+//
 //        try {
 //            logger.info("开始同步高层次人才科技奖励信息");
 //            personSyncService.syncHeightAwardInfoAll();
@@ -211,42 +211,42 @@ public class PersonSyncScheduler implements CommandLineRunner {
 //        } catch (Exception e) {
 //            logger.error("高层次人才类型信息同步失败", e);
 //        }
-
+//
 //        try {
 //            logger.info("开始同步论文信息");
 //            personSyncService.syncPaperInfoAll();
 //        } catch (Exception e) {
 //            logger.error("论文信息同步失败", e);
 //        }
-
+//
 //        try {
 //            logger.info("开始同步专利信息");
 //            personSyncService.syncPatentInfoAll();
 //        } catch (Exception e) {
 //            logger.error("专利信息同步失败", e);
 //        }
-
+//
 //        try {
 //            logger.info("开始同步专业技术资格信息");
 //            personSyncService.syncTechInfoAll();
 //        } catch (Exception e) {
 //            logger.error("专业技术资格信息同步失败", e);
 //        }
-
+//
 //        try {
 //            logger.info("开始同步科研情况信息");
 //            personSyncService.syncResearchInfoAll();
 //        } catch (Exception e) {
 //            logger.error("科研情况信息同步失败", e);
 //        }
-
+//
 //        try {
 //            logger.info("开始同步个人奖励称号信息");
 //            personSyncService.syncHonorInfoAll();
 //        } catch (Exception e) {
 //            logger.error("个人奖励称号信息同步失败", e);
 //        }
-
+//
 //        try {
 //            logger.info("开始同步学术社团任职信息");
 //            personSyncService.syncSocietyInfoAll();
@@ -260,7 +260,7 @@ public class PersonSyncScheduler implements CommandLineRunner {
 //        } catch (Exception e) {
 //            logger.error("外出培训及学术活动信息同步失败", e);
 //        }
-
+//
 //        try {
 //            logger.info("开始同步上级单位进修信息");
 //            personSyncService.syncSuperviseInfoAll();

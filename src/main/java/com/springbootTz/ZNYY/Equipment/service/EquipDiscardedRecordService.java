@@ -45,8 +45,8 @@ public class EquipDiscardedRecordService {
      * orgName,unitInfoToolMapper.selectUnitNameById(field0034)
      * uscid,unitInfoToolMapper.selectUnitCodeByName(field0034)
      * uploadTime,当前上传时间
-     * sysPrdrCode,FJZZZYKJGS
-     * sysPrdrName,福建众智政友有限公司
+     * sysPrdrCode,FJZZZYKJYXGS
+     * sysPrdrName,福建众智政友科技有限公司
      * discardedNo,field0001
      * equipCode,field0023
      * equipName,field0006
@@ -69,7 +69,7 @@ public class EquipDiscardedRecordService {
      * state,0
      * reserve1,无
      * reserve2,无
-     * dataClctPrdrName,福建众智政友有限公司
+     * dataClctPrdrName,福建众智政友科技有限公司
      * crteTime,startDate
      * updtTime,startDate
      * deleted,默认0，除非update的时候没有这条记录需要update，那就把deleted设为1，表示该条记录被删除了
@@ -144,19 +144,20 @@ public class EquipDiscardedRecordService {
         EquipDiscardedRecord equipDiscardedRecord = new EquipDiscardedRecord();
 
         // 获取单位信息
-        String unitCode = String.valueOf(unitInfoToolMapper.selectUnitCodeByName(Long.parseLong(disposal.getField0034())));
+        String unitCode = String
+                .valueOf(unitInfoToolMapper.selectUnitCodeByName(Long.parseLong(disposal.getField0034())));
         String unitName = unitInfoToolMapper.selectUnitNameById(Long.parseLong((disposal.getField0034())));
 
-        // 生成RID: uscid+FJZZZYKJGS+discarded_no
-        String rid = unitCode + "FJZZZYKJGS" + disposal.getField0001();
+        // 生成RID: uscid+FJZZZYKJYXGS+discarded_no
+        String rid = unitCode + "FJZZZYKJYXGS" + disposal.getField0001();
 
         // 设置基本信息
         equipDiscardedRecord.setRid(rid);
         equipDiscardedRecord.setOrgName(unitName);
         equipDiscardedRecord.setUscid(unitCode);
         equipDiscardedRecord.setUploadTime(getCurrentTime());
-        equipDiscardedRecord.setSysPrdrCode("FJZZZYKJGS");
-        equipDiscardedRecord.setSysPrdrName("福建众智政友有限公司");
+        equipDiscardedRecord.setSysPrdrCode("FJZZZYKJYXGS");
+        equipDiscardedRecord.setSysPrdrName("福建众智政友科技有限公司");
         equipDiscardedRecord.setDiscardedNo(disposal.getField0001());
         equipDiscardedRecord.setEquipCode(disposal.getField0023());
         equipDiscardedRecord.setEquipName(disposal.getField0006());
@@ -219,7 +220,7 @@ public class EquipDiscardedRecordService {
         equipDiscardedRecord.setState("0");
         equipDiscardedRecord.setReserve1("无");
         equipDiscardedRecord.setReserve2("无");
-        equipDiscardedRecord.setDataClctPrdrName("福建众智政友有限公司");
+        equipDiscardedRecord.setDataClctPrdrName("福建众智政友科技有限公司");
         equipDiscardedRecord.setCrteTime(disposal.getStartDate() != null ? disposal.getStartDate() : getCurrentTime());
         equipDiscardedRecord.setUpdtTime(disposal.getStartDate() != null ? disposal.getStartDate() : getCurrentTime());
         equipDiscardedRecord.setDeleted("0");

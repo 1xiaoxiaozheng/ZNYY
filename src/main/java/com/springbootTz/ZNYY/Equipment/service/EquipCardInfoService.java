@@ -35,15 +35,15 @@ public class EquipCardInfoService {
      * 家居设备 / 网络信息设备 / 医疗专用设备 / 无形资产 / 车辆 /
      * 房屋土地，就用字段ev_field6的值，如果是周宁总医院类型是： 网络信息设备那就用字段ev_field7的值，否则用“无”
      *
-     * sysPrdrCode=FJZZZYKJGS
+     * sysPrdrCode=FJZZZYKJYXGS
      *
      * equip_card_info表，LexmisN6_AssetCard与LexmisN6_ExtendVal的join查询
-     * rid，unitInfoToolMapper.selectUnitCodeByName(acBudgetOrg)+"FJZZZYKJGS"+cardRecno
+     * rid，unitInfoToolMapper.selectUnitCodeByName(acBudgetOrg)+"FJZZZYKJYXGS"+cardRecno
      * orgName，unitInfoToolMapper.selectUnitNameById(acBudgetOrg)
      * uscid,unitInfoToolMapper.selectUnitCodeByName(acBudgetOrg)
      * uploadTime,当前时间YYYY-MM-DD HH:MM:SS
-     * sysPrdrCode，"FJZZZYKJGS"
-     * sysPrdrName，"福建众智政友有限公司"
+     * sysPrdrCode，"FJZZZYKJYXGS"
+     * sysPrdrName，"福建众智政友科技有限公司"
      * cardRecno，acId
      * equipCardNo，acNo
      * applyNo，acNo
@@ -102,7 +102,7 @@ public class EquipCardInfoService {
      * auditFlag，0
      * reserve1，空字符串
      * reserve2，空字符串
-     * dataClctPrdrName，福建众智政友有限公司
+     * dataClctPrdrName，福建众智政友科技有限公司
      * crteTime，默认时间2025-08-06 00:00:00
      * updtTime，acUpdateTime
      * deleted，默认是0.除非下次update的时候没有更新这条，那就为1
@@ -167,15 +167,15 @@ public class EquipCardInfoService {
         String unitName = unitInfoToolMapper.selectUnitNameById(assetCard.getAcBudgetOrg());
 
         // 生成RID
-        String rid = unitCode + "FJZZZYKJGS" + assetCard.getAcId();
+        String rid = unitCode + "FJZZZYKJYXGS" + assetCard.getAcId();
 
         // 设置基本信息
         equipCardInfo.setRid(rid);
         equipCardInfo.setOrgName(unitName);
         equipCardInfo.setUscid(unitCode);
         equipCardInfo.setUploadTime(getCurrentTime());
-        equipCardInfo.setSysPrdrCode("FJZZZYKJGS");
-        equipCardInfo.setSysPrdrName("福建众智政友有限公司");
+        equipCardInfo.setSysPrdrCode("FJZZZYKJYXGS");
+        equipCardInfo.setSysPrdrName("福建众智政友科技有限公司");
         equipCardInfo.setCardRecno(assetCard.getAcId().toString());
         equipCardInfo.setEquipCardNo(assetCard.getAcNo());
         equipCardInfo.setApplyNo(assetCard.getAcNo());
@@ -260,7 +260,7 @@ public class EquipCardInfoService {
         equipCardInfo.setAuditFlag("0");
         equipCardInfo.setReserve1("");
         equipCardInfo.setReserve2("");
-        equipCardInfo.setDataClctPrdrName("福建众智政友有限公司");
+        equipCardInfo.setDataClctPrdrName("福建众智政友科技有限公司");
         equipCardInfo.setCrteTime(parseDate("1900-01-01 00:00:00"));
         // 处理更新时间，如果为null则使用当前时间
         Date updateTime = assetCard.getAcUpdateTime();

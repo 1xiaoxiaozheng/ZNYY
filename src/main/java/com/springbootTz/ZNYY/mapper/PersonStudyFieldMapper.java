@@ -35,9 +35,9 @@ public class PersonStudyFieldMapper {
     @Autowired
     private PostgresPersonDetailTrainingMapper postgresPersonDetailTrainingMapper;
 
-    private static final String SYS_PRDR_CODE = "FJZZZYKJGS";
-    private static final String SYS_PRDR_NAME = "福建众智政友科技公司";
-    private static final String DATA_CLCT_PRDR_NAME = "福建众智政友科技公司";
+    private static final String SYS_PRDR_CODE = "FJZZZYKJYXGS";
+    private static final String SYS_PRDR_NAME = "福建众智政友科技有限公司";
+    private static final String DATA_CLCT_PRDR_NAME = "福建众智政友科技有限公司";
 
     private static <T> Function<T, String> toSafeString(Function<T, ?> func) {
         return t -> {

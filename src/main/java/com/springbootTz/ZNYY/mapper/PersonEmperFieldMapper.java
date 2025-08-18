@@ -41,9 +41,9 @@ public class PersonEmperFieldMapper {
     private PostgresPersonDetailCustomMapper postgresPersonDetailCustomMapper;
 
     // 直接定义常量，避免配置文件中文乱码
-    private static final String SYS_PRDR_CODE = "FJZZZYKJGS";
-    private static final String SYS_PRDR_NAME = "福建众智政友科技公司";
-    private static final String DATA_CLCT_PRDR_NAME = "福建众智政友科技公司";
+    private static final String SYS_PRDR_CODE = "FJZZZYKJYXGS";
+    private static final String SYS_PRDR_NAME = "福建众智政友科技有限公司";
+    private static final String DATA_CLCT_PRDR_NAME = "福建众智政友科技有限公司";
 
     private static <T> Function<T, String> toSafeString(Function<T, ?> func) {
         return t -> {
@@ -70,8 +70,8 @@ public class PersonEmperFieldMapper {
      * 对应关系如下：
      * RID，ORG_NAME，USCID，与PersonEduinfoMapper中的一样和ehr_person内容关联，只不过自己这张表不一样而已
      * UPLOAD_TIME为当前时间
-     * SYS_PRDR_CODE为1，SYS_PRDR_NAME为福建众智政友科技公司
-     * DATA_CLCT_PRDR_NAME为福建众智政友科技公司
+     * SYS_PRDR_CODE为1，SYS_PRDR_NAME为福建众智政友科技有限公司
+     * DATA_CLCT_PRDR_NAME为福建众智政友科技有限公司
      * ORIGINAL_ID为ehr_org_person_detail_custom的id
      * STAFF_ID为person_id
      * STAFF_NO为关联表的number字段
