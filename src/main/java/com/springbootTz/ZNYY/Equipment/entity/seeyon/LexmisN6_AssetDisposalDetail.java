@@ -127,11 +127,11 @@ public class LexmisN6_AssetDisposalDetail {
     @TableField("field0029")
     private String field0029;
 
-    /**
-     * 原管理科室
-     */
-    @TableField("field0030")
-    private String field0030;
+//    /**
+//     * 原管理科室
+//     */
+//    @TableField("field0030")
+//    private String field0030;
 
     /**
      * 资产说明

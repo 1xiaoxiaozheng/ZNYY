@@ -39,7 +39,7 @@ public class AssetDisposalWithDetailDTO {
     private String field0021; // 原使用人
     private String field0023; // 资产编号
     private String field0024; // 资产状态
-    private BigDecimal field0028; // 资产数量
+//    private BigDecimal field0028; // 资产数量
     private String field0029; // 原管理人
     private String field0030; // 原管理科室
     private String field0031; // 资产说明

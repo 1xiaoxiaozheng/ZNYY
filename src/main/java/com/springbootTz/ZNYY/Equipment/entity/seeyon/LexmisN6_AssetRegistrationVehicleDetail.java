@@ -79,11 +79,11 @@ public class LexmisN6_AssetRegistrationVehicleDetail {
     @TableField("field0015")
     private BigDecimal field0015;
 
-    /**
-     * 管理科室
-     */
-    @TableField("field0016")
-    private String field0016;
+//    /**
+//     * 管理科室
+//     */
+//    @TableField("field0016")
+//    private String field0016;
 
     /**
      * 使用科室

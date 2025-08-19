@@ -77,11 +77,11 @@ public class LexmisN6_AssetRegistrationMedicalDetail {
     @TableField("field0015")
     private BigDecimal field0015;
 
-    /**
-     * 管理科室
-     */
-    @TableField("field0016")
-    private String field0016;
+//    /**
+//     * 管理科室
+//     */
+//    @TableField("field0016")
+//    private String field0016;
 
     /**
      * 归属科室

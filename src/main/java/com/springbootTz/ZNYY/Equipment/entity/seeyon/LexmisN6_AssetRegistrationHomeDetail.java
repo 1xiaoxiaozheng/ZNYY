@@ -83,11 +83,11 @@ public class LexmisN6_AssetRegistrationHomeDetail {
     @TableField("field0036")
     private BigDecimal field0036;
 
-    /**
-     * 管理科室
-     */
-    @TableField("field0041")
-    private String field0041;
+//    /**
+//     * 管理科室
+//     */
+//    @TableField("field0041")
+//    private String field0041;
 
     /**
      * 折旧小数位数

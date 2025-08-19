@@ -585,7 +585,6 @@ public interface AssetRegistrationVehicleQueryMapper {
                         "d.field0013, " +
                         "d.field0014, " +
                         "d.field0015, " +
-                        "d.field0016, " +
                         "d.field0017, " +
                         "d.field0018, " +
                         "d.field0019, " +

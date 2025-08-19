@@ -22,7 +22,6 @@ public interface AssetRegistrationHouseQueryMapper {
             "m.field0003, " +
             "m.field0004, " +
             "m.field0005, " +
-            "m.field0041, " +
             "m.field0047, " +
             "m.field0066, " +
             "m.field0067, " +

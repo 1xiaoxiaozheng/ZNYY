@@ -39,7 +39,6 @@ public interface AssetRegistrationQueryMapper {
                         "d.field0031, " +
                         "d.field0032, " +
                         "d.field0036, " +
-                        "d.field0041, " +
                         "d.field0047, " +
                         "d.field0048, " +
                         "d.field0058, " +
@@ -108,7 +107,6 @@ public interface AssetRegistrationQueryMapper {
                         "d.field0031, " +
                         "d.field0032, " +
                         "d.field0036, " +
-                        "d.field0041, " +
                         "d.field0047, " +
                         "d.field0048, " +
                         "d.field0058, " +
@@ -177,7 +175,6 @@ public interface AssetRegistrationQueryMapper {
                         "d.field0031, " +
                         "d.field0032, " +
                         "d.field0036, " +
-                        "d.field0041, " +
                         "d.field0047, " +
                         "d.field0048, " +
                         "d.field0058, " +
@@ -246,7 +243,6 @@ public interface AssetRegistrationQueryMapper {
                         "d.field0031, " +
                         "d.field0032, " +
                         "d.field0036, " +
-                        "d.field0041, " +
                         "d.field0047, " +
                         "d.field0048, " +
                         "d.field0058, " +
@@ -315,7 +311,6 @@ public interface AssetRegistrationQueryMapper {
                         "d.field0031, " +
                         "d.field0032, " +
                         "d.field0036, " +
-                        "d.field0041, " +
                         "d.field0047, " +
                         "d.field0048, " +
                         "d.field0058, " +
@@ -384,7 +379,6 @@ public interface AssetRegistrationQueryMapper {
                         "d.field0031, " +
                         "d.field0032, " +
                         "d.field0036, " +
-                        "d.field0041, " +
                         "d.field0047, " +
                         "d.field0048, " +
                         "d.field0058, " +
@@ -453,7 +447,6 @@ public interface AssetRegistrationQueryMapper {
                         "d.field0031, " +
                         "d.field0032, " +
                         "d.field0036, " +
-                        "d.field0041, " +
                         "d.field0047, " +
                         "d.field0048, " +
                         "d.field0058, " +
