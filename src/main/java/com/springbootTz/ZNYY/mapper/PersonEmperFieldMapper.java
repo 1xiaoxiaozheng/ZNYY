@@ -23,6 +23,14 @@ import java.util.function.Function;
  * 用于OraclePersonEmprInfo与PostgresPersonDetailCustom字段映射的工具类
  * hum_psn_empr_info表的同步，该表对应内容为自定义字段表ehr_org_person_detail_custom
  */
+/**
+ * 3. PersonEmperFieldMapper - 人员工作经历
+ * 数据说明：人员的工作履历信息，包括工作单位、岗位、工作时间等
+ * PostgreSQL表：ehr_org_person_detail_custom (detail_id =
+ * "person_detail_DFIXZgBn")
+ * Oracle表：HUM_PSN_EMPR_INFO
+ * 同步方法：syncWorkInfoAll()
+ */
 @Component
 public class PersonEmperFieldMapper {
     private static final Logger logger = LoggerFactory.getLogger(PersonEmperFieldMapper.class);
@@ -124,7 +132,7 @@ public class PersonEmperFieldMapper {
                 PostgresPerson person = postgresPersonMapper.selectById(p.getPersonId());
                 return person == null ? " " : person.getName();
             }));
-            put("CRTE_TIME", toSafeString(p -> p.getCreateTime() == null ? " " : p.getCreateTime().toString()));
+            put("CRTE_TIME", toSafeString(p -> "2025-06-30 00:00:00"));
             put("UPDT_TIME", toSafeString(p -> p.getModifyTime() == null ? " " : p.getModifyTime().toString()));
             put("DELETED", toSafeString(p -> {
                 // 根据delFlag判断：1正常则DELETED为0，其他情况DELETED为1

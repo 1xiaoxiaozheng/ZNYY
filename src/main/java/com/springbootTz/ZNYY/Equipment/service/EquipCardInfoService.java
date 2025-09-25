@@ -189,16 +189,16 @@ public class EquipCardInfoService {
         equipCardInfo.setNowCost(buyCost != null ? buyCost : BigDecimal.ZERO);
         // 处理购买日期，如果为null则使用默认日期
         Date buyDate = assetCard.getAcGetDate();
-        equipCardInfo.setBuyDate(buyDate != null ? formatDate(buyDate) : parseDate("1900-01-01 00:00:00"));
+        equipCardInfo.setBuyDate(buyDate != null ? formatDate(buyDate) : parseDate("2025-08-18 00:00:00"));
 
         // 设置开始使用日期
         Date startUseDate = getStartUseDate(assetCard);
-        equipCardInfo.setStartUseDate(startUseDate != null ? startUseDate : parseDate("1900-01-01 00:00:00"));
+        equipCardInfo.setStartUseDate(startUseDate != null ? startUseDate : parseDate("2025-08-18 00:00:00"));
 
         // 设置到期日期
         // 设置到期日期，如果为null则使用默认日期
         Date expireDate = getExpireDate(assetCard, unitName);
-        equipCardInfo.setExpireDate(expireDate != null ? expireDate : parseDate("1900-01-01 00:00:00"));
+        equipCardInfo.setExpireDate(expireDate != null ? expireDate : parseDate("2025-08-18 00:00:00"));
 
         // 设置科室信息
         equipCardInfo.setUseDeptCode(assetCard.getAcUseDeptNo());
@@ -235,11 +235,11 @@ public class EquipCardInfoService {
         equipCardInfo.setNetSalvageCost(BigDecimal.ZERO);
         equipCardInfo.setReceiveNo(" ");
         // 避免设置 null，使用默认日期防止 Oracle 报错
-        equipCardInfo.setReceiveDate(parseDate("1900-01-01 00:00:00"));
+        equipCardInfo.setReceiveDate(parseDate("2025-08-18 00:00:00"));
         equipCardInfo.setReceiveOperator(" ");
         equipCardInfo.setHouseAreaSquare(BigDecimal.ZERO);
         // 避免设置 null，使用默认日期防止 Oracle 报错
-        equipCardInfo.setDeprecStartDate(parseDate("1900-01-01 00:00:00"));
+        equipCardInfo.setDeprecStartDate(parseDate("2025-08-18 00:00:00"));
         equipCardInfo.setDeprecFlag("1");
         // 处理折旧类型，如果为null则使用默认值
         Integer deprecKind = assetCard.getAcDeprKind();
@@ -261,13 +261,13 @@ public class EquipCardInfoService {
         equipCardInfo.setReserve1("");
         equipCardInfo.setReserve2("");
         equipCardInfo.setDataClctPrdrName("福建众智政友科技有限公司");
-        equipCardInfo.setCrteTime(parseDate("1900-01-01 00:00:00"));
+        equipCardInfo.setCrteTime(parseDate("2025-08-18 00:00:00"));
         // 处理更新时间，如果为null则使用当前时间
         Date updateTime = assetCard.getAcUpdateTime();
         equipCardInfo.setUpdtTime(updateTime != null ? updateTime : getCurrentTime());
         equipCardInfo.setDeleted("0");
         // 直接使用默认日期，避免 Oracle null 值错误
-        equipCardInfo.setDeletedTime(parseDate("1900-01-01 00:00:00"));
+        equipCardInfo.setDeletedTime(parseDate("2025-08-18 00:00:00"));
 
         return equipCardInfo;
     }
@@ -285,12 +285,12 @@ public class EquipCardInfoService {
                 assetType.contains("固定资产"))) {
             // 若acBvDate1不为null，格式化后返回；否则返回当前时间
             return formatDate(
-                    assetCard.getEvField101() != null ? assetCard.getEvField101() : parseDate("1900-01-01 00:00:00"));
+                    assetCard.getEvField101() != null ? assetCard.getEvField101() : parseDate("2025-08-18 00:00:00"));
         }
         // 2. 不满足上述类型，使用扩展字段ev_field101/102
         else {
             return formatDate(
-                    assetCard.getEvField102() != null ? assetCard.getEvField102() : parseDate("1900-01-01 00:00:00"));
+                    assetCard.getEvField102() != null ? assetCard.getEvField102() : parseDate("2025-08-18 00:00:00"));
         }
     }
 

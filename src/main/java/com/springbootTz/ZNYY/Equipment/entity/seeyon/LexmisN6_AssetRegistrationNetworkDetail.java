@@ -9,8 +9,12 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.IdType;
 import org.apache.ibatis.type.JdbcType;
 
+/**
+ * 资产登记-网络信息设备明细表实体类
+ * 对应数据库表：formson_1188
+ */
 @Data
-@TableName("formson_1061")
+@TableName("formson_1188")
 public class LexmisN6_AssetRegistrationNetworkDetail {
 
     /**
@@ -50,7 +54,7 @@ public class LexmisN6_AssetRegistrationNetworkDetail {
     private String field0011;
 
     /**
-     * 取得方式
+     * 资产来源
      */
     @TableField("field0012")
     private String field0012;
@@ -79,14 +83,8 @@ public class LexmisN6_AssetRegistrationNetworkDetail {
     @TableField("field0016")
     private BigDecimal field0016;
 
-//    /**
-//     * 管理科室
-//     */
-//    @TableField("field0017")
-//    private String field0017;
-
     /**
-     * 归属科室
+     * 管理科室2
      */
     @TableField("field0018")
     private String field0018;
@@ -200,12 +198,6 @@ public class LexmisN6_AssetRegistrationNetworkDetail {
     private String field0036;
 
     /**
-     * 供应商
-     */
-    @TableField("field0037")
-    private String field0037;
-
-    /**
      * 发票号
      */
     @TableField("field0038")
@@ -276,6 +268,30 @@ public class LexmisN6_AssetRegistrationNetworkDetail {
      */
     @TableField("field0053")
     private String field0053;
+
+    /**
+     * 上传发票
+     */
+    @TableField("field0055")
+    private String field0055;
+
+    /**
+     * 单位
+     */
+    @TableField("field0056")
+    private String field0056;
+
+    /**
+     * 金额
+     */
+    @TableField("field0057")
+    private BigDecimal field0057;
+
+    /**
+     * 管理人
+     */
+    @TableField("field0061")
+    private String field0061;
 
     /**
      * 关联主表的ID

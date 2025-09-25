@@ -59,7 +59,7 @@ public class EquipRegInfoService_WL {
      * crteTime，startDate
      * updtTime，startDate
      * deleted，"0"
-     * deletedTime，使用默认时间1900-01-01 00:00:00
+     * deletedTime，使用默认时间2025-08-18 00:00:00
      */
 
     /**
@@ -89,7 +89,8 @@ public class EquipRegInfoService_WL {
 
                 // 跳过"周宁总医院"的数据
                 if (unitName != null && unitName.contains("周宁总医院")) {
-//                    System.out.println("跳过周宁总医院数据，单据编号: " + network.getField0001() + ", 单位: " + unitName);
+                    // System.out.println("跳过周宁总医院数据，单据编号: " + network.getField0001() + ", 单位: " +
+                    // unitName);
                     skipCount++;
                     continue;
                 }
@@ -99,7 +100,7 @@ public class EquipRegInfoService_WL {
 
                 // 如果rid为null则跳过
                 if (network.getField0001() == null) {
-//                    System.out.println("跳过单据编号为空: " + network.getField0001());
+                    // System.out.println("跳过单据编号为空: " + network.getField0001());
                     skipCount++;
                     continue;
                 }
@@ -129,6 +130,7 @@ public class EquipRegInfoService_WL {
         System.out.println("错误: " + errorCount + " 条");
         System.out.println("总计处理: " + (insertCount + updateCount + skipCount + errorCount) + " 条");
     }
+
     /**
      * 将AssetRegistrationNetworkWithDetailDTO映射为EquipRegInfo
      */
@@ -172,7 +174,7 @@ public class EquipRegInfoService_WL {
             equipRegInfo.setDevUsefulLife(usefulLifeDate);
         } else {
             // 使用默认日期
-            equipRegInfo.setDevUsefulLife(parseDate("1900-01-01 00:00:00"));
+            equipRegInfo.setDevUsefulLife(parseDate("2025-08-18 00:00:00"));
         }
 
         equipRegInfo.setProdplacInfo("无");
@@ -193,10 +195,10 @@ public class EquipRegInfoService_WL {
         equipRegInfo.setReserve1("无");
         equipRegInfo.setReserve2("无");
         equipRegInfo.setDataClctPrdrName("福建众智政友科技有限公司");
-        equipRegInfo.setCrteTime(network.getStartDate() != null ? network.getStartDate() : getCurrentTime());
+        equipRegInfo.setCrteTime(parseDate("2025-08-18 00:00:00"));
         equipRegInfo.setUpdtTime(network.getStartDate() != null ? network.getStartDate() : getCurrentTime());
         equipRegInfo.setDeleted("0");
-        equipRegInfo.setDeletedTime(parseDate("1900-01-01 00:00:00"));
+        equipRegInfo.setDeletedTime(parseDate("2025-08-18 00:00:00"));
 
         return equipRegInfo;
     }

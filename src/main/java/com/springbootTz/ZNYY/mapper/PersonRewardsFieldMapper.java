@@ -18,6 +18,14 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * 11. PersonRewardsFieldMapper - 人员奖励称号信息
+ * 数据说明：人员获得的奖励和荣誉称号信息
+ * PostgreSQL表：ehr_org_person_detail_custom (detail_id =
+ * "person_detail_IvMVko5s")
+ * Oracle表：HUM_PSN_REWARDS
+ * 同步方法：syncHonorInfoAll()
+ */
 @Component
 public class PersonRewardsFieldMapper {
     @Autowired
@@ -93,10 +101,7 @@ public class PersonRewardsFieldMapper {
                 PostgresPerson person = postgresPersonMapper.selectById(p.getPersonId());
                 return person == null ? " " : person.getName();
             }));
-            put("crteTime",
-                    toSafeString(p -> p.getCreateTime() == null
-                            ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
-                            : p.getCreateTime().toString()));
+            put("crteTime", toSafeString(p -> "2025-06-30 00:00:00"));
             put("updtTime",
                     toSafeString(p -> p.getModifyTime() == null
                             ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())

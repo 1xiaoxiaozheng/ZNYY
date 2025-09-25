@@ -11,10 +11,10 @@ import org.apache.ibatis.type.JdbcType;
 
 /**
  * 资产登记单-房屋土地明细表实体类
- * 对应数据库表：formson_1054
+ * 对应数据库表：formson_1198
  */
 @Data
-@TableName("formson_1054")
+@TableName("formson_1198")
 public class LexmisN6_AssetRegistrationHouseDetail {
 
     /**
@@ -83,14 +83,8 @@ public class LexmisN6_AssetRegistrationHouseDetail {
     @TableField("field0015")
     private BigDecimal field0015;
 
-//    /**
-//     * 管理科室
-//     */
-//    @TableField("field0016")
-//    private String field0016;
-
     /**
-     * 归属科室
+     * 管理科室2
      */
     @TableField("field0018")
     private String field0018;
@@ -376,6 +370,30 @@ public class LexmisN6_AssetRegistrationHouseDetail {
      */
     @TableField("field0070")
     private String field0070;
+
+    /**
+     * 单位
+     */
+    @TableField("field0072")
+    private String field0072;
+
+    /**
+     * 管理人
+     */
+    @TableField("field0073")
+    private String field0073;
+
+    /**
+     * 上传发票
+     */
+    @TableField("field0074")
+    private String field0074;
+
+    /**
+     * 金额
+     */
+    @TableField("field0076")
+    private BigDecimal field0076;
 
     /**
      * 关联主表的ID

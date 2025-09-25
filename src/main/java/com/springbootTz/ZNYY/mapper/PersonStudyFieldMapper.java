@@ -20,6 +20,13 @@ import java.util.Map;
 import java.util.function.Function;
 import java.lang.reflect.Field;
 
+/**
+ * 13. PersonStudyFieldMapper - 人员外出培训及学术活动信息
+ * 数据说明：人员参加的外出培训和学术活动信息
+ * PostgreSQL表：ehr_org_person_detail_training
+ * Oracle表：HUM_STAFF_STUDY
+ * 同步方法：syncOutInfoAll()
+ */
 @Component
 public class PersonStudyFieldMapper {
     @Autowired
@@ -95,7 +102,7 @@ public class PersonStudyFieldMapper {
                 PostgresPerson person = postgresPersonMapper.selectById(p.getPersonId());
                 return person == null ? " " : person.getName();
             }));
-            put("CRTE_TIME", toSafeString(p -> p.getCreateTime() == null ? " " : p.getCreateTime().toString()));
+            put("CRTE_TIME", toSafeString(p -> "2025-06-30 00:00:00"));
             put("UPDT_TIME", toSafeString(p -> p.getModifyTime() == null ? " " : p.getModifyTime().toString()));
             put("DELETED", toSafeString(p -> {
                 Integer delFlag = p.getDelFlag();

@@ -59,7 +59,7 @@ public class EquipRegInfoService_TD {
      * crteTime，startDate
      * updtTime，startDate
      * deleted，"0"
-     * deletedTime，使用默认时间1900-01-01 00:00:00
+     * deletedTime，使用默认时间2025-08-18 00:00:00
      */
 
     /**
@@ -171,7 +171,7 @@ public class EquipRegInfoService_TD {
             equipRegInfo.setDevUsefulLife(usefulLifeDate);
         } else {
             // 使用默认日期
-            equipRegInfo.setDevUsefulLife(parseDate("1900-01-01 00:00:00"));
+            equipRegInfo.setDevUsefulLife(parseDate("2025-08-18 00:00:00"));
         }
 
         equipRegInfo.setProdplacInfo("无");
@@ -192,10 +192,10 @@ public class EquipRegInfoService_TD {
         equipRegInfo.setReserve1("无");
         equipRegInfo.setReserve2("无");
         equipRegInfo.setDataClctPrdrName("福建众智政友科技有限公司");
-        equipRegInfo.setCrteTime(house.getStartDate() != null ? house.getStartDate() : getCurrentTime());
+        equipRegInfo.setCrteTime(parseDate("2025-08-18 00:00:00"));
         equipRegInfo.setUpdtTime(house.getStartDate() != null ? house.getStartDate() : getCurrentTime());
         equipRegInfo.setDeleted("0");
-        equipRegInfo.setDeletedTime(parseDate("1900-01-01 00:00:00"));
+        equipRegInfo.setDeletedTime(parseDate("2025-08-18 00:00:00"));
 
         return equipRegInfo;
     }

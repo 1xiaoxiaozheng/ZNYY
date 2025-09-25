@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * 资产登记-医疗专用设备与明细关联查询DTO
+ * 资产登记单-医疗专用设备与明细关联查询DTO
  */
 @Data
 public class AssetRegistrationMedicalWithDetailDTO {
@@ -14,14 +14,19 @@ public class AssetRegistrationMedicalWithDetailDTO {
     private Long id; // 主表ID
     private String field0001; // 单据编号
     private String field0002; // 填报人
-    private String field0003; // 所属科室
+    private String field0003; // 归属科室
     private Date field0004; // 填报日期
-    private String field0005; // 单位
+    private String field0005; // 所属单位
     private String field0041; // 财务审核
     private String field0047; // 实际采购人员
     private String field0048; // 填报人-文本
     private String field0049; // 实际采购人员-文本
     private String field0050; // 采购人员确认
+    private String field0061; // 管理科室
+    private String field0065; // 采购科室负责人
+    private String field0066; // 供应商
+    private BigDecimal field0067; // 金额合计
+    private String field0069; // 供应商查询
     private Date startDate; // 开始日期
 
     // 明细表信息
@@ -35,8 +40,7 @@ public class AssetRegistrationMedicalWithDetailDTO {
     private BigDecimal field0013; // 原始价值
     private String field0014; // 规格型号
     private BigDecimal field0015; // 资产数量
-    private String field0016; // 管理科室
-    private String field0018; // 归属科室
+    private String field0018; // 管理科室2
     private String field0019; // 归属单位
     private String field0020; // 存放地点
     private String field0021; // 经费来源
@@ -49,7 +53,6 @@ public class AssetRegistrationMedicalWithDetailDTO {
     private BigDecimal field0028; // 期初累计折旧
     private Date field0029; // 折旧起始日期
     private String field0030; // 资产说明
-    private String field0031; // 供应商
     private String field0032; // 发票号
     private String field0033; // 品牌
     private String field0034; // 合同编号
@@ -71,5 +74,10 @@ public class AssetRegistrationMedicalWithDetailDTO {
     private String field0058; // 资产分类代码
     private BigDecimal field0059; // 预计使用月数
     private String field0060; // 经费来源-文本
+    private String field0062; // 上传发票
+    private BigDecimal field0063; // 金额
+    private String field0064; // 单位
+    private String field0068; // 管理人
+    private Date field0070; // 生产日期
     private Long formmainId; // 关联主表的ID
 }

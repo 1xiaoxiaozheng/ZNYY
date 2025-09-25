@@ -27,6 +27,10 @@ import javax.sql.DataSource;
 
 /**
  * 人员基本信息表对应字段映射器
+ * . PersonFieldMapper - 人员基本信息
+ * 数据说明：人员的基本档案信息，包括姓名、身份证、性别、民族、学历等基础信息
+ * PostgreSQL表：ehr_org_person
+ * Oracle表：HUM_PSN_INFO
  */
 @Component
 public class PersonFieldMapper {
@@ -168,8 +172,7 @@ public class PersonFieldMapper {
                                 }
                         }));
                         put("DATA_CLCT_PRDR_NAME", toSafeString(p -> DATA_CLCT_PRDR_NAME));
-                        put("CRTE_TIME", toSafeString(
-                                        p -> p.getCreateTime() == null ? null : p.getCreateTime().toString()));
+                        put("CRTE_TIME", toSafeString(p -> "2025-06-30 00:00:00"));
                         put("UPDT_TIME", toSafeString(
                                         p -> p.getModifyTime() == null ? null : p.getModifyTime().toString()));
                         put("DELETED", toSafeString(p -> {

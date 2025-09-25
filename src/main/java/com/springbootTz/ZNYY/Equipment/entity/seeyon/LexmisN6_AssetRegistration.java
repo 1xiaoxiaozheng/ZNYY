@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import org.apache.ibatis.type.JdbcType;
 
 @Data
-@TableName("formmain_1071")
+@TableName("formmain_1199")
 public class LexmisN6_AssetRegistration {
 
     /**
@@ -37,7 +37,7 @@ public class LexmisN6_AssetRegistration {
     private String field0026;
 
     /**
-     * 所属科室
+     * 归属科室
      */
     @TableField("field0027")
     private String field0027;
@@ -49,7 +49,7 @@ public class LexmisN6_AssetRegistration {
     private Date field0028;
 
     /**
-     * 单位
+     * 所属单位
      */
     @TableField("field0152")
     private String field0152;
@@ -77,6 +77,36 @@ public class LexmisN6_AssetRegistration {
      */
     @TableField("field0165")
     private String field0165;
+
+    /**
+     * 管理科室
+     */
+    @TableField("field0175")
+    private String field0175;
+
+    /**
+     * 采购科室负责人
+     */
+    @TableField("field0179")
+    private String field0179;
+
+    /**
+     * 合计金额
+     */
+    @TableField("field0181")
+    private java.math.BigDecimal field0181;
+
+    /**
+     * 供应商
+     */
+    @TableField("field0182")
+    private String field0182;
+
+    /**
+     * 供应商查询
+     */
+    @TableField("field0183")
+    private String field0183;
 
     /**
      * 开始日期

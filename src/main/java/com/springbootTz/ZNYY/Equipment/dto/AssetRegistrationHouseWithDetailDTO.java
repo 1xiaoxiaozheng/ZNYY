@@ -14,14 +14,18 @@ public class AssetRegistrationHouseWithDetailDTO {
     private Long id; // 主表ID
     private String field0001; // 单据编号
     private String field0002; // 填报人
-    private String field0003; // 所属科室
+    private String field0003; // 归属科室
     private Date field0004; // 填报日期
-    private String field0005; // 单位
+    private String field0005; // 所属单位
     private String field0041; // 采购员确认
     private String field0047; // 本次登记实际采购员
     private String field0066; // 财务审核
     private String field0067; // 填报人-文本
     private String field0068; // 本次登记实际采购员-文本
+    private String field0071; // 管理科室
+    private String field0075; // 采购科室负责人
+    private String field0077; // 供应商入库
+    private BigDecimal field0078; // 合计金额
     private Date startDate; // 开始日期
 
     // 明细表信息
@@ -36,8 +40,7 @@ public class AssetRegistrationHouseWithDetailDTO {
     private BigDecimal field0013; // 原始价值
     private String field0014; // 规格型号
     private BigDecimal field0015; // 资产数量
-    private String field0016; // 管理科室
-    private String field0018; // 归属科室
+    private String field0018; // 管理科室2
     private String field0019; // 归属单位
     private String field0020; // 存放地点
     private String field0021; // 经费来源
@@ -85,5 +88,9 @@ public class AssetRegistrationHouseWithDetailDTO {
     private BigDecimal field0065; // 其他用房
     private BigDecimal field0069; // 预计使用月数
     private String field0070; // 经费来源-文本
+    private String field0072; // 单位
+    private String field0073; // 管理人
+    private String field0074; // 上传发票
+    private BigDecimal field0076; // 金额
     private Long formmainId; // 关联主表的ID
 }

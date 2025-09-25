@@ -24,6 +24,14 @@ import java.math.BigDecimal;
 import com.springbootTz.ZNYY.entity.OraclePersonResearch;
 import com.springbootTz.ZNYY.tool.EnumValueQueryTool;
 
+/**
+ * 10. PersonResearchMapper - 人员科研情况信息
+ * 数据说明：人员参与的科研项目信息，包括项目名称、项目时间、经费等
+ * PostgreSQL表：ehr_org_person_detail_custom (detail_id =
+ * "person_detail_zT5ssVbi")
+ * Oracle表：HUM_PSN_RESEARCH
+ * 同步方法：syncResearchInfoAll()
+ */
 @Component
 public class PersonResearchMapper {
     private static final Logger logger = LoggerFactory.getLogger(PersonResearchMapper.class);
@@ -101,7 +109,7 @@ public class PersonResearchMapper {
                 PostgresPerson person = postgresPersonMapper.selectById(p.getPersonId());
                 return person == null ? " " : person.getName();
             }));
-            put("CRTE_TIME", toSafeString(p -> p.getCreateTime() == null ? " " : p.getCreateTime().toString()));
+            put("CRTE_TIME", toSafeString(p -> "2025-06-30 00:00:00"));
             put("UPDT_TIME", toSafeString(p -> p.getModifyTime() == null ? " " : p.getModifyTime().toString()));
             put("DELETED", toSafeString(p -> {
                 Integer delFlag = p.getDelFlag();

@@ -9,8 +9,12 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.IdType;
 import org.apache.ibatis.type.JdbcType;
 
+/**
+ * 资产登记单-车辆明细表实体类
+ * 对应数据库表：formson_1196
+ */
 @Data
-@TableName("formson_1056")
+@TableName("formson_1196")
 public class LexmisN6_AssetRegistrationVehicleDetail {
 
     /**
@@ -79,12 +83,6 @@ public class LexmisN6_AssetRegistrationVehicleDetail {
     @TableField("field0015")
     private BigDecimal field0015;
 
-//    /**
-//     * 管理科室
-//     */
-//    @TableField("field0016")
-//    private String field0016;
-
     /**
      * 使用科室
      */
@@ -92,7 +90,7 @@ public class LexmisN6_AssetRegistrationVehicleDetail {
     private String field0017;
 
     /**
-     * 归属科室
+     * 管理科室2
      */
     @TableField("field0018")
     private String field0018;
@@ -168,12 +166,6 @@ public class LexmisN6_AssetRegistrationVehicleDetail {
      */
     @TableField("field0030")
     private String field0030;
-
-    /**
-     * 供应商
-     */
-    @TableField("field0031")
-    private String field0031;
 
     /**
      * 发票号
@@ -348,6 +340,30 @@ public class LexmisN6_AssetRegistrationVehicleDetail {
      */
     @TableField("field0066")
     private String field0066;
+
+    /**
+     * 上传发票
+     */
+    @TableField("field0069")
+    private String field0069;
+
+    /**
+     * 单位
+     */
+    @TableField("field0070")
+    private String field0070;
+
+    /**
+     * 金额
+     */
+    @TableField("field0071")
+    private BigDecimal field0071;
+
+    /**
+     * 管理人
+     */
+    @TableField("field0074")
+    private String field0074;
 
     /**
      * 关联主表的ID

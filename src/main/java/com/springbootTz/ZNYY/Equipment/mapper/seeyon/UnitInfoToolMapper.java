@@ -29,20 +29,4 @@ public interface UnitInfoToolMapper {
     @Select("SELECT code FROM ORG_UNIT WHERE ID = #{unitId}")
     String selectUnitCodeByName(@Param("unitId") Long unitId);
 
-    /**
-     * 查询所有单位信息
-     * 
-     * @return 单位名称列表
-     */
-    @Select("SELECT name FROM ORG_UNIT")
-    java.util.List<String> selectAllUnitNames();
-
-    /**
-     * 根据单位名称模糊查询
-     * 
-     * @param unitName 单位名称（支持模糊查询）
-     * @return 匹配的单位名称列表
-     */
-    @Select("SELECT name FROM ORG_UNIT WHERE name LIKE '%' + #{unitName} + '%'")
-    java.util.List<String> selectUnitNamesByFuzzyName(@Param("unitName") String unitName);
 }

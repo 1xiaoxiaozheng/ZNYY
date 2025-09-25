@@ -59,7 +59,7 @@ public class EquipRegInfoService_JJ {
      * crteTime，startDate
      * updtTime，startDate
      * deleted，“0”
-     * deletedTime，使用默认时间1900-01-01 00:00:00
+     * deletedTime，使用默认时间2025-08-18 00:00:00
      */
 
     /**
@@ -89,7 +89,8 @@ public class EquipRegInfoService_JJ {
 
                 // 跳过”周宁县总医院“的数据，修复空指针判断顺序
                 if (unitName != null && unitName.equals("周宁县总医院")) {
-//                    System.out.println("跳过周宁县总医院数据，单据编号：" + Home.getField0017() + "单位：" + unitName);
+                    // System.out.println("跳过周宁县总医院数据，单据编号：" + Home.getField0017() + "单位：" +
+                    // unitName);
                     skipCount++;
                     continue;
                 }
@@ -99,7 +100,7 @@ public class EquipRegInfoService_JJ {
 
                 // 如果rid为null则跳过
                 if (Home.getField0017() == null) {
-//                    System.out.println("跳过单据编号为空: " + Home.getField0017());
+                    // System.out.println("跳过单据编号为空: " + Home.getField0017());
                     skipCount++;
                     continue;
                 }
@@ -128,6 +129,7 @@ public class EquipRegInfoService_JJ {
         System.out.println("错误：" + errorCount);
         System.out.println("总计处理：" + (insertCount + updateCount + skipCount + errorCount) + "条");
     }
+
     /**
      * 将AssetRegistrationHomeWithDetailDTO映射为EquipRegInfo
      */
@@ -171,7 +173,7 @@ public class EquipRegInfoService_JJ {
             equipRegInfo.setDevUsefulLife(usefulLifeDate);
         } else {
             // 使用默认日期
-            equipRegInfo.setDevUsefulLife(parseDate("1900-01-01 00:00:00"));
+            equipRegInfo.setDevUsefulLife(parseDate("2025-08-18 00:00:00"));
         }
 
         equipRegInfo.setProdplacInfo("无");
@@ -191,10 +193,10 @@ public class EquipRegInfoService_JJ {
         equipRegInfo.setReserve1("无");
         equipRegInfo.setReserve2("无");
         equipRegInfo.setDataClctPrdrName("福建众智政友科技有限公司");
-        equipRegInfo.setCrteTime(Home.getStartDate() != null ? Home.getStartDate() : getCurrentTime());
+        equipRegInfo.setCrteTime(parseDate("2025-08-18 00:00:00"));
         equipRegInfo.setUpdtTime(Home.getStartDate() != null ? Home.getStartDate() : getCurrentTime());
         equipRegInfo.setDeleted("0");
-        equipRegInfo.setDeletedTime(parseDate("1900-01-01 00:00:00"));
+        equipRegInfo.setDeletedTime(parseDate("2025-08-18 00:00:00"));
 
         return equipRegInfo;
 

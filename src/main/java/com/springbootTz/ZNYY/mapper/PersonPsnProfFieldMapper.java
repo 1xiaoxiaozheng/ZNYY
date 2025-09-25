@@ -3,10 +3,7 @@ package com.springbootTz.ZNYY.mapper;
 import com.springbootTz.ZNYY.entity.PostgresPersonDetailCustom;
 import com.springbootTz.ZNYY.entity.PostgresPerson;
 import com.springbootTz.ZNYY.entity.OraclePersonProf;
-import com.springbootTz.ZNYY.tool.DepartmentQueryTool;
-import com.springbootTz.ZNYY.tool.OrgCodeConcatTool;
-import com.springbootTz.ZNYY.tool.OrgCodeQueryTool;
-import com.springbootTz.ZNYY.tool.JsonKeyValueTool;
+import com.springbootTz.ZNYY.tool.*;
 import com.springbootTz.ZNYY.mapper.postgresql.PostgresPersonMapper;
 import com.springbootTz.ZNYY.mapper.postgresql.PostgresPersonDetailCustomMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +21,14 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * 9. PersonPsnProfFieldMapper - 人员专业技术资格信息
+ * 数据说明：人员的专业技术资格认证信息，包括资格名称、获得时间等
+ * PostgreSQL表：ehr_org_person_detail_custom (detail_id =
+ * "person_detail_kX9wywgy")
+ * Oracle表：HUM_PSN_PROF
+ * 同步方法：syncTechInfoAll()
+ */
 @Component
 public class PersonPsnProfFieldMapper {
     private static final Logger logger = LoggerFactory.getLogger(PersonPsnProfFieldMapper.class);
@@ -40,6 +45,8 @@ public class PersonPsnProfFieldMapper {
     private PostgresPersonMapper postgresPersonMapper;
     @Autowired
     private PostgresPersonDetailCustomMapper postgresPersonDetailCustomMapper;
+    @Autowired
+    private EnumValueQueryTool enumValueQueryTool;
 
     private static final String SYS_PRDR_CODE = "FJZZZYKJYXGS";
     private static final String SYS_PRDR_NAME = "福建众智政友科技有限公司";
@@ -101,7 +108,7 @@ public class PersonPsnProfFieldMapper {
                 PostgresPerson person = postgresPersonMapper.selectById(p.getPersonId());
                 return person == null ? " " : person.getName();
             }));
-            put("CRTE_TIME", toSafeString(p -> p.getCreateTime() == null ? " " : p.getCreateTime().toString()));
+            put("CRTE_TIME", toSafeString(p -> "2025-06-30 00:00:00"));
             put("UPDT_TIME", toSafeString(p -> p.getModifyTime() == null ? " " : p.getModifyTime().toString()));
             put("DELETED", toSafeString(p -> {
                 Integer delFlag = p.getDelFlag();
@@ -131,12 +138,12 @@ public class PersonPsnProfFieldMapper {
             }));
 
             put("SKILL_GRADE_CODE", toSafeString(p -> {
-                String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_xp9DuAvb");
+                String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_nV1qvUMb");
                 return v == null ? " " : v;
             }));
             put("SKILL_GRADE_NAME", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_xp9DuAvb");
-                return v == null ? " " : v;
+                return v == null ? " " : enumValueQueryTool.getDisplayByEnumNameAndValue("职称级别", Long.parseLong(v));
             }));
 
             put("GET_DATE", toSafeString(p -> {

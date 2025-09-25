@@ -1,6 +1,7 @@
 package com.springbootTz.ZNYY.Equipment.entity.seeyon;
 
 import lombok.Data;
+import java.math.BigDecimal;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -10,10 +11,10 @@ import org.apache.ibatis.type.JdbcType;
 
 /**
  * 资产登记-医疗专用设备主表实体类
- * 对应数据库表：formmain_1057
+ * 对应数据库表：formmain_1193
  */
 @Data
-@TableName("formmain_1057")
+@TableName("formmain_1193")
 public class LexmisN6_AssetRegistrationMedical {
 
     /**
@@ -35,7 +36,7 @@ public class LexmisN6_AssetRegistrationMedical {
     private String field0002;
 
     /**
-     * 所属科室
+     * 归属科室
      */
     @TableField("field0003")
     private String field0003;
@@ -47,7 +48,7 @@ public class LexmisN6_AssetRegistrationMedical {
     private Date field0004;
 
     /**
-     * 单位
+     * 所属单位
      */
     @TableField("field0005")
     private String field0005;
@@ -81,6 +82,36 @@ public class LexmisN6_AssetRegistrationMedical {
      */
     @TableField("field0050")
     private String field0050;
+
+    /**
+     * 管理科室
+     */
+    @TableField("field0061")
+    private String field0061;
+
+    /**
+     * 采购科室负责人
+     */
+    @TableField("field0065")
+    private String field0065;
+
+    /**
+     * 供应商
+     */
+    @TableField("field0066")
+    private String field0066;
+
+    /**
+     * 金额合计
+     */
+    @TableField("field0067")
+    private BigDecimal field0067;
+
+    /**
+     * 供应商查询
+     */
+    @TableField("field0069")
+    private String field0069;
 
     /**
      * 开始日期

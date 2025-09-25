@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * 资产登记-车辆主表与明细表关联查询DTO
+ * 资产登记单-车辆与明细关联查询DTO
  */
 @Data
 public class AssetRegistrationVehicleWithDetailDTO {
@@ -14,14 +14,19 @@ public class AssetRegistrationVehicleWithDetailDTO {
     private Long id; // 主表ID
     private String field0001; // 单据编号
     private String field0002; // 填报人
-    private String field0003; // 所属科室
+    private String field0003; // 归属科室
     private Date field0004; // 填报日期
-    private String field0005; // 单位
+    private String field0005; // 所属单位
     private String field0060; // 采购人员确认
     private String field0061; // 财务审核
     private String field0062; // 填报人-文本
     private String field0063; // 实际采购员-文本
-    private String field0064; // 实际采购员
+    private String field0064; // 实际采购人员
+    private String field0067; // 管理科室
+    private String field0068; // 采购科室负责人
+    private BigDecimal field0072; // 合计金额
+    private String field0073; // 供应商
+    private String field0075; // 供应商查询
     private Date startDate; // 开始日期
 
     // 明细表信息
@@ -36,9 +41,8 @@ public class AssetRegistrationVehicleWithDetailDTO {
     private BigDecimal field0013; // 原始价值
     private String field0014; // 规格型号
     private BigDecimal field0015; // 资产数量
-    private String field0016; // 管理科室
     private String field0017; // 使用科室
-    private String field0018; // 归属科室
+    private String field0018; // 管理科室2
     private String field0019; // 归属单位
     private String field0020; // 存放地点
     private String field0021; // 经费来源
@@ -51,7 +55,6 @@ public class AssetRegistrationVehicleWithDetailDTO {
     private BigDecimal field0028; // 期初累计折旧
     private Date field0029; // 折旧起始日期
     private String field0030; // 资产说明
-    private String field0031; // 供应商
     private String field0032; // 发票号
     private String field0033; // 品牌
     private String field0034; // 合同编号
@@ -81,5 +84,9 @@ public class AssetRegistrationVehicleWithDetailDTO {
     private BigDecimal field0059; // 资产用途
     private BigDecimal field0065; // 预计使用月数
     private String field0066; // 经费来源-文本
+    private String field0069; // 上传发票
+    private String field0070; // 单位
+    private BigDecimal field0071; // 金额
+    private String field0074; // 管理人
     private Long formmainId; // 关联主表的ID
 }

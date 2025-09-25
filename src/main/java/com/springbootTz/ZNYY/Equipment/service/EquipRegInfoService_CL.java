@@ -35,7 +35,7 @@ public class EquipRegInfoService_CL {
 
     /**
      * 映射关系
-     * equip_reg_info表，formmain_1055和formson_1056的关联表AssetRegistrationVehicleWithDetailDTO
+     * equip_reg_info表，formmain_1195和formson_1196的关联表AssetRegistrationVehicleWithDetailDTO
      * rid，uscid+FJZZZYKJYXGS+equipCode
      * orgName，unitInfoToolMapper.selectUnitNameById(field0005)
      * uscid，unitInfoToolMapper.selectUnitCodeByName(field0005)
@@ -64,7 +64,7 @@ public class EquipRegInfoService_CL {
      * crteTime，startDate
      * updtTime，startDate
      * deleted，"0"
-     * deletedTime，使用默认时间1900-01-01 00:00:00
+     * deletedTime，使用默认时间2025-08-18 00:00:00
      */
 
     /**
@@ -177,7 +177,7 @@ public class EquipRegInfoService_CL {
             equipRegInfo.setDevUsefulLife(usefulLifeDate);
         } else {
             // 使用默认日期
-            equipRegInfo.setDevUsefulLife(parseDate("1900-01-01 00:00:00"));
+            equipRegInfo.setDevUsefulLife(parseDate("2025-08-18 00:00:00"));
         }
 
         equipRegInfo.setProdplacInfo("无");
@@ -198,10 +198,10 @@ public class EquipRegInfoService_CL {
         equipRegInfo.setReserve1("无");
         equipRegInfo.setReserve2("无");
         equipRegInfo.setDataClctPrdrName("福建众智政友科技有限公司");
-        equipRegInfo.setCrteTime(vehicle.getStartDate() != null ? vehicle.getStartDate() : getCurrentTime());
+        equipRegInfo.setCrteTime(parseDate("2025-08-18 00:00:00"));
         equipRegInfo.setUpdtTime(vehicle.getStartDate() != null ? vehicle.getStartDate() : getCurrentTime());
         equipRegInfo.setDeleted("0");
-        equipRegInfo.setDeletedTime(parseDate("1900-01-01 00:00:00"));
+        equipRegInfo.setDeletedTime(parseDate("2025-08-18 00:00:00"));
 
         return equipRegInfo;
     }

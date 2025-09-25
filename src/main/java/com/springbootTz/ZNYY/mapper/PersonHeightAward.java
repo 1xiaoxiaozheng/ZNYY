@@ -14,6 +14,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.text.SimpleDateFormat;
 
+/**
+ * 5. PersonHeightAward - 高层次人才科技奖励信息
+ * 数据说明：高层次人才获得的科技奖励信息
+ * PostgreSQL表：ehr_org_person_detail_custom (detail_id =
+ * "person_detail_iMSAH8eL")
+ * Oracle表：HUM_PSN_HEIGHT_AWARD
+ * 同步方法：syncHeightAwardInfoAll()
+ */
 @Component
 public class PersonHeightAward {
     private static final Logger logger = LoggerFactory.getLogger(PersonHeightAward.class);
@@ -208,11 +216,7 @@ public class PersonHeightAward {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_jyBN4wl3");
                 return v == null ? " " : v;
             }));
-            put("CRTE_TIME", toSafeDate(p -> {
-                if (p.getCreateTime() == null)
-                    return new Date();
-                return p.getCreateTime();
-            }));
+            put("CRTE_TIME", toSafeString(p -> "2025-06-30 00:00:00"));
             put("UPDT_TIME", toSafeDate(p -> {
                 if (p.getModifyTime() == null)
                     return new Date();

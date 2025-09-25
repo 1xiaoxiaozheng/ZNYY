@@ -19,6 +19,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * . PersonPatentFieldMapper - 人员专利信息
+ * 数据说明：人员申请的专利信息，包括专利名称、专利号、授权时间等
+ * PostgreSQL表：ehr_org_person_detail_custom (detail_id =
+ * "person_detail_rBtRIvSB")
+ * Oracle表：HUM_PSN_PATENT
+ * 同步方法：syncPatentInfoAll()
+ */
 @Component
 public class PersonPatentFieldMapper {
     @Autowired
@@ -145,11 +153,7 @@ public class PersonPatentFieldMapper {
                     }));
 
             put("DATA_CLCT_PRDR_NAME", toSafeString(p -> DATA_CLCT_PRDR_NAME));
-            put("CRTE_TIME", toSafeString(p -> {
-                Date createTime = p.getCreateTime();
-                return createTime == null ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
-                        : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(createTime);
-            }));
+            put("CRTE_TIME", toSafeString(p -> "2025-06-30 00:00:00"));
             put("UPDT_TIME", toSafeString(p -> {
                 Date modifyTime = p.getModifyTime();
                 return modifyTime == null ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())

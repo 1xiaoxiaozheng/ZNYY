@@ -10,7 +10,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import org.apache.ibatis.type.JdbcType;
 
 @Data
-@TableName("formson_1072")
+@TableName("formson_1200")
 public class LexmisN6_AssetRegistrationDetail {
 
     /**
@@ -50,12 +50,6 @@ public class LexmisN6_AssetRegistrationDetail {
     private Date field0010;
 
     /**
-     * 供应商
-     */
-    @TableField("field0013")
-    private String field0013;
-
-    /**
      * 联系人
      */
     @TableField("field0014")
@@ -78,12 +72,6 @@ public class LexmisN6_AssetRegistrationDetail {
      */
     @TableField("field0036")
     private BigDecimal field0036;
-
-//    /**
-//     * 管理科室
-//     */
-//    @TableField("field0041")
-//    private String field0041;
 
     /**
      * 折旧小数位数
@@ -170,7 +158,7 @@ public class LexmisN6_AssetRegistrationDetail {
     private String field0133;
 
     /**
-     * 归属科室
+     * 管理科室2
      */
     @TableField("field0134")
     private String field0134;
@@ -294,6 +282,30 @@ public class LexmisN6_AssetRegistrationDetail {
      */
     @TableField("field0174")
     private String field0174;
+
+    /**
+     * 单位
+     */
+    @TableField("field0176")
+    private String field0176;
+
+    /**
+     * 管理人
+     */
+    @TableField("field0177")
+    private String field0177;
+
+    /**
+     * 上传发票
+     */
+    @TableField("field0178")
+    private String field0178;
+
+    /**
+     * 金额
+     */
+    @TableField("field0180")
+    private BigDecimal field0180;
 
     /**
      * 关联主表的ID

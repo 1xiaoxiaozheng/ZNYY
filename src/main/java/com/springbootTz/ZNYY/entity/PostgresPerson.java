@@ -226,7 +226,7 @@ public class PostgresPerson {
     private Integer state;
     /** 兼职部门列表 */
     private String subDepts;
-    /** 职称 */
+    /** 职称 *//*需要变更*/
     private String technicalTitle;
     /** thirdId */
     private String thirdId;

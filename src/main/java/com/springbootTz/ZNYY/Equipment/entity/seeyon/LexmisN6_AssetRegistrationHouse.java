@@ -1,6 +1,7 @@
 package com.springbootTz.ZNYY.Equipment.entity.seeyon;
 
 import lombok.Data;
+import java.math.BigDecimal;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -10,10 +11,10 @@ import org.apache.ibatis.type.JdbcType;
 
 /**
  * 资产登记单-房屋土地主表实体类
- * 对应数据库表：formmain_1053
+ * 对应数据库表：formmain_1197
  */
 @Data
-@TableName("formmain_1053")
+@TableName("formmain_1197")
 public class LexmisN6_AssetRegistrationHouse {
 
     /**
@@ -35,7 +36,7 @@ public class LexmisN6_AssetRegistrationHouse {
     private String field0002;
 
     /**
-     * 所属科室
+     * 归属科室
      */
     @TableField("field0003")
     private String field0003;
@@ -47,7 +48,7 @@ public class LexmisN6_AssetRegistrationHouse {
     private Date field0004;
 
     /**
-     * 单位
+     * 所属单位
      */
     @TableField("field0005")
     private String field0005;
@@ -81,6 +82,30 @@ public class LexmisN6_AssetRegistrationHouse {
      */
     @TableField("field0068")
     private String field0068;
+
+    /**
+     * 管理科室
+     */
+    @TableField("field0071")
+    private String field0071;
+
+    /**
+     * 采购科室负责人
+     */
+    @TableField("field0075")
+    private String field0075;
+
+    /**
+     * 供应商入库
+     */
+    @TableField("field0077")
+    private String field0077;
+
+    /**
+     * 合计金额
+     */
+    @TableField("field0078")
+    private BigDecimal field0078;
 
     /**
      * 开始日期

@@ -1,9 +1,7 @@
 package com.springbootTz.ZNYY.mapper;
 
-import com.springbootTz.ZNYY.entity.OraclePerson;
-import com.springbootTz.ZNYY.entity.OraclePersonEmpType;
-import com.springbootTz.ZNYY.entity.PostgresPersonDetailWorkExperience;
-import com.springbootTz.ZNYY.entity.PostgresPerson;
+import com.springbootTz.ZNYY.entity.*;
+import com.springbootTz.ZNYY.service.OursEnumValueService;
 import com.springbootTz.ZNYY.tool.*;
 import com.springbootTz.ZNYY.mapper.postgresql.PostgresPersonMapper;
 import com.springbootTz.ZNYY.mapper.postgresql.PostgresPersonDetailWorkExperienceMapper;
@@ -16,9 +14,16 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+
 /**
- * 用于OraclePersonEmpType与PostgresPersonDetailWorkExperience字段映射的工具类
- * hum_psn_emp_tpye表接收PostgresPersonDetailWorkExperience的字段映射
+ * 4. PersonEmpFieldMapper - 人员岗位聘任信息
+ *
+ * 数据说明：人员的岗位聘任记录，包括聘任岗位、聘任时间等
+ * PostgreSQL表：ehr_org_person_detail_work_experience
+ * Oracle表：HUM_PSN_EMP_TYPE
+ * 同步方法：syncEmpTypeInfoAll()
+ *
+ * 要修改成新势力的聘任信息表,需要更改对应的postgresql的表为ehr_org_person
  */
 @Component
 public class PersonEmpFieldMapper {
@@ -37,6 +42,12 @@ public class PersonEmpFieldMapper {
     private PostgresPersonMapper postgresPersonMapper;
     @Autowired
     private PostgresPersonDetailWorkExperienceMapper postgresPersonDetailWorkExperienceMapper;
+
+    @Autowired
+    private EnumValueQueryTool enumValueQueryTool;
+
+    @Autowired
+    private OursEnumValueService oursEnumValueService;
 
     // 直接定义常量，避免配置文件中文乱码
     private static final String SYS_PRDR_CODE = "FJZZZYKJYXGS";
@@ -66,33 +77,7 @@ public class PersonEmpFieldMapper {
         return departmentQueryTool.getOrgNameByDeptId(deptId);
     }
 
-    /**
-     * Oracle字段名 -> 映射逻辑（输入PostgresPersonDetailWorkExperience，输出String）
-     * 对应关系如下（格式：Oracle字段名 → Postgres数据来源）：
-     *
-     * 基础关联字段： RID → 根据personId查询机构名称，再通过orgCodeConcatTool生成（格式：机构代码+厂商代码+记录ID）
-     * ORG_NAME → 根据personId查询机构名称 USCID → 根据机构名称查询对应的统一社会信用代码
-     *
-     * 系统固定值： UPLOAD_TIME → 当前系统时间（格式：yyyy-MM-dd HH:mm:ss） SYS_PRDR_CODE →
-     * 固定值"1" SYS_PRDR_NAME → 固定值"福建众智政友科技有限公司" DATA_CLCT_PRDR_NAME →
-     * 固定值"福建众智政友科技有限公司"
-     *
-     * 人员信息： ORIGINAL_ID → ehr_org_person_detail_work_experience表的id字段 STAFF_ID
-     * → person_id字段 STAFF_NO → 关联PostgresPerson表的number字段 STAFF_NAME →
-     * 关联PostgresPerson表的name字段
-     *
-     * 时间字段： CRTE_TIME → create_time字段 UPDT_TIME → modify_time字段 DELETED_TIME →
-     * 空字符串
-     *
-     * 状态字段： DELETED → 根据del_flag判断：1正常则DELETED为0，其他情况为1
-     *
-     * 扩展字段： FIRST_EMP_START_DATE → 从customFields中提取person_vXaQxFNe的值
-     * APPOINT_LEVEL_CODE → 关联PostgresPerson表的jobLevel字段 APPOINT_LEVEL_NAME →
-     * 关联PostgresPerson表的jobGradeId字段 JOB_DESC → des字段 EMP_START_DATE →
-     * startTime字段 EMP_END_DATE → endTime字段 TECH_JOB_TITLE_CODE → jobName字段
-     * TECH_JOB_TITLE_NAME → jobName字段
-     */
-    public final Map<String, Function<PostgresPersonDetailWorkExperience, String>> FIELD_MAPPING = new LinkedHashMap<String, Function<PostgresPersonDetailWorkExperience, String>>() {
+    public final Map<String, Function<PostgresPersonDetailCustom, String>> FIELD_MAPPING = new LinkedHashMap<String, Function<PostgresPersonDetailCustom, String>>() {
         {
             put("RID", toSafeString(p -> {
                 String orgName = getOrgNameByPersonId(p.getPersonId());
@@ -127,7 +112,7 @@ public class PersonEmpFieldMapper {
                 PostgresPerson person = postgresPersonMapper.selectById(p.getPersonId());
                 return person == null ? " " : person.getName();
             }));
-            put("CRTE_TIME", toSafeString(p -> p.getCreateTime() == null ? " " : p.getCreateTime().toString()));
+            put("CRTE_TIME", toSafeString(p -> "2025-06-30 00:00:00"));
             put("UPDT_TIME", toSafeString(p -> p.getModifyTime() == null ? " " : p.getModifyTime().toString()));
             put("DELETED", toSafeString(p -> {
                 // 根据delFlag判断：1正常则DELETED为0，其他情况DELETED为1
@@ -137,22 +122,41 @@ public class PersonEmpFieldMapper {
             put("DELETED_TIME", toSafeString(p -> " "));
             put("DATA_CLCT_PRDR_NAME", toSafeString(p -> DATA_CLCT_PRDR_NAME));
             put("FIRST_EMP_START_DATE", toSafeString(p -> {
-                String firstEmpStartDate = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_vXaQxFNe");
+                String firstEmpStartDate = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_oeHnCJMI");
                 return firstEmpStartDate == null ? " " : firstEmpStartDate;
             }));
             put("APPOINT_LEVEL_CODE", toSafeString(p -> {
-                PostgresPerson person = postgresPersonMapper.selectById(p.getPersonId());
-                return person == null || person.getJobLevel() == null ? " " : person.getJobLevel();
+               String appointLevelCode = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_1H50BR2W");
+               return appointLevelCode == null ? " " : appointLevelCode;
             }));
             put("APPOINT_LEVEL_NAME", toSafeString(p -> {
-                PostgresPerson person = postgresPersonMapper.selectById(p.getPersonId());
-                return person == null || person.getJobGradeId() == null ? " " : person.getJobGradeId();
+                String appointLevelName = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_1H50BR2W");
+                return appointLevelName == null ? " " :oursEnumValueService.getDisplayById(appointLevelName);
             }));
-            put("JOB_DESC", toSafeString(p -> p.getDes() == null ? " " : p.getDes()));
-            put("EMP_START_DATE", toSafeString(p -> p.getStartTime() == null ? " " : p.getStartTime()));
-            put("EMP_END_DATE", toSafeString(p -> p.getEndTime() == null ? " " : p.getEndTime()));
-            put("TECH_JOB_TITLE_CODE", toSafeString(p -> p.getJobName() == null ? " " : p.getJobName()));
-            put("TECH_JOB_TITLE_NAME", toSafeString(p -> p.getJobName() == null ? " " : p.getJobName()));
+            put("JOB_DESC", toSafeString(p -> {
+                String jobDesc = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_Ahbu58hq");
+                return jobDesc == null ? " " : oursEnumValueService.getDisplayById(jobDesc);
+            }));
+            put("EMP_START_DATE", toSafeString(p -> {
+                     String empStartDate   =  jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_oeHnCJMI");
+                        return empStartDate == null ? " " : empStartDate;
+                            }
+            ));
+            put("EMP_END_DATE", toSafeString(p ->{
+                        String empEndDate = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_SqvXuxOU");
+                        return empEndDate == null ? " " : empEndDate;
+                    }
+            ));
+            put("TECH_JOB_TITLE_CODE", toSafeString(p ->
+            {
+                String techJobTitleCode = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_gd4dwPAf");
+                return techJobTitleCode == null ? " " : techJobTitleCode;
+            }));
+            put("TECH_JOB_TITLE_NAME", toSafeString(p ->
+            {
+                String techJobTitleName = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_gd4dwPAf");
+                return techJobTitleName == null ? " " :oursEnumValueService.getDisplayById(techJobTitleName);
+            }));
         }
     };
 

@@ -11,10 +11,10 @@ import org.apache.ibatis.type.JdbcType;
 
 /**
  * 资产登记-医疗专用设备明细表实体类
- * 对应数据库表：formson_1058
+ * 对应数据库表：formson_1194
  */
 @Data
-@TableName("formson_1058")
+@TableName("formson_1194")
 public class LexmisN6_AssetRegistrationMedicalDetail {
 
     /**
@@ -77,14 +77,8 @@ public class LexmisN6_AssetRegistrationMedicalDetail {
     @TableField("field0015")
     private BigDecimal field0015;
 
-//    /**
-//     * 管理科室
-//     */
-//    @TableField("field0016")
-//    private String field0016;
-
     /**
-     * 归属科室
+     * 管理科室2
      */
     @TableField("field0018")
     private String field0018;
@@ -160,12 +154,6 @@ public class LexmisN6_AssetRegistrationMedicalDetail {
      */
     @TableField("field0030")
     private String field0030;
-
-    /**
-     * 供应商
-     */
-    @TableField("field0031")
-    private String field0031;
 
     /**
      * 发票号
@@ -292,6 +280,36 @@ public class LexmisN6_AssetRegistrationMedicalDetail {
      */
     @TableField("field0060")
     private String field0060;
+
+    /**
+     * 上传发票
+     */
+    @TableField("field0062")
+    private String field0062;
+
+    /**
+     * 金额
+     */
+    @TableField("field0063")
+    private BigDecimal field0063;
+
+    /**
+     * 单位
+     */
+    @TableField("field0064")
+    private String field0064;
+
+    /**
+     * 管理人
+     */
+    @TableField("field0068")
+    private String field0068;
+
+    /**
+     * 生产日期
+     */
+    @TableField(value = "field0070", jdbcType = JdbcType.TIMESTAMP)
+    private Date field0070;
 
     /**
      * 关联主表的ID

@@ -11,10 +11,10 @@ import org.apache.ibatis.type.JdbcType;
 
 /**
  * 资产登记单-家居设备明细表实体类
- * 对应数据库表：formson_0989
+ * 对应数据库表：formson_1190
  */
 @Data
-@TableName("formson_0989")
+@TableName("formson_1190")
 public class LexmisN6_AssetRegistrationHomeDetail {
 
     /**
@@ -54,12 +54,6 @@ public class LexmisN6_AssetRegistrationHomeDetail {
     private Date field0010;
 
     /**
-     * 供应商
-     */
-    @TableField("field0013")
-    private String field0013;
-
-    /**
      * 联系人
      */
     @TableField("field0014")
@@ -82,12 +76,6 @@ public class LexmisN6_AssetRegistrationHomeDetail {
      */
     @TableField("field0036")
     private BigDecimal field0036;
-
-//    /**
-//     * 管理科室
-//     */
-//    @TableField("field0041")
-//    private String field0041;
 
     /**
      * 折旧小数位数
@@ -174,7 +162,7 @@ public class LexmisN6_AssetRegistrationHomeDetail {
     private String field0133;
 
     /**
-     * 归属科室
+     * 管理科室2
      */
     @TableField("field0134")
     private String field0134;
@@ -286,6 +274,30 @@ public class LexmisN6_AssetRegistrationHomeDetail {
      */
     @TableField("field0172")
     private String field0172;
+
+    /**
+     * 上传发票
+     */
+    @TableField("field0174")
+    private String field0174;
+
+    /**
+     * 单位
+     */
+    @TableField("field0175")
+    private String field0175;
+
+    /**
+     * 金额
+     */
+    @TableField("field0176")
+    private BigDecimal field0176;
+
+    /**
+     * 管理人
+     */
+    @TableField("field0180")
+    private String field0180;
 
     /**
      * 关联主表的ID

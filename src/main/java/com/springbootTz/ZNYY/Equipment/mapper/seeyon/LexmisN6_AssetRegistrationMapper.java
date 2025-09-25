@@ -16,42 +16,42 @@ public interface LexmisN6_AssetRegistrationMapper extends BaseMapper<LexmisN6_As
     /**
      * 查询所有资产登记单信息
      */
-    @Select("SELECT * FROM formmain_1071")
+    @Select("SELECT * FROM formmain_1199")
     List<LexmisN6_AssetRegistration> selectAll();
 
     /**
      * 根据单据编号查询资产登记单信息
      */
-    @Select("SELECT * FROM formmain_1071 WHERE field0017 = #{field0017}")
+    @Select("SELECT * FROM formmain_1199 WHERE field0017 = #{field0017}")
     LexmisN6_AssetRegistration selectByField0017(String field0017);
 
     /**
      * 根据填报人查询资产登记单信息
      */
-    @Select("SELECT * FROM formmain_1071 WHERE field0026 = #{field0026}")
+    @Select("SELECT * FROM formmain_1199 WHERE field0026 = #{field0026}")
     List<LexmisN6_AssetRegistration> selectByField0026(String field0026);
 
     /**
      * 根据所属科室查询资产登记单信息
      */
-    @Select("SELECT * FROM formmain_1071 WHERE field0027 = #{field0027}")
+    @Select("SELECT * FROM formmain_1199 WHERE field0027 = #{field0027}")
     List<LexmisN6_AssetRegistration> selectByField0027(String field0027);
 
     /**
      * 根据单位查询资产登记单信息
      */
-    @Select("SELECT * FROM formmain_1071 WHERE field0152 = #{field0152}")
+    @Select("SELECT * FROM formmain_1199 WHERE field0152 = #{field0152}")
     List<LexmisN6_AssetRegistration> selectByField0152(String field0152);
 
     /**
      * 根据实际采购人员查询资产登记单信息
      */
-    @Select("SELECT * FROM formmain_1071 WHERE field0162 = #{field0162}")
+    @Select("SELECT * FROM formmain_1199 WHERE field0162 = #{field0162}")
     List<LexmisN6_AssetRegistration> selectByField0162(String field0162);
 
     /**
      * 查询指定日期范围内的资产登记单信息
      */
-    @Select("SELECT * FROM formmain_1071 WHERE field0028 BETWEEN #{startDate} AND #{endDate}")
+    @Select("SELECT * FROM formmain_1199 WHERE field0028 BETWEEN #{startDate} AND #{endDate}")
     List<LexmisN6_AssetRegistration> selectByDateRange(String startDate, String endDate);
 }

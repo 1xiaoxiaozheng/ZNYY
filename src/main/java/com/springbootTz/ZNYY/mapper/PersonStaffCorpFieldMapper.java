@@ -19,6 +19,14 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * 12. PersonStaffCorpFieldMapper - 人员学术社团任职信息
+ * 数据说明：人员在学术社团中的任职信息
+ * PostgreSQL表：ehr_org_person_detail_custom (detail_id =
+ * "person_detail_VXVwV5ve")
+ * Oracle表：HUM_STAFF_CORP
+ * 同步方法：syncSocietyInfoAll()
+ */
 @Component
 public class PersonStaffCorpFieldMapper {
     @Autowired
@@ -94,7 +102,7 @@ public class PersonStaffCorpFieldMapper {
                 PostgresPerson person = postgresPersonMapper.selectById(p.getPersonId());
                 return person == null ? " " : person.getName();
             }));
-            put("CRTE_TIME", toSafeString(p -> p.getCreateTime() == null ? " " : p.getCreateTime().toString()));
+            put("CRTE_TIME", toSafeString(p -> "2025-06-30 00:00:00"));
             put("UPDT_TIME", toSafeString(p -> p.getModifyTime() == null ? " " : p.getModifyTime().toString()));
             put("DELETED", toSafeString(p -> {
                 Integer delFlag = p.getDelFlag();

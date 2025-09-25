@@ -17,6 +17,14 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * 7. PersonPaperFieldMapper - 人员论文信息
+ * 数据说明：人员发表的学术论文信息，包括论文标题、期刊、发表时间等
+ * PostgreSQL表：ehr_org_person_detail_custom (detail_id =
+ * "person_detail_kX9wywgy")
+ * Oracle表：HUM_PSN_PAPER
+ * 同步方法：syncPaperInfoAll()
+ */
 @Component
 public class PersonPaperFieldMapper {
     @Autowired
@@ -92,7 +100,7 @@ public class PersonPaperFieldMapper {
                 PostgresPerson person = postgresPersonMapper.selectById(p.getPersonId());
                 return person == null ? " " : person.getName();
             }));
-            put("CRTE_TIME", toSafeString(p -> p.getCreateTime() == null ? " " : p.getCreateTime().toString()));
+            put("CRTE_TIME", toSafeString(p -> "2025-06-30 00:00:00"));
             put("UPDT_TIME", toSafeString(p -> p.getModifyTime() == null ? " " : p.getModifyTime().toString()));
             put("DELETED", toSafeString(p -> {
                 Integer delFlag = p.getDelFlag();

@@ -25,6 +25,11 @@ import com.springbootTz.ZNYY.tool.OrgCodeQueryTool;
 /**
  * 用于OraclePersonEduInfo与PostgresPersonDetailEducationExperience字段映射的工具类
  * 后续可在此类中实现字段映射逻辑
+ * PersonEduInfoFieldMapper - 人员教育经历
+ * 数据说明：人员的学历教育经历，包括学校、专业、学位、学习时间等
+ * PostgreSQL表：ehr_org_person_detail_education_experience
+ * Oracle表：HUM_PSN_EDU_INFO
+ * 同步方法：syncEducationInfoAll()
  */
 @Component
 public class PersonEduInfoFieldMapper {
@@ -126,7 +131,7 @@ public class PersonEduInfoFieldMapper {
             put("MAJOR_CODE", toSafeString(p -> p.getMajor() == null ? " " : p.getMajor()));
             put("MAJOR_NAME", toSafeString(p -> p.getMajor() == null ? " " : p.getMajor()));
             put("DATA_CLCT_PRDR_NAME", toSafeString(p -> DATA_CLCT_PRDR_NAME));
-            put("CRTE_TIME", toSafeString(p -> p.getCreateTime() == null ? " " : p.getCreateTime().toString()));
+            put("CRTE_TIME", toSafeString(p -> "2025-06-30 00:00:00"));
             put("UPDT_TIME", toSafeString(p -> p.getModifyTime() == null ? " " : p.getModifyTime().toString()));
             put("DELETED", toSafeString(p -> {
                 Integer delFlag = p.getDelFlag();

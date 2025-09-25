@@ -192,11 +192,11 @@ public class EquipDiscardedRecordService {
                 purcDate = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
             } catch (DateTimeParseException e) {
                 // 解析失败时使用默认日期
-                purcDate = parseDate("1900-01-01 00:00:00");
+                purcDate = parseDate("2025-08-18 00:00:00");
             }
         } else {
             // 日期字符串为null或空时使用默认日期
-            purcDate = parseDate("1900-01-01 00:00:00");
+            purcDate = parseDate("2025-08-18 00:00:00");
         }
         equipDiscardedRecord.setPurcDate(purcDate);
 
@@ -221,10 +221,10 @@ public class EquipDiscardedRecordService {
         equipDiscardedRecord.setReserve1("无");
         equipDiscardedRecord.setReserve2("无");
         equipDiscardedRecord.setDataClctPrdrName("福建众智政友科技有限公司");
-        equipDiscardedRecord.setCrteTime(disposal.getStartDate() != null ? disposal.getStartDate() : getCurrentTime());
+        equipDiscardedRecord.setCrteTime(parseDate("2025-08-18 00:00:00"));
         equipDiscardedRecord.setUpdtTime(disposal.getStartDate() != null ? disposal.getStartDate() : getCurrentTime());
         equipDiscardedRecord.setDeleted("0");
-        equipDiscardedRecord.setDeletedTime(parseDate("1900-01-01 00:00:00"));
+        equipDiscardedRecord.setDeletedTime(parseDate("2025-08-18 00:00:00"));
 
         return equipDiscardedRecord;
     }

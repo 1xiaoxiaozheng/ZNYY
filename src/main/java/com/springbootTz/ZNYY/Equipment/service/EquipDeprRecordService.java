@@ -111,14 +111,14 @@ public class EquipDeprRecordService {
         equipDeprRecord.setDeprCumAmt(BigDecimal.ZERO); // 无对应字段
         equipDeprRecord.setOperatorName(depreciation.getDCreateName());
         if (depreciation.getDVoucherDate() == null) {
-            equipDeprRecord.setDealDate(parseDate("1900-01-01 00:00:00")); // 无对应字段
+            equipDeprRecord.setDealDate(parseDate("2025-08-18 00:00:00")); // 无对应字段
         } else {
             equipDeprRecord.setDealDate(depreciation.getDVoucherDate());// 如果为空那就使用默认值，
         }
         equipDeprRecord.setCreateCertFlag("无"); // 无对应字段，设为空字符串
-        equipDeprRecord.setCreateCertDate(parseDate("1900-01-01 00:00:00")); // 无对应字段
+        equipDeprRecord.setCreateCertDate(parseDate("2025-08-18 00:00:00")); // 无对应字段
         equipDeprRecord.setAccruedCostFlag("无"); // 无对应字段，设为空字符串
-        equipDeprRecord.setAccruedCostDate(parseDate("1900-01-01 00:00:00")); // 无对应字段
+        equipDeprRecord.setAccruedCostDate(parseDate("2025-08-18 00:00:00")); // 无对应字段
         equipDeprRecord.setDeprMean(depreciation.getDDeprKind().toString());
         equipDeprRecord.setDeprMeanName(getDeprMeanName(depreciation.getDDeprKind()));
         equipDeprRecord.setStroomCode("无"); // 无对应字段，设为空字符串
@@ -132,10 +132,10 @@ public class EquipDeprRecordService {
         equipDeprRecord.setReserve1("无");
         equipDeprRecord.setReserve2("无");
         equipDeprRecord.setDataClctPrdrName("福建众智政友科技有限公司");
-        equipDeprRecord.setCrteTime(depreciation.getDCreateDate());
-        equipDeprRecord.setUpdtTime(parseDate("1900-01-01 00:00:00"));
+        equipDeprRecord.setCrteTime(parseDate("2025-08-18 00:00:00"));
+        equipDeprRecord.setUpdtTime(parseDate("2025-08-18 00:00:00"));
         equipDeprRecord.setDeleted("0");
-        equipDeprRecord.setDeletedTime(parseDate("1900-01-01 00:00:00"));
+        equipDeprRecord.setDeletedTime(parseDate("2025-08-18 00:00:00"));
 
         return equipDeprRecord;
     }
