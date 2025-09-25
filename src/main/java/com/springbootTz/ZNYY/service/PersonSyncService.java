@@ -239,40 +239,6 @@ public class PersonSyncService {
      * 全量同步Postgres教育经历到Oracle，original_id存在则update，不存在则insert
      * 只同步USCID有值且为指定机构代码的数据
      */
-    // public void syncEducationInfoAll() {
-    // List<PostgresPersonDetailEducationExperience> pgList =
-    // postgresPersonDetailEducationExperienceMapper
-    // .selectList(null);
-    // int processCount = 0;//总共处理记录数
-    // int updateCount = 0;//更新记录数
-    // int insertCount = 0;//插入记录数
-    //
-    // for (PostgresPersonDetailEducationExperience pg : pgList) {
-    //
-    // Map<String, Function<PostgresPersonDetailEducationExperience, String>>
-    // mapping = personEduInfoFieldMapper.FIELD_MAPPING;
-    // OraclePersonEduInfo oracleEdu = new OraclePersonEduInfo();
-    // for (Map.Entry<String, Function<PostgresPersonDetailEducationExperience,
-    // String>> entry : mapping
-    // .entrySet()) {
-    // personEduInfoFieldMapper.setOracleField(oracleEdu, entry.getKey(),
-    // entry.getValue().apply(pg));
-    // }
-    // String uscid = oracleEdu.getUscid();
-    // if (uscid == null || uscid.trim().isEmpty()) {
-    // continue; // USCID 为空不推送
-    // }
-    // QueryWrapper<OraclePersonEduInfo> qw = new QueryWrapper<>();
-    // qw.eq("ORIGINAL_ID", oracleEdu.getOriginalId());
-    // OraclePersonEduInfo exist = oraclePersonEduInfoMapper.selectOne(qw);
-    // if (exist != null) {
-    // oracleEdu.setRid(exist.getRid());
-    // oraclePersonEduInfoMapper.updateById(oracleEdu);
-    // } else {
-    // oraclePersonEduInfoMapper.insert(oracleEdu);
-    // }
-    // }
-    // }
     public void syncEducationInfoAll() {
         // 2. 同步开始日志：记录任务启动和初始状态
         logger.info("=== 教育经历数据同步任务开始 ===");
@@ -397,7 +363,7 @@ public class PersonSyncService {
             });
 
             // logger.info("正在从PostgreSQL查询工作经历数据...");
-            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(null);
+            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
             // logger.info("PostgreSQL查询完成，共获取{}条记录", pgList.size());
 
             int processCount = 0;
@@ -626,7 +592,7 @@ public class PersonSyncService {
             }
 
             // logger.info("正在从PostgreSQL查询height_award数据...");
-            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(null);
+            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
             // logger.info("PostgreSQL查询完成，共获取{}条记录", pgList.size());
 
             int processCount = 0;
@@ -747,7 +713,7 @@ public class PersonSyncService {
                 // logger.info("成功清理不符合条件的数据");
             }
 
-            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(null);
+            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
             // logger.info("Found {} records in PostgreSQL height table", pgList.size());
 
             int processCount = 0;
@@ -831,7 +797,7 @@ public class PersonSyncService {
         try {
             // 先从PostgreSQL获取detail_id等于指定值的记录的id列表
             QueryWrapper<PostgresPersonDetailCustom> pgQueryWrapper = new QueryWrapper<>();
-            pgQueryWrapper.eq("detail_id", "person_detail_kX9wywgy");
+            pgQueryWrapper.eq("detail_id", "person_detail_LBISJEzo");
             List<PostgresPersonDetailCustom> toDeleteList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
             List<String> toDeleteIds = toDeleteList.stream()
                     .map(PostgresPersonDetailCustom::getId)
@@ -848,7 +814,7 @@ public class PersonSyncService {
             }
 
             // logger.info("正在从PostgreSQL查询论文数据...");
-            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(null);
+            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
             // logger.info("PostgreSQL查询完成，共获取{}条记录", pgList.size());
 
             int processCount = 0;
@@ -857,7 +823,7 @@ public class PersonSyncService {
 
             for (PostgresPersonDetailCustom pg : pgList) {
                 // 检查detail_id是否符合条件
-                if (!"person_detail_kX9wywgy".equals(pg.getDetailId())) {
+                if (!"person_detail_LBISJEzo".equals(pg.getDetailId())) {
                     // logger.debug("跳过非目标detail_id记录，当前detail_id: {}, ID: {}", pg.getDetailId(),
                     // pg.getId());
                     continue;
@@ -941,7 +907,7 @@ public class PersonSyncService {
             }
 
             // logger.info("正在从PostgreSQL查询专利数据...");
-            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(null);
+            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
             // logger.info("PostgreSQL查询完成，共获取{}条记录", pgList.size());
 
             int processCount = 0;
@@ -1065,7 +1031,7 @@ public class PersonSyncService {
             }
 
             // logger.info("正在从PostgreSQL查询专业技术资格数据...");
-            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(null);
+            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
             // logger.info("PostgreSQL查询完成，共获取{}条记录", pgList.size());
 
             int processCount = 0;
@@ -1188,7 +1154,7 @@ public class PersonSyncService {
             });
 
             // logger.info("正在从PostgreSQL查询科研项目数据...");
-            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(null);
+            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
             // logger.info("PostgreSQL查询完成，共获取{}条记录", pgList.size());
 
             int processCount = 0;
@@ -1312,7 +1278,7 @@ public class PersonSyncService {
             });
 
             // logger.info("正在从PostgreSQL查询荣誉信息数据...");
-            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(null);
+            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
             // logger.info("PostgreSQL查询完成，共获取{}条记录", pgList.size());
 
             int processCount = 0;
@@ -1435,7 +1401,7 @@ public class PersonSyncService {
             });
 
             // logger.info("正在从PostgreSQL查询社会任职数据...");
-            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(null);
+            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
             // logger.info("PostgreSQL查询完成，共获取{}条记录", pgList.size());
 
             int processCount = 0;
@@ -1661,7 +1627,7 @@ public class PersonSyncService {
             });
 
             // logger.info("正在从PostgreSQL查询研究生导师数据...");
-            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(null);
+            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
             // logger.info("PostgreSQL查询完成，共获取{}条记录", pgList.size());
 
             int processCount = 0;
@@ -1785,7 +1751,7 @@ public class PersonSyncService {
             });
 
             // logger.info("正在从PostgreSQL查询学术兼职数据...");
-            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(null);
+            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
             // logger.info("PostgreSQL查询完成，共获取{}条记录", pgList.size());
 
             int processCount = 0;

@@ -3,6 +3,7 @@ package com.springbootTz.ZNYY.mapper;
 import com.springbootTz.ZNYY.entity.PostgresPersonDetailCustom;
 import com.springbootTz.ZNYY.entity.PostgresPerson;
 import com.springbootTz.ZNYY.entity.OraclePersonProf;
+import com.springbootTz.ZNYY.service.OursEnumValueService;
 import com.springbootTz.ZNYY.tool.*;
 import com.springbootTz.ZNYY.mapper.postgresql.PostgresPersonMapper;
 import com.springbootTz.ZNYY.mapper.postgresql.PostgresPersonDetailCustomMapper;
@@ -47,6 +48,9 @@ public class PersonPsnProfFieldMapper {
     private PostgresPersonDetailCustomMapper postgresPersonDetailCustomMapper;
     @Autowired
     private EnumValueQueryTool enumValueQueryTool;
+
+    @Autowired
+    private OursEnumValueService oursEnumValueService;
 
     private static final String SYS_PRDR_CODE = "FJZZZYKJYXGS";
     private static final String SYS_PRDR_NAME = "福建众智政友科技有限公司";
@@ -142,8 +146,8 @@ public class PersonPsnProfFieldMapper {
                 return v == null ? " " : v;
             }));
             put("SKILL_GRADE_NAME", toSafeString(p -> {
-                String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_xp9DuAvb");
-                return v == null ? " " : enumValueQueryTool.getDisplayByEnumNameAndValue("职称级别", Long.parseLong(v));
+                String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_nV1qvUMb");
+                return v == null ? " " : oursEnumValueService.getDisplayById(v);
             }));
 
             put("GET_DATE", toSafeString(p -> {

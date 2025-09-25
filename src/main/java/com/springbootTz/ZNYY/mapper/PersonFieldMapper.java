@@ -4,6 +4,7 @@ import com.springbootTz.ZNYY.entity.PostgresPerson;
 import com.springbootTz.ZNYY.entity.OraclePerson;
 import com.springbootTz.ZNYY.mapper.oracle.OraclePersonMapper;
 import com.springbootTz.ZNYY.mapper.postgresql.PostgresPersonMapper;
+import com.springbootTz.ZNYY.service.OursEnumValueService;
 import com.springbootTz.ZNYY.tool.DepartmentQueryTool;
 import com.springbootTz.ZNYY.tool.OrgCodeConcatTool;
 import com.springbootTz.ZNYY.tool.OrgCodeQueryTool;
@@ -50,6 +51,11 @@ public class PersonFieldMapper {
         private PostgresPersonMapper postgresPersonMapper;
         @Autowired
         private OraclePersonMapper oraclePersonMapper;
+        @Autowired
+        private OursEnumValueService oursEnumValueService;
+
+        @Autowired
+        private JsonKeyValueTool jsonKeyValueTool;
         // 直接定义常量，避免配置文件中文乱码
         private static final String SYS_PRDR_CODE = "FJZZZYKJYXGS";
         private static final String SYS_PRDR_NAME = "福建众智政友科技有限公司";
@@ -119,9 +125,14 @@ public class PersonFieldMapper {
                         put("POLITICAL_NAME", toSafeString(p -> p.getPoliticalType()));
                         put("DEPT_CODE", toSafeString(PostgresPerson::getDeptId));
                         put("DEPT_NAME", toSafeString(p -> departmentQueryTool.getOrgNameByDeptId(p.getDeptId())));
-                        put("PERSON_PROP_CODE", toSafeString(p -> p.getWorkType()));
-                        put("PERSON_PROP_NAME", toSafeString(p -> p.getWorkType() == null ? null
-                                        : enumValueQueryTool.getDisplayByEnumNameAndValue("工作性质-标准", p.getWorkType())));
+                        put("PERSON_PROP_CODE", toSafeString(p -> {
+                                String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_xLIaqBeW");
+                                return v == null ? " " : v;
+                        }));
+                        put("PERSON_PROP_NAME", toSafeString(p ->{
+                                String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_xLIaqBeW");
+                                return v == null ? " " : oursEnumValueService.getDisplayById(v);
+                        }));
                         put("COME_FROM_ORG", toSafeString(p -> COME_FROM_ORG));
                         put("WORK_YM", toSafeString(p -> {
                                 if (p.getStartWorkTime() == null)
@@ -200,28 +211,36 @@ public class PersonFieldMapper {
                                         p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_xsM0Ez44")));
                         put("COME_PROP_CODE",
                                         toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
-                                                        "person_kdU0XGy6")));
-                        put("COME_PROP_NAME",
-                                        toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
-                                                        "person_kdU0XGy6")));
+                                                        "person_vJMvshZ8")));
+                        put("COME_PROP_NAME", toSafeString(
+                                p ->{
+                                        String v = JsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_vJMvshZ8");
+                                        return v == null ? " " : oursEnumValueService.getDisplayById(v);
+                                } ));
                         put("COME_TYPE_CODE",
                                         toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
-                                                        "person_danhI3wb")));
+                                                        "person_3RAFf7Nh")));
                         put("COME_TYPE_NAME",
-                                        toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
-                                                        "person_danhI3wb")));
+                                        toSafeString(p ->{
+                                                String v = JsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_3RAFf7Nh");
+                                                return v == null ? " " : oursEnumValueService.getDisplayById(v);
+                                        } ));
                         put("FIRST_EDU_BACKGROUND_CODE",
                                         toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
-                                                        "person_8Rvwg5q1")));
+                                                        "person_MBYwLXDw")));
                         put("FIRST_EDU_BACKGROUND_NAME",
-                                        toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
-                                                        "person_8Rvwg5q1")));
+                                        toSafeString(p -> {
+                                                String v = JsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_MBYwLXDw");
+                                                return v == null ? " " : oursEnumValueService.getDisplayById(v);
+                                        }));
                         put("DEGREE_CODE",
                                         toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
-                                                        "person_DkRk64Sq")));
+                                                        "person_EL6UH78b")));
                         put("DEGREE_NAME",
-                                        toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
-                                                        "person_DkRk64Sq")));
+                                        toSafeString(p -> {
+                                                String v = JsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_EL6UH78b");
+                                                 return v == null ? " " : oursEnumValueService.getDisplayById(v);
+                                        }));
                         put("FIRST_LEVEL_DISC_CODE",
                                         toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
                                                         "person_j4dW8oSZ")));

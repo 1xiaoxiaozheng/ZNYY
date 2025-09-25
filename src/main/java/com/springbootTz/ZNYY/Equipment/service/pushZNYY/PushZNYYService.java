@@ -251,85 +251,85 @@ public class PushZNYYService implements CommandLineRunner {
     // 开机自启
     @Override
     public void run(String... args) {
-//        logger.info("【定时任务】开始推送seeyon卡片信息到znyy...");
-//        try {
-//            equipCardInfoService.syncEquipCardInfo();
-//            logger.info("【定时任务】推送seeyon卡片信息到znyy完成");
-//        } catch (Exception e) {
-//            logger.error("【定时任务】推送seeyon卡片信息到znyy失败", e);
-//        }
-//
-//        logger.info("【定时任务】开始推送seeyon设备折旧记录到znyy...");
-//        try {
-//            equipDeprRecordService.syncEquipDeprRecord();
-//            logger.info("【定时任务】推送设备折旧记录到znyy完成");
-//        } catch (Exception e) {
-//            logger.error("【定时任务】推送设备折旧记录到znyy失败", e);
-//            throw e;
-//        }
-//
-//        logger.info("【定时任务】开始推送seeyon设备报废记录到znyy...");
-//        try {
-//            equipDiscardedRecordService.syncEquipDiscardedRecord();
-//            logger.info("【定时任务】推送seeyon设备报废记录到znyy完成");
-//        } catch (Exception e) {
-//            logger.error("【定时任务】推送seeyon设备报废记录到znyy失败", e);
-//            throw e;
-//        }
-//
-//        logger.info("【定时任务】开始推送设备登记表————车辆登记数据到znyy...");
-//        try {
-//            equipRegInfoService_CL.syncEquipRegInfo();
-//            logger.info("【定时任务】推送设备登记表————车辆登记数据到znyy完成");
-//        } catch (Exception e) {
-//            logger.error("【定时任务】推送设备登记表————车辆登记数据到znyy失败", e);
-//            throw e;
-//        }
-//
-//        logger.info("【定时任务】开始推送设备登记表————家居设备数据到znyy...");
-//        try {
-//            equipRegInfoService_JJ.syncEquipRegInfoFromSeeyonToZNYY();
-//            logger.info("【定时任务】推送设备登记表————家居设备数据到znyy完成");
-//        } catch (Exception e) {
-//            logger.error("【定时任务】推送设备登记表————家居设备数据到znyy失败", e);
-//            throw e;
-//        }
-//
-//        logger.info("【定时任务】开始推送设备登记表————房屋土地数据到znyy...");
-//        try {
-//            equipRegInfoService_TD.syncEquipRegInfo();
-//            logger.info("【定时任务】推送设备登记表————房屋土地数据到znyy完成");
-//        } catch (Exception e) {
-//            logger.error("【定时任务】推送设备登记表————房屋土地数据到znyy失败", e);
-//            throw e;
-//        }
-//
-//        logger.info("【定时任务】开始推送设备登记表————网络设备数据到znyy...");
-//        try {
-//            equipRegInfoService_WL.syncEquipRegInfo();
-//            logger.info("【定时任务】推送设备登记表————网络设备数据到znyy完成");
-//        } catch (Exception e) {
-//            logger.error("【定时任务】推送设备登记表————网络设备数据到znyy失败", e);
-//            throw e;
-//        }
-//
-//        logger.info("【定时任务】开始推送设备登记表————无形资产数据到znyy...");
-//        try {
-//            equipRegInfoService_WX.syncEquipRegInfo();
-//            logger.info("【定时任务】推送设备登记表————无形资产数据到znyy完成");
-//        } catch (Exception e) {
-//            logger.error("【定时任务】推送设备登记表————无形资产数据到znyy失败", e);
-//            throw e;
-//        }
-//
-//        logger.info("【定时任务】开始推送设备登记表————医疗设备数据到znyy...");
-//        try {
-//            equipRegInfoService_YL.syncEquipRegInfo();
-//            logger.info("【定时任务】推送设备登记表————医疗设备数据到znyy完成");
-//        } catch (Exception e) {
-//            logger.error("【定时任务】推送设备登记表————医疗设备数据到znyy失败", e);
-//            throw e;
-//        }
+        logger.info("【定时任务】开始推送seeyon卡片信息到znyy...");
+        try {
+            equipCardInfoService.syncEquipCardInfo();
+            logger.info("【定时任务】推送seeyon卡片信息到znyy完成");
+        } catch (Exception e) {
+            logger.error("【定时任务】推送seeyon卡片信息到znyy失败", e);
+        }
+
+        logger.info("【定时任务】开始推送seeyon设备折旧记录到znyy...");
+        try {
+            equipDeprRecordService.syncEquipDeprRecord();
+            logger.info("【定时任务】推送设备折旧记录到znyy完成");
+        } catch (Exception e) {
+            logger.error("【定时任务】推送设备折旧记录到znyy失败", e);
+            throw e;
+        }
+
+        logger.info("【定时任务】开始推送seeyon设备报废记录到znyy...");
+        try {
+            equipDiscardedRecordService.syncEquipDiscardedRecord();
+            logger.info("【定时任务】推送seeyon设备报废记录到znyy完成");
+        } catch (Exception e) {
+            logger.error("【定时任务】推送seeyon设备报废记录到znyy失败", e);
+            throw e;
+        }
+
+        logger.info("【定时任务】开始推送设备登记表————车辆登记数据到znyy...");
+        try {
+            equipRegInfoService_CL.syncEquipRegInfo();
+            logger.info("【定时任务】推送设备登记表————车辆登记数据到znyy完成");
+        } catch (Exception e) {
+            logger.error("【定时任务】推送设备登记表————车辆登记数据到znyy失败", e);
+            throw e;
+        }
+
+        logger.info("【定时任务】开始推送设备登记表————家居设备数据到znyy...");
+        try {
+            equipRegInfoService_JJ.syncEquipRegInfoFromSeeyonToZNYY();
+            logger.info("【定时任务】推送设备登记表————家居设备数据到znyy完成");
+        } catch (Exception e) {
+            logger.error("【定时任务】推送设备登记表————家居设备数据到znyy失败", e);
+            throw e;
+        }
+
+        logger.info("【定时任务】开始推送设备登记表————房屋土地数据到znyy...");
+        try {
+            equipRegInfoService_TD.syncEquipRegInfo();
+            logger.info("【定时任务】推送设备登记表————房屋土地数据到znyy完成");
+        } catch (Exception e) {
+            logger.error("【定时任务】推送设备登记表————房屋土地数据到znyy失败", e);
+            throw e;
+        }
+
+        logger.info("【定时任务】开始推送设备登记表————网络设备数据到znyy...");
+        try {
+            equipRegInfoService_WL.syncEquipRegInfo();
+            logger.info("【定时任务】推送设备登记表————网络设备数据到znyy完成");
+        } catch (Exception e) {
+            logger.error("【定时任务】推送设备登记表————网络设备数据到znyy失败", e);
+            throw e;
+        }
+
+        logger.info("【定时任务】开始推送设备登记表————无形资产数据到znyy...");
+        try {
+            equipRegInfoService_WX.syncEquipRegInfo();
+            logger.info("【定时任务】推送设备登记表————无形资产数据到znyy完成");
+        } catch (Exception e) {
+            logger.error("【定时任务】推送设备登记表————无形资产数据到znyy失败", e);
+            throw e;
+        }
+
+        logger.info("【定时任务】开始推送设备登记表————医疗设备数据到znyy...");
+        try {
+            equipRegInfoService_YL.syncEquipRegInfo();
+            logger.info("【定时任务】推送设备登记表————医疗设备数据到znyy完成");
+        } catch (Exception e) {
+            logger.error("【定时任务】推送设备登记表————医疗设备数据到znyy失败", e);
+            throw e;
+        }
     }
 
 }
