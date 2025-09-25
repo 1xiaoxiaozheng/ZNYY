@@ -14,4 +14,10 @@ public class OursEnumValue {
 
     // 目标查询字段：对应 SQL 中的 display
     private String display;
+
+    // 添加code字段
+    private String code;
+
+    // 添加enum_id字段
+    private String enumId;
 }

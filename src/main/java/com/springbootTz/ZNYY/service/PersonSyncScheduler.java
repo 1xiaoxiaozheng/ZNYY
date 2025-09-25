@@ -236,12 +236,12 @@ public class PersonSyncScheduler implements CommandLineRunner {
         // logger.error("人员基本信息同步失败", e);
         // }
         //
-        // try {
-        // logger.info("开始同步教育信息");
-        // personSyncService.syncEducationInfoAll();
-        // } catch (Exception e) {
-        // logger.error("教育信息同步失败", e);
-        // }
+         try {
+         logger.info("开始同步教育信息");
+         personSyncService.syncEducationInfoAll();
+         } catch (Exception e) {
+         logger.error("教育信息同步失败", e);
+         }
         //
         // try {
         // logger.info("开始同步工作履历信息");
@@ -250,12 +250,12 @@ public class PersonSyncScheduler implements CommandLineRunner {
         // logger.error("工作履历信息同步失败", e);
         // }
 
-        try {
-            logger.info("开始同步人员岗位聘任信息");
-            personSyncService.syncEmpTypeInfoAll();
-        } catch (Exception e) {
-            logger.error("人员岗位聘任信息同步失败", e);
-        }
+//        try {
+//            logger.info("开始同步人员岗位聘任信息");
+//            personSyncService.syncEmpTypeInfoAll();
+//        } catch (Exception e) {
+//            logger.error("人员岗位聘任信息同步失败", e);
+//        }
 
         // try {
         // logger.info("开始同步高层次人才科技奖励信息");

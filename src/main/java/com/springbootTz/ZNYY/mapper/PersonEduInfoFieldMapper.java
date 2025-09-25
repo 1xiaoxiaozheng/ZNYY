@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import com.springbootTz.ZNYY.service.OursEnumValueService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,8 @@ public class PersonEduInfoFieldMapper {
     private PostgresPersonMapper postgresPersonMapper;
     @Autowired
     private PostgresPersonDetailEducationExperienceMapper detailEducationExperienceMapper;
+    @Autowired
+    private OursEnumValueService oursEnumValueService;
 
     // 直接定义常量，避免配置文件中文乱码
     private static final String SYS_PRDR_CODE = "FJZZZYKJYXGS";
@@ -89,6 +92,7 @@ public class PersonEduInfoFieldMapper {
                     return " ";
                 }
                 return orgCodeConcatTool.concatCodeAndParams(orgName, SYS_PRDR_CODE, p.getId());
+//                return uscid+SYS_PRDR_CODE+p.getId();
             }));
             put("ORG_NAME", toSafeString(p -> {
                 String orgName = getOrgNameByPersonId(p.getPersonId());
@@ -99,7 +103,7 @@ public class PersonEduInfoFieldMapper {
                 if (orgName == null || orgName.isEmpty()) {
                     return " ";
                 }
-                String uscid = orgCodeQueryTool.getCodeByDisplay(orgName);
+                String uscid = oursEnumValueService.getCodeByDisplay(orgName);
                 return uscid == null ? " " : uscid;
             }));
             put("UPLOAD_TIME",
@@ -121,13 +125,51 @@ public class PersonEduInfoFieldMapper {
             put("GRADUAT_DATE", toSafeString(p -> p.getEndTime() == null ? " " : p.getEndTime()));
             put("EDU_BACKGROUND_CODE", toSafeString(p -> p.getEducationType() == null ? " " : p.getEducationType()));
             put("EDU_BACKGROUND_NAME", toSafeString(p -> p.getEducationType() == null ? " "
-                    : enumValueQueryTool.getDisplayByEnumNameAndValue("学历类型枚举", p.getEducationType())));
+                    : oursEnumValueService.getDisplayById(p.getEducationType())));
             put("DEGREE_CODE", toSafeString(p -> p.getDegreeType() == null ? " " : p.getDegreeType()));
-            put("DEGREE_NAME", toSafeString(p -> p.getDegreeType() == null ? " "
-                    : enumValueQueryTool.getDisplayByEnumNameAndValue("学位类型枚举", p.getDegreeType())));
+            //如果枚举值是“未取得学位”——无
+            put("DEGREE_NAME", toSafeString(p -> {
+                String degreeType = p.getDegreeType();
+                if (degreeType == null || degreeType.isEmpty()) {
+                    return " ";
+                }
+                String degreeName = oursEnumValueService.getDisplayById(degreeType);
+                if (degreeName == null || degreeName.isEmpty()) {
+                    return " ";
+                }
+                if (degreeName.equals("未取得学位")) {
+                    return "无";
+                }
+                return degreeName;
+            }));
+
+//            put("DEGREE_NAME", toSafeString(p -> p.getDegreeType() == null ? " "
+//                    : oursEnumValueService.getDisplayById(p.getDegreeType())));
             put("EDU_TYPE_CODE", toSafeString(p -> p.getLearnType() == null ? " " : p.getLearnType()));
-            put("EDU_TYPE_NAME", toSafeString(p -> p.getLearnType() == null ? " "
-                    : enumValueQueryTool.getDisplayByEnumNameAndValue("学习类型枚举", p.getLearnType())));
+            //获取枚举值名称并对比成三医网需要的，全日制——普通全日制，成人教育——成人脱产，远程教育——网络教育，自学考试——自学考试和学历文凭考试，其他非全日制——其他
+            put("EDU_TYPE_NAME", toSafeString(p -> {
+                String eduType = p.getLearnType();
+                if (eduType == null || eduType.isEmpty()) {
+                    return " ";
+                }
+                String eduTypeName = oursEnumValueService.getDisplayById(eduType);
+                if (eduTypeName == null || eduTypeName.isEmpty()) {
+                    return " ";
+                }
+                if (eduTypeName.equals("全日制")) {
+                    return "普通全日制";
+                } else if (eduTypeName.equals("成人教育")) {
+                    return "成人脱产";
+                } else if (eduTypeName.equals("远程教育")) {
+                    return "网络教育";
+                } else if (eduTypeName.equals("自学考试")) {
+                    return "自学考试和学历文凭考试";
+                } else {
+                    return "其他非全日制";
+                }
+            }));
+
+
             put("MAJOR_CODE", toSafeString(p -> p.getMajor() == null ? " " : p.getMajor()));
             put("MAJOR_NAME", toSafeString(p -> p.getMajor() == null ? " " : p.getMajor()));
             put("DATA_CLCT_PRDR_NAME", toSafeString(p -> DATA_CLCT_PRDR_NAME));
@@ -139,7 +181,7 @@ public class PersonEduInfoFieldMapper {
             }));
             put("DELETED_TIME", toSafeString(p -> " "));
             put("VARIANT", toSafeString(p -> {
-                String variant = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_wdN4kD3G");
+                String variant = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_l5u6zqdd");
                 return variant == null ? " " : variant;
             }));
         }

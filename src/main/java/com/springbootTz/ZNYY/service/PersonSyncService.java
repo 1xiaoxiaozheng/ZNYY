@@ -239,32 +239,137 @@ public class PersonSyncService {
      * 全量同步Postgres教育经历到Oracle，original_id存在则update，不存在则insert
      * 只同步USCID有值且为指定机构代码的数据
      */
+    // public void syncEducationInfoAll() {
+    // List<PostgresPersonDetailEducationExperience> pgList =
+    // postgresPersonDetailEducationExperienceMapper
+    // .selectList(null);
+    // int processCount = 0;//总共处理记录数
+    // int updateCount = 0;//更新记录数
+    // int insertCount = 0;//插入记录数
+    //
+    // for (PostgresPersonDetailEducationExperience pg : pgList) {
+    //
+    // Map<String, Function<PostgresPersonDetailEducationExperience, String>>
+    // mapping = personEduInfoFieldMapper.FIELD_MAPPING;
+    // OraclePersonEduInfo oracleEdu = new OraclePersonEduInfo();
+    // for (Map.Entry<String, Function<PostgresPersonDetailEducationExperience,
+    // String>> entry : mapping
+    // .entrySet()) {
+    // personEduInfoFieldMapper.setOracleField(oracleEdu, entry.getKey(),
+    // entry.getValue().apply(pg));
+    // }
+    // String uscid = oracleEdu.getUscid();
+    // if (uscid == null || uscid.trim().isEmpty()) {
+    // continue; // USCID 为空不推送
+    // }
+    // QueryWrapper<OraclePersonEduInfo> qw = new QueryWrapper<>();
+    // qw.eq("ORIGINAL_ID", oracleEdu.getOriginalId());
+    // OraclePersonEduInfo exist = oraclePersonEduInfoMapper.selectOne(qw);
+    // if (exist != null) {
+    // oracleEdu.setRid(exist.getRid());
+    // oraclePersonEduInfoMapper.updateById(oracleEdu);
+    // } else {
+    // oraclePersonEduInfoMapper.insert(oracleEdu);
+    // }
+    // }
+    // }
     public void syncEducationInfoAll() {
-        List<PostgresPersonDetailEducationExperience> pgList = postgresPersonDetailEducationExperienceMapper
-                .selectList(null);
-        for (PostgresPersonDetailEducationExperience pg : pgList) {
-            Map<String, Function<PostgresPersonDetailEducationExperience, String>> mapping = personEduInfoFieldMapper.FIELD_MAPPING;
-            OraclePersonEduInfo oracleEdu = new OraclePersonEduInfo();
-            for (Map.Entry<String, Function<PostgresPersonDetailEducationExperience, String>> entry : mapping
-                    .entrySet()) {
-                personEduInfoFieldMapper.setOracleField(oracleEdu, entry.getKey(), entry.getValue().apply(pg));
+        // 2. 同步开始日志：记录任务启动和初始状态
+        logger.info("=== 教育经历数据同步任务开始 ===");
+
+        List<PostgresPersonDetailEducationExperience> pgList = null;
+        try {
+            // 3. 查询PostgreSQL数据日志：记录查询操作和结果数量
+            logger.debug("正在从PostgreSQL查询教育经历数据...");
+            pgList = postgresPersonDetailEducationExperienceMapper.selectList(null);
+            logger.info("PostgreSQL查询完成，共获取到[{}]条教育经历记录",
+                    (pgList == null ? 0 : pgList.size()));
+
+            int processCount = 0; // 总共处理记录数
+            int updateCount = 0; // 更新记录数
+            int insertCount = 0; // 插入记录数
+            int skipCount = 0; // 跳过记录数（如USCID为空）
+
+            if (pgList == null || pgList.isEmpty()) {
+                logger.info("无教育经历记录需要处理，同步任务提前结束");
+                return;
             }
-            String uscid = oracleEdu.getUscid();
-            if (uscid == null || uscid.trim().isEmpty()) {
-                continue; // USCID 为空不推送
+
+            // 4. 循环处理每条记录：添加单条记录的上下文日志
+            for (PostgresPersonDetailEducationExperience pg : pgList) {
+                processCount++;
+                // 记录当前处理的记录标识（用pg的主键，如id，需确保pg有getId()方法）
+                String currentPgId = pg.getId() != null ? pg.getId().toString() : "未知ID";
+                logger.debug("正在处理第[{}]条记录，PostgreSQL记录ID: [{}]", processCount, currentPgId);
+
+                Map<String, Function<PostgresPersonDetailEducationExperience, String>> mapping = null;
+                OraclePersonEduInfo oracleEdu = new OraclePersonEduInfo();
+                try {
+                    // 5. 字段映射日志：记录映射开始和关键配置
+                    mapping = personEduInfoFieldMapper.FIELD_MAPPING;
+                    logger.debug("当前记录字段映射配置：共[{}]个字段需要映射", mapping.size());
+
+                    for (Map.Entry<String, Function<PostgresPersonDetailEducationExperience, String>> entry : mapping
+                            .entrySet()) {
+                        String oracleField = entry.getKey(); // Oracle表字段名
+                        String pgValue = entry.getValue().apply(pg); // PostgreSQL映射值
+                        // 调试级日志：记录每个字段的映射关系（可选，数据敏感时可注释）
+                        logger.trace("字段映射 - Oracle字段[{}]：PostgreSQL值[{}]", oracleField, pgValue);
+
+                        personEduInfoFieldMapper.setOracleField(oracleEdu, oracleField, pgValue);
+                    }
+                    logger.debug("第[{}]条记录字段映射完成，Oracle记录ORIGINAL_ID: [{}]",
+                            processCount, oracleEdu.getOriginalId());
+
+                    // 6. USCID过滤日志：记录过滤原因
+                    String uscid = oracleEdu.getUscid();
+                    logger.trace("第[{}]条记录USCID值：[{}]", processCount, uscid);
+                    if (uscid == null || uscid.trim().isEmpty()) {
+                        skipCount++;
+                        logger.debug("第[{}]条记录跳过处理：USCID为空（PostgreSQL记录ID: [{}]）",
+                                processCount, currentPgId);
+                        continue; // USCID为空不推送
+                    }
+
+                    // 7. Oracle查询日志：记录查询条件
+                    QueryWrapper<OraclePersonEduInfo> qw = new QueryWrapper<>();
+                    qw.eq("ORIGINAL_ID", oracleEdu.getOriginalId());
+                    logger.debug("第[{}]条记录：查询Oracle是否存在，条件ORIGINAL_ID: [{}]",
+                            processCount, oracleEdu.getOriginalId());
+
+                    OraclePersonEduInfo exist = oraclePersonEduInfoMapper.selectOne(qw);
+                    if (exist != null) {
+                        // 8. 更新操作日志：记录更新的关键标识
+                        oracleEdu.setRid(exist.getRid());
+                        oraclePersonEduInfoMapper.updateById(oracleEdu);
+                        updateCount++;
+                        logger.info("第[{}]条记录更新成功 - Oracle RID: [{}], ORIGINAL_ID: [{}]",
+                                processCount, exist.getRid(), oracleEdu.getOriginalId());
+                    } else {
+                        // 9. 插入操作日志：记录插入的关键标识
+                        oraclePersonEduInfoMapper.insert(oracleEdu);
+                        insertCount++;
+                        logger.info("第[{}]条记录插入成功 - Oracle ORIGINAL_ID: [{}], USCID: [{}]",
+                                processCount, oracleEdu.getOriginalId(), uscid);
+                    }
+
+                } catch (Exception e) {
+                    // 10. 异常日志：记录详细错误信息和上下文（便于排查）
+                    logger.error("第[{}]条记录处理失败（PostgreSQL记录ID: [{}]），错误信息：{}",
+                            processCount, currentPgId, e.getMessage(), e);
+                    skipCount++; // 异常记录计入跳过数
+                }
             }
-            // if (!"12352230490632333M".equals(uscid)) {
-            // continue; // 只推送指定 USCID
-            // }
-            QueryWrapper<OraclePersonEduInfo> qw = new QueryWrapper<>();
-            qw.eq("ORIGINAL_ID", oracleEdu.getOriginalId());
-            OraclePersonEduInfo exist = oraclePersonEduInfoMapper.selectOne(qw);
-            if (exist != null) {
-                oracleEdu.setRid(exist.getRid());
-                oraclePersonEduInfoMapper.updateById(oracleEdu);
-            } else {
-                oraclePersonEduInfoMapper.insert(oracleEdu);
-            }
+
+            // 11. 同步结束统计日志：清晰展示核心指标
+            logger.info("=== 教育经历数据同步任务结束 ===");
+            logger.info("同步统计：总查询记录数[{}]，总处理记录数[{}]，更新记录数[{}]，插入记录数[{}]，跳过记录数[{}]",
+                    pgList.size(), processCount, updateCount, insertCount, skipCount);
+
+        } catch (Exception e) {
+            // 12. 全局异常日志：捕获任务级别的严重异常
+            logger.error("教育经历数据同步任务整体失败，错误信息：{}", e.getMessage(), e);
+            throw e; // 若需要上层处理，可抛出异常；否则可仅记录日志
         }
     }
 
@@ -342,10 +447,10 @@ public class PersonSyncService {
                         logger.debug("跳过空USCID记录，ID: {}", pg.getId());
                         continue;
                     }
-                    if (!"12352230490632333M".equals(uscid.trim())) {
-                        logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
-                        continue;
-                    }
+//                    if (!"12352230490632333M".equals(uscid.trim())) {
+//                        logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
+//                        continue;
+//                    }
 
                     logger.info("准备同步记录到Oracle，ORIGINAL_ID: {}, USCID: {}", fieldValues.get("ORIGINAL_ID"), uscid);
 
@@ -422,13 +527,14 @@ public class PersonSyncService {
             int insertCount = 0;
 
             for (PostgresPersonDetailCustom pg : pgList) {
-//                logger.debug("正在处理第{}条记录，ID: {}", ++processCount, pg.getId());
+                // logger.debug("正在处理第{}条记录，ID: {}", ++processCount, pg.getId());
 
                 Map<String, Function<PostgresPersonDetailCustom, String>> mapping = personEmpFieldMapper.FIELD_MAPPING;
-//                logger.debug("字段映射: {}", mapping);
-//                for (Map.Entry<String, Function<PostgresPersonDetailCustom, String>> entry : mapping.entrySet()) {
-//                    logger.info("Oracle字段: {} -> PostgreSQL字段映射", entry.getKey());
-//                }
+                // logger.debug("字段映射: {}", mapping);
+                // for (Map.Entry<String, Function<PostgresPersonDetailCustom, String>> entry :
+                // mapping.entrySet()) {
+                // logger.info("Oracle字段: {} -> PostgreSQL字段映射", entry.getKey());
+                // }
                 OraclePersonEmpType oracleEmpType = new OraclePersonEmpType();
 
                 try {
@@ -437,7 +543,7 @@ public class PersonSyncService {
                         personEmpFieldMapper.setOracleField(oracleEmpType, entry.getKey(), entry.getValue().apply(pg));
                     }
                 } catch (Exception e) {
-                     logger.error("字段映射失败，记录ID: {}, 错误: {}", pg.getId(), e.getMessage(), e);
+                    logger.error("字段映射失败，记录ID: {}, 错误: {}", pg.getId(), e.getMessage(), e);
                     continue;
                 }
 
@@ -890,10 +996,10 @@ public class PersonSyncService {
                         // logger.debug("跳过空USCID记录，ID: {}", pg.getId());
                         continue;
                     }
-                    if (!"12352230490632333M".equals(uscid.trim())) {
-                        // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
-                        continue;
-                    }
+//                    if (!"12352230490632333M".equals(uscid.trim())) {
+//                        // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
+//                        continue;
+//                    }
 
                     // logger.info("准备同步记录到Oracle，ORIGINAL_ID: {}, USCID: {}",
                     // fieldValues.get("ORIGINAL_ID"), uscid);
@@ -1009,10 +1115,10 @@ public class PersonSyncService {
                         // logger.debug("跳过空USCID记录，ID: {}", pg.getId());
                         continue;
                     }
-                    if (!"12352230490632333M".equals(uscid.trim())) {
-                        // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
-                        continue;
-                    }
+//                    if (!"12352230490632333M".equals(uscid.trim())) {
+//                        // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
+//                        continue;
+//                    }
 
                     // logger.info("准备同步记录到Oracle，ORIGINAL_ID: {}, USCID: {}",
                     // fieldValues.get("ORIGINAL_ID"), uscid);
@@ -1132,10 +1238,10 @@ public class PersonSyncService {
                         // logger.debug("跳过空USCID记录，ID: {}", pg.getId());
                         continue;
                     }
-                    if (!"12352230490632333M".equals(uscid.trim())) {
-                        // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
-                        continue;
-                    }
+//                    if (!"12352230490632333M".equals(uscid.trim())) {
+//                        // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
+//                        continue;
+//                    }
 
                     // logger.info("准备同步记录到Oracle，ORIGINAL_ID: {}, USCID: {}",
                     // fieldValues.get("ORIGINAL_ID"), uscid);
@@ -1255,10 +1361,10 @@ public class PersonSyncService {
                         // logger.debug("跳过空USCID记录，ID: {}", pg.getId());
                         continue;
                     }
-                    if (!"12352230490632333M".equals(uscid.trim())) {
-                        // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
-                        continue;
-                    }
+//                    if (!"12352230490632333M".equals(uscid.trim())) {
+//                        // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
+//                        continue;
+//                    }
 
                     // logger.info("准备同步记录到Oracle，ORIGINAL_ID: {}, USCID: {}",
                     // fieldValues.get("ORIGINAL_ID"), uscid);
@@ -1379,10 +1485,10 @@ public class PersonSyncService {
                         // logger.debug("跳过空USCID记录，ID: {}", pg.getId());
                         continue;
                     }
-                    if (!"12352230490632333M".equals(uscid.trim())) {
-                        // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
-                        continue;
-                    }
+//                    if (!"12352230490632333M".equals(uscid.trim())) {
+//                        // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
+//                        continue;
+//                    }
 
                     // logger.info("准备同步记录到Oracle，ORIGINAL_ID: {}, USCID: {}",
                     // fieldValues.get("ORIGINAL_ID"), uscid);
@@ -1481,10 +1587,10 @@ public class PersonSyncService {
                         // logger.debug("跳过空USCID记录，ID: {}", pg.getId());
                         continue;
                     }
-                    if (!"12352230490632333M".equals(uscid.trim())) {
-                        // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
-                        continue;
-                    }
+//                    if (!"12352230490632333M".equals(uscid.trim())) {
+//                        // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
+//                        continue;
+//                    }
 
                     // logger.info("准备同步记录到Oracle，ORIGINAL_ID: {}, USCID: {}",
                     // fieldValues.get("ORIGINAL_ID"), uscid);
@@ -1605,10 +1711,10 @@ public class PersonSyncService {
                         // logger.debug("跳过空USCID记录，ID: {}", pg.getId());
                         continue;
                     }
-                    if (!"12352230490632333M".equals(uscid.trim())) {
-                        // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
-                        continue;
-                    }
+//                    if (!"12352230490632333M".equals(uscid.trim())) {
+//                        // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
+//                        continue;
+//                    }
 
                     // logger.info("准备同步记录到Oracle，ORIGINAL_ID: {}, USCID: {}",
                     // fieldValues.get("ORIGINAL_ID"), uscid);
@@ -1729,10 +1835,10 @@ public class PersonSyncService {
                         // logger.debug("跳过空USCID记录，ID: {}", pg.getId());
                         continue;
                     }
-                    if (!"12352230490632333M".equals(uscid.trim())) {
-                        // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
-                        continue;
-                    }
+//                    if (!"12352230490632333M".equals(uscid.trim())) {
+//                        // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
+//                        continue;
+//                    }
 
                     // logger.info("准备同步记录到Oracle，ORIGINAL_ID: {}, USCID: {}",
                     // fieldValues.get("ORIGINAL_ID"), uscid);

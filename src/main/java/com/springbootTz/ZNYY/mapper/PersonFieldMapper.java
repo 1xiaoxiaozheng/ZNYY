@@ -76,10 +76,6 @@ public class PersonFieldMapper {
                                 if (orgName == null || orgName.isEmpty()) {
                                         return null;
                                 }
-                                String uscid = orgCodeQueryTool.getCodeByDisplay(orgName);
-                                if (uscid == null || uscid.isEmpty()) {
-                                        return null;
-                                }
                                 return orgCodeConcatTool.concatCodeAndParams(orgName, SYS_PRDR_CODE, p.getId());
                         }));
                         put("ORG_NAME", toSafeString(p -> departmentQueryTool.getOrgNameByDeptId(p.getDeptId())));

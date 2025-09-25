@@ -60,19 +60,19 @@ public class PostgresPersonDetailEducationExperience implements Serializable {
     private Integer sync2basic;
 
     /** 学位类型 */
-    private Integer degreeType;
+    private String degreeType;
 
     /** 备注 */
     private String des;
 
     /** 学历类型 */
-    private Integer educationType;
+    private String educationType;
 
     /** 结束时间 */
     private Timestamp endTime;
 
     /** 学习类型 */
-    private Integer learnType;
+    private String learnType;
 
     /** 专业 */
     private String major;
@@ -203,11 +203,11 @@ public class PostgresPersonDetailEducationExperience implements Serializable {
         this.sync2basic = sync2basic;
     }
 
-    public Integer getDegreeType() {
+    public String getDegreeType() {
         return degreeType;
     }
 
-    public void setDegreeType(Integer degreeType) {
+    public void setDegreeType(String degreeType) {
         this.degreeType = degreeType;
     }
 
@@ -219,11 +219,11 @@ public class PostgresPersonDetailEducationExperience implements Serializable {
         this.des = des;
     }
 
-    public Integer getEducationType() {
+    public String getEducationType() {
         return educationType;
     }
 
-    public void setEducationType(Integer educationType) {
+    public void setEducationType(String educationType) {
         this.educationType = educationType;
     }
 
@@ -235,11 +235,11 @@ public class PostgresPersonDetailEducationExperience implements Serializable {
         this.endTime = endTime;
     }
 
-    public Integer getLearnType() {
+    public String getLearnType() {
         return learnType;
     }
 
-    public void setLearnType(Integer learnType) {
+    public void setLearnType(String learnType) {
         this.learnType = learnType;
     }
 

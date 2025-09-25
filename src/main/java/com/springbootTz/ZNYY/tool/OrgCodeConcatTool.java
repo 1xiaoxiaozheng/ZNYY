@@ -1,5 +1,7 @@
 package com.springbootTz.ZNYY.tool;
 
+import com.springbootTz.ZNYY.entity.OursEnumValue;
+import com.springbootTz.ZNYY.service.OursEnumValueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -8,6 +10,9 @@ public class OrgCodeConcatTool {
 
     @Autowired
     private OrgCodeQueryTool orgCodeQueryTool;
+
+    @Autowired
+    private OursEnumValueService oursEnumValueService;
 
     /**
      * 根据org_name获取code，并拼接code+sys_prdr+code+original_id
@@ -18,7 +23,8 @@ public class OrgCodeConcatTool {
      * @return 拼接后的字符串
      */
     public String concatCodeAndParams(String org_name, String sys_prdr, String original_id) {
-        String code = orgCodeQueryTool.getCodeByDisplay(org_name);
+        //String code = orgCodeQueryTool.getCodeByDisplay(org_name);
+        String code = oursEnumValueService.getCodeByDisplay(org_name);
         if (code == null) {
             return "";
         }
