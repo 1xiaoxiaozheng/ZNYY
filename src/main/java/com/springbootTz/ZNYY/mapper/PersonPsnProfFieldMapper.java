@@ -49,6 +49,7 @@ public class PersonPsnProfFieldMapper {
     @Autowired
     private EnumValueQueryTool enumValueQueryTool;
 
+
     @Autowired
     private OursEnumValueService oursEnumValueService;
 
@@ -124,38 +125,38 @@ public class PersonPsnProfFieldMapper {
                 return v == null ? " " : v;
             }));
             put("PROFTECHTTL_CERTIFICATE_CODE", toSafeString(p -> {
-                String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_8kWse64O");
+                String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_LTbb9qSY");
                 return v == null ? " " : v;
             }));
             put("PROFTECHTTL_CERTIFICATE_NAME", toSafeString(p -> {
-                String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_8kWse64O");
-                return v == null ? " " : v;
+                String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_LTbb9qSY");
+                return v == null ? " " : oursEnumValueService.getDisplayById(v);
             }));
 
             put("MAJOR_CODE", toSafeString(p -> {
-                String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_E3lUuJ5q");
+                String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_03iE1b0K");
                 return v == null ? " " : v;
             }));
             put("MAJOR_NAME", toSafeString(p -> {
-                String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_E3lUuJ5q");
-                return v == null ? " " : v;
+                String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_03iE1b0K");
+                return v == null ? " " : oursEnumValueService.getDisplayById(v);
             }));
 
             put("SKILL_GRADE_CODE", toSafeString(p -> {
-                String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_nV1qvUMb");
+                String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_jEn1RsXW");
                 return v == null ? " " : v;
             }));
             put("SKILL_GRADE_NAME", toSafeString(p -> {
-                String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_nV1qvUMb");
+                String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_jEn1RsXW");
                 return v == null ? " " : oursEnumValueService.getDisplayById(v);
             }));
 
             put("GET_DATE", toSafeString(p -> {
-                String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_JaN9bnJf");
+                String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_3hp4V3sp");
                 return v == null ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) : v;
             }));
             put("EXPYSTARTTIME", toSafeString(p -> {
-                String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_c5zbuL20");
+                String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_3hp4V3sp");
                 return v == null ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) : v;
             }));
             put("CERTIFICATE_MECHANISM", toSafeString(p -> {

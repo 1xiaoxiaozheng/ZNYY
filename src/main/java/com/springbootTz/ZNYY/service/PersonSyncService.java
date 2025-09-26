@@ -1014,7 +1014,7 @@ public class PersonSyncService {
         try {
             // 先从PostgreSQL获取detail_id等于指定值的记录的id列表
             QueryWrapper<PostgresPersonDetailCustom> pgQueryWrapper = new QueryWrapper<>();
-            pgQueryWrapper.eq("detail_id", "person_detail_kX9wywgy");
+            pgQueryWrapper.eq("detail_id", "person_detail_6oerH62E");
             List<PostgresPersonDetailCustom> toDeleteList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
             List<String> toDeleteIds = toDeleteList.stream()
                     .map(PostgresPersonDetailCustom::getId)
@@ -1042,7 +1042,7 @@ public class PersonSyncService {
                 // logger.debug("正在处理第{}条记录，ID: {}", ++processCount, pg.getId());
 
                 // 检查detail_id是否符合条件
-                if (!"person_detail_kX9wywgy".equals(pg.getDetailId())) {
+                if (!"person_detail_6oerH62E".equals(pg.getDetailId())) {
                     // logger.debug("跳过非目标detail_id记录，当前detail_id: {}, ID: {}", pg.getDetailId(),
                     // pg.getId());
                     continue;
