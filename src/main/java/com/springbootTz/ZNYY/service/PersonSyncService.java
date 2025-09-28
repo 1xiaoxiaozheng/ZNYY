@@ -413,10 +413,10 @@ public class PersonSyncService {
                         logger.debug("跳过空USCID记录，ID: {}", pg.getId());
                         continue;
                     }
-//                    if (!"12352230490632333M".equals(uscid.trim())) {
-//                        logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
-//                        continue;
-//                    }
+                    // if (!"12352230490632333M".equals(uscid.trim())) {
+                    // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
+                    // continue;
+                    // }
 
                     logger.info("准备同步记录到Oracle，ORIGINAL_ID: {}, USCID: {}", fieldValues.get("ORIGINAL_ID"), uscid);
 
@@ -962,10 +962,10 @@ public class PersonSyncService {
                         // logger.debug("跳过空USCID记录，ID: {}", pg.getId());
                         continue;
                     }
-//                    if (!"12352230490632333M".equals(uscid.trim())) {
-//                        // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
-//                        continue;
-//                    }
+                    // if (!"12352230490632333M".equals(uscid.trim())) {
+                    // // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
+                    // continue;
+                    // }
 
                     // logger.info("准备同步记录到Oracle，ORIGINAL_ID: {}, USCID: {}",
                     // fieldValues.get("ORIGINAL_ID"), uscid);
@@ -1081,10 +1081,10 @@ public class PersonSyncService {
                         // logger.debug("跳过空USCID记录，ID: {}", pg.getId());
                         continue;
                     }
-//                    if (!"12352230490632333M".equals(uscid.trim())) {
-//                        // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
-//                        continue;
-//                    }
+                    // if (!"12352230490632333M".equals(uscid.trim())) {
+                    // // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
+                    // continue;
+                    // }
 
                     // logger.info("准备同步记录到Oracle，ORIGINAL_ID: {}, USCID: {}",
                     // fieldValues.get("ORIGINAL_ID"), uscid);
@@ -1204,10 +1204,10 @@ public class PersonSyncService {
                         // logger.debug("跳过空USCID记录，ID: {}", pg.getId());
                         continue;
                     }
-//                    if (!"12352230490632333M".equals(uscid.trim())) {
-//                        // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
-//                        continue;
-//                    }
+                    // if (!"12352230490632333M".equals(uscid.trim())) {
+                    // // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
+                    // continue;
+                    // }
 
                     // logger.info("准备同步记录到Oracle，ORIGINAL_ID: {}, USCID: {}",
                     // fieldValues.get("ORIGINAL_ID"), uscid);
@@ -1327,10 +1327,10 @@ public class PersonSyncService {
                         // logger.debug("跳过空USCID记录，ID: {}", pg.getId());
                         continue;
                     }
-//                    if (!"12352230490632333M".equals(uscid.trim())) {
-//                        // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
-//                        continue;
-//                    }
+                    // if (!"12352230490632333M".equals(uscid.trim())) {
+                    // // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
+                    // continue;
+                    // }
 
                     // logger.info("准备同步记录到Oracle，ORIGINAL_ID: {}, USCID: {}",
                     // fieldValues.get("ORIGINAL_ID"), uscid);
@@ -1451,10 +1451,10 @@ public class PersonSyncService {
                         // logger.debug("跳过空USCID记录，ID: {}", pg.getId());
                         continue;
                     }
-//                    if (!"12352230490632333M".equals(uscid.trim())) {
-//                        // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
-//                        continue;
-//                    }
+                    // if (!"12352230490632333M".equals(uscid.trim())) {
+                    // // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
+                    // continue;
+                    // }
 
                     // logger.info("准备同步记录到Oracle，ORIGINAL_ID: {}, USCID: {}",
                     // fieldValues.get("ORIGINAL_ID"), uscid);
@@ -1553,10 +1553,10 @@ public class PersonSyncService {
                         // logger.debug("跳过空USCID记录，ID: {}", pg.getId());
                         continue;
                     }
-//                    if (!"12352230490632333M".equals(uscid.trim())) {
-//                        // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
-//                        continue;
-//                    }
+                    // if (!"12352230490632333M".equals(uscid.trim())) {
+                    // // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
+                    // continue;
+                    // }
 
                     // logger.info("准备同步记录到Oracle，ORIGINAL_ID: {}, USCID: {}",
                     // fieldValues.get("ORIGINAL_ID"), uscid);
@@ -1677,10 +1677,10 @@ public class PersonSyncService {
                         // logger.debug("跳过空USCID记录，ID: {}", pg.getId());
                         continue;
                     }
-//                    if (!"12352230490632333M".equals(uscid.trim())) {
-//                        // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
-//                        continue;
-//                    }
+                    // if (!"12352230490632333M".equals(uscid.trim())) {
+                    // // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
+                    // continue;
+                    // }
 
                     // logger.info("准备同步记录到Oracle，ORIGINAL_ID: {}, USCID: {}",
                     // fieldValues.get("ORIGINAL_ID"), uscid);
@@ -1801,10 +1801,10 @@ public class PersonSyncService {
                         // logger.debug("跳过空USCID记录，ID: {}", pg.getId());
                         continue;
                     }
-//                    if (!"12352230490632333M".equals(uscid.trim())) {
-//                        // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
-//                        continue;
-//                    }
+                    // if (!"12352230490632333M".equals(uscid.trim())) {
+                    // // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
+                    // continue;
+                    // }
 
                     // logger.info("准备同步记录到Oracle，ORIGINAL_ID: {}, USCID: {}",
                     // fieldValues.get("ORIGINAL_ID"), uscid);

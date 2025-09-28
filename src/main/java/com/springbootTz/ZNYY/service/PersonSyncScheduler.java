@@ -174,55 +174,55 @@ public class PersonSyncScheduler implements CommandLineRunner {
         }
     }
 
-    public void syncEmpTypeInfoAll() {
-        logger.info("开始执行syncEmpTypeInfoAll同步...");
-
-        try {
-            // 添加调试日志
-            logger.info("正在从PostgreSQL查询所有person_detail_custom数据...");
-            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(null);
-            logger.info("PostgreSQL查询完成，共获取{}条记录", pgList.size());
-
-            // 统计不同detail_id的记录数量
-            Map<String, Long> detailIdCount = pgList.stream()
-                    .collect(Collectors.groupingBy(
-                            PostgresPersonDetailCustom::getDetailId,
-                            Collectors.counting()));
-            logger.info("各detail_id记录数量: {}", detailIdCount);
-
-            // 检查目标detail_id的记录
-            long targetCount = pgList.stream()
-                    .filter(pg -> "person_detail_9ZpRnS5U".equals(pg.getDetailId()))
-                    .count();
-            logger.info("目标detail_id 'person_detail_9ZpRnS5U' 的记录数量: {}", targetCount);
-
-            int processCount = 0;
-            int updateCount = 0;
-            int insertCount = 0;
-            int skipCount = 0;
-
-            for (PostgresPersonDetailCustom pg : pgList) {
-                processCount++;
-
-                // 检查detail_id是否符合条件
-                if (!"person_detail_9ZpRnS5U".equals(pg.getDetailId())) {
-                    logger.debug("跳过非目标detail_id记录，当前detail_id: {}, ID: {}", pg.getDetailId(), pg.getId());
-                    skipCount++;
-                    continue;
-                }
-
-                logger.info("处理第{}条目标记录，ID: {}", processCount, pg.getId());
-
-                // 其余处理逻辑...
-            }
-
-            logger.info("同步完成，总处理: {}条，更新: {}条，插入: {}条，跳过: {}条",
-                    processCount, updateCount, insertCount, skipCount);
-        } catch (Exception e) {
-            logger.error("同步过程发生异常: {}", e.getMessage(), e);
-            throw e;
-        }
-    }
+//    public void syncEmpTypeInfoAll() {
+//        logger.info("开始执行syncEmpTypeInfoAll同步...");
+//
+//        try {
+//            // 添加调试日志
+//            logger.info("正在从PostgreSQL查询所有person_detail_custom数据...");
+//            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(null);
+//            logger.info("PostgreSQL查询完成，共获取{}条记录", pgList.size());
+//
+//            // 统计不同detail_id的记录数量
+//            Map<String, Long> detailIdCount = pgList.stream()
+//                    .collect(Collectors.groupingBy(
+//                            PostgresPersonDetailCustom::getDetailId,
+//                            Collectors.counting()));
+//            logger.info("各detail_id记录数量: {}", detailIdCount);
+//
+//            // 检查目标detail_id的记录
+//            long targetCount = pgList.stream()
+//                    .filter(pg -> "person_detail_9ZpRnS5U".equals(pg.getDetailId()))
+//                    .count();
+//            logger.info("目标detail_id 'person_detail_9ZpRnS5U' 的记录数量: {}", targetCount);
+//
+//            int processCount = 0;
+//            int updateCount = 0;
+//            int insertCount = 0;
+//            int skipCount = 0;
+//
+//            for (PostgresPersonDetailCustom pg : pgList) {
+//                processCount++;
+//
+//                // 检查detail_id是否符合条件
+//                if (!"person_detail_9ZpRnS5U".equals(pg.getDetailId())) {
+//                    logger.debug("跳过非目标detail_id记录，当前detail_id: {}, ID: {}", pg.getDetailId(), pg.getId());
+//                    skipCount++;
+//                    continue;
+//                }
+//
+//                logger.info("处理第{}条目标记录，ID: {}", processCount, pg.getId());
+//
+//                // 其余处理逻辑...
+//            }
+//
+//            logger.info("同步完成，总处理: {}条，更新: {}条，插入: {}条，跳过: {}条",
+//                    processCount, updateCount, insertCount, skipCount);
+//        } catch (Exception e) {
+//            logger.error("同步过程发生异常: {}", e.getMessage(), e);
+//            throw e;
+//        }
+//    }
 
     @Override
     public void run(String... args) {

@@ -14,6 +14,8 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class EquipRegInfoService_JJ {
@@ -82,6 +84,11 @@ public class EquipRegInfoService_JJ {
         int updateCount = 0;
         int skipCount = 0;
         int errorCount = 0;
+        int deleteCount = 0;
+
+        // 收集本次推送的所有RID
+        Set<String> currentRids = new HashSet<>();
+
         for (AssetRegistrationHomeWithDetailDTO Home : HomeList) {
             try {
                 // 获取单位信息
@@ -105,6 +112,9 @@ public class EquipRegInfoService_JJ {
                     continue;
                 }
 
+                // 添加到当前RID集合
+                currentRids.add(equipRegInfo.getRid());
+
                 // 检查是否已存在
                 int exists = equipRegInfoMapper.checkEquipRegInfoExists(equipRegInfo.getRid());
                 if (exists > 0) {
@@ -122,12 +132,31 @@ public class EquipRegInfoService_JJ {
             }
         }
 
+        // 处理删除逻辑
+        try {
+            List<String> existingRids = equipRegInfoMapper.selectActiveRidsBySysPrdrCode("FJZZZYKJYXGS");
+            Set<String> existingRidSet = new HashSet<>(existingRids);
+
+            Set<String> toDeleteRids = new HashSet<>(existingRidSet);
+            toDeleteRids.removeAll(currentRids);
+
+            if (!toDeleteRids.isEmpty()) {
+                String ridsToDelete = String.join("','", toDeleteRids);
+                deleteCount = equipRegInfoMapper.batchMarkAsDeleted("'" + ridsToDelete + "'");
+                System.out.println("标记删除的RID数量: " + deleteCount);
+                System.out.println("被删除的RID: " + toDeleteRids);
+            }
+        } catch (Exception e) {
+            System.out.println("处理删除逻辑时发生错误: " + e.getMessage());
+        }
+
         System.out.println("=== 家具设备登记推送结果 ===");
         System.out.println("新增：" + insertCount);
         System.out.println("更新：" + updateCount);
+        System.out.println("删除：" + deleteCount);
         System.out.println("跳过：" + skipCount);
         System.out.println("错误：" + errorCount);
-        System.out.println("总计处理：" + (insertCount + updateCount + skipCount + errorCount) + "条");
+        System.out.println("总计处理：" + (insertCount + updateCount + deleteCount + skipCount + errorCount) + "条");
     }
 
     /**

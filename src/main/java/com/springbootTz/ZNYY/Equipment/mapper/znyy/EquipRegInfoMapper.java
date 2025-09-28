@@ -343,8 +343,8 @@ public interface EquipRegInfoMapper extends BaseMapper<EquipRegInfo> {
         /**
          * 检查设备注册信息是否存在
          */
-        @Select("SELECT COUNT(*) FROM equip_reg_info WHERE equip_code = #{equipCode} AND (deleted IS NULL OR deleted = '0')")
-        int checkEquipRegInfoExists(String equipCode);
+        @Select("SELECT COUNT(*) FROM equip_reg_info WHERE rid = #{rid} AND (deleted IS NULL OR deleted = '0')")
+        int checkEquipRegInfoExists(String rid);
 
         /**
          * 根据设备代码查询设备注册信息（未删除）
@@ -397,4 +397,16 @@ public interface EquipRegInfoMapper extends BaseMapper<EquipRegInfo> {
          */
         @Select("SELECT * FROM equip_reg_info WHERE disable_flag = '1' AND (deleted IS NULL OR deleted = '0')")
         List<EquipRegInfo> selectDisabledEquipmentsRegInfo();
+
+        /**
+         * 根据系统厂商代码查询所有未删除的设备RID
+         */
+        @Select("SELECT rid FROM equip_reg_info WHERE sys_prdr_code = #{sysPrdrCode} AND (deleted IS NULL OR deleted = '0')")
+        List<String> selectActiveRidsBySysPrdrCode(String sysPrdrCode);
+
+        /**
+         * 批量标记设备为已删除
+         */
+        @Update("UPDATE equip_reg_info SET deleted = '1', deleted_time = SYSDATE WHERE rid IN (${rids})")
+        int batchMarkAsDeleted(String rids);
 }

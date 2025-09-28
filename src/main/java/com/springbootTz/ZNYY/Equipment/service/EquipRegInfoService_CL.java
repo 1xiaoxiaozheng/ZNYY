@@ -18,6 +18,8 @@ import java.util.Date;
 import java.util.List;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class EquipRegInfoService_CL {
@@ -86,6 +88,10 @@ public class EquipRegInfoService_CL {
         int updateCount = 0;
         int skipCount = 0;
         int errorCount = 0;
+        int deleteCount = 0;
+
+        // 收集本次推送的所有RID
+        Set<String> currentRids = new HashSet<>();
 
         for (AssetRegistrationVehicleWithDetailDTO vehicle : vehicleList) {
             try {
@@ -94,7 +100,6 @@ public class EquipRegInfoService_CL {
 
                 // 跳过"周宁总医院"的数据
                 if (unitName != null && unitName.contains("周宁总医院")) {
-//                    System.out.println("跳过周宁总医院数据，单据编号: " + vehicle.getField0001() + ", 单位: " + unitName);
                     skipCount++;
                     continue;
                 }
@@ -104,10 +109,12 @@ public class EquipRegInfoService_CL {
 
                 // 如果rid为null则跳过
                 if (vehicle.getField0001() == null) {
-//                    System.out.println("跳过单据编号为空的内容: " + vehicle.getField0001());
                     skipCount++;
                     continue;
                 }
+
+                // 添加到当前RID集合
+                currentRids.add(equipRegInfo.getRid());
 
                 // 检查是否已存在
                 int exists = equipRegInfoMapper.checkEquipRegInfoExists(equipRegInfo.getRid());
@@ -127,13 +134,35 @@ public class EquipRegInfoService_CL {
             }
         }
 
+        // 处理删除逻辑：标记目标库中存在但源库中不存在的记录为已删除
+        try {
+            // 查询目标库中所有未删除的RID
+            List<String> existingRids = equipRegInfoMapper.selectActiveRidsBySysPrdrCode("FJZZZYKJYXGS");
+            Set<String> existingRidSet = new HashSet<>(existingRids);
+
+            // 找出需要删除的RID（目标库有但源库没有的）
+            Set<String> toDeleteRids = new HashSet<>(existingRidSet);
+            toDeleteRids.removeAll(currentRids);
+
+            if (!toDeleteRids.isEmpty()) {
+                String ridsToDelete = String.join("','", toDeleteRids);
+                deleteCount = equipRegInfoMapper.batchMarkAsDeleted("'" + ridsToDelete + "'");
+                System.out.println("标记删除的RID数量: " + deleteCount);
+                System.out.println("被删除的RID: " + toDeleteRids);
+            }
+        } catch (Exception e) {
+            System.out.println("处理删除逻辑时发生错误: " + e.getMessage());
+        }
+
         System.out.println("=== 车辆设备登记推送完成统计 ===");
         System.out.println("新增: " + insertCount + " 条");
         System.out.println("更新: " + updateCount + " 条");
+        System.out.println("删除: " + deleteCount + " 条");
         System.out.println("跳过: " + skipCount + " 条");
         System.out.println("错误: " + errorCount + " 条");
-        System.out.println("总计处理: " + (insertCount + updateCount + skipCount + errorCount) + " 条");
+        System.out.println("总计处理: " + (insertCount + updateCount + deleteCount + skipCount + errorCount) + " 条");
     }
+
     /**
      * 将AssetRegistrationVehicleWithDetailDTO映射为EquipRegInfo
      */
