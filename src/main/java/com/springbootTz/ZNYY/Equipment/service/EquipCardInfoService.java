@@ -14,6 +14,8 @@ import java.text.SimpleDateFormat;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class EquipCardInfoService {
@@ -124,22 +126,35 @@ public class EquipCardInfoService {
         int updateCount = 0;
         int skipCount = 0;
         int errorCount = 0;
+        int deleteCount = 0;
+
+        // 收集本次推送的所有RID
+        Set<String> currentRids = new HashSet<>();
 
         for (AssetCardWithDepreciationDTO assetCard : assetCardList) {
             try {
                 // 数据已经在 seeyon 层面过滤掉了周宁总医院，这里直接处理
                 EquipCardInfo equipCardInfo = mapToEquipCardInfo(assetCard);
 
-                // 检查是否已存在
-                int exists = equipCardInfoMapper.checkEquipCardExists(equipCardInfo.getEquipCardNo());
+                // 添加到当前RID集合
+                currentRids.add(equipCardInfo.getRid());
+
+                // 检查是否已存在（使用RID检查）
+                int exists = equipCardInfoMapper.checkEquipCardExistsByRid(equipCardInfo.getRid());
 
                 if (exists > 0) {
                     // 存在则更新 - 使用 RID 进行更新，避免数据覆盖
+                    equipCardInfo.setDeleted("0"); // 确保标记为未删除
+                    // 不设置 deletedTime，让 SQL 中的 CASE 语句处理
                     equipCardInfoMapper.updateEquipCardInfo(equipCardInfo);
                     updateCount++;
                 } else {
                     // 不存在则插入
-                    equipCardInfoMapper.insert(equipCardInfo);
+                    equipCardInfo.setDeleted("0");
+                    // equipCardInfo.setDeletedTime(null);
+                    // 插入时设置创建时间为当前时间
+                    equipCardInfo.setCrteTime(getCurrentTime());
+                    equipCardInfoMapper.insertEquipCardInfo(equipCardInfo);
                     insertCount++;
                 }
             } catch (Exception e) {
@@ -148,12 +163,33 @@ public class EquipCardInfoService {
             }
         }
 
+        // 处理删除逻辑：标记目标库中存在但源库中不存在的记录为已删除
+        try {
+            // 查询目标库中所有未删除的RID
+            List<String> existingRids = equipCardInfoMapper.selectActiveRidsBySysPrdrCode("FJZZZYKJYXGS");
+            Set<String> existingRidSet = new HashSet<>(existingRids);
+
+            // 找出需要删除的RID（目标库有但源库没有的）
+            Set<String> toDeleteRids = new HashSet<>(existingRidSet);
+            toDeleteRids.removeAll(currentRids);
+
+            if (!toDeleteRids.isEmpty()) {
+                String ridsToDelete = String.join("','", toDeleteRids);
+                deleteCount = equipCardInfoMapper.batchMarkAsDeleted("'" + ridsToDelete + "'");
+                System.out.println("标记删除的RID数量: " + deleteCount);
+                System.out.println("被删除的RID: " + toDeleteRids);
+            }
+        } catch (Exception e) {
+            System.out.println("处理删除逻辑时发生错误: " + e.getMessage());
+        }
+
         System.out.println("=== 设备卡片信息推送完成统计 ===");
         System.out.println("新增: " + insertCount + " 条");
         System.out.println("更新: " + updateCount + " 条");
+        System.out.println("删除: " + deleteCount + " 条");
         System.out.println("跳过: " + skipCount + " 条");
         System.out.println("错误: " + errorCount + " 条");
-        System.out.println("总计处理: " + (insertCount + updateCount + skipCount + errorCount) + " 条");
+        System.out.println("总计处理: " + (insertCount + updateCount + deleteCount + skipCount + errorCount) + " 条");
     }
 
     /**
@@ -234,12 +270,12 @@ public class EquipCardInfoService {
         equipCardInfo.setNetSalvageRate(BigDecimal.ZERO);
         equipCardInfo.setNetSalvageCost(BigDecimal.ZERO);
         equipCardInfo.setReceiveNo(" ");
-        // 避免设置 null，使用默认日期防止 Oracle 报错
-        equipCardInfo.setReceiveDate(parseDate("2025-08-18 00:00:00"));
+        // 设置为 null，让 SQL 中的 CASE 语句处理
+        // equipCardInfo.setReceiveDate(null);
         equipCardInfo.setReceiveOperator(" ");
         equipCardInfo.setHouseAreaSquare(BigDecimal.ZERO);
-        // 避免设置 null，使用默认日期防止 Oracle 报错
-        equipCardInfo.setDeprecStartDate(parseDate("2025-08-18 00:00:00"));
+        // 设置为 null，让 SQL 中的 CASE 语句处理
+        // equipCardInfo.setDeprecStartDate(null);
         equipCardInfo.setDeprecFlag("1");
         // 处理折旧类型，如果为null则使用默认值
         Integer deprecKind = assetCard.getAcDeprKind();
@@ -261,13 +297,14 @@ public class EquipCardInfoService {
         equipCardInfo.setReserve1("");
         equipCardInfo.setReserve2("");
         equipCardInfo.setDataClctPrdrName("福建众智政友科技有限公司");
-        equipCardInfo.setCrteTime(parseDate("2025-08-18 00:00:00"));
+        // 设置为 null，让 SQL 中的 CASE 语句处理
+        // equipCardInfo.setCrteTime(null);
         // 处理更新时间，如果为null则使用当前时间
         Date updateTime = assetCard.getAcUpdateTime();
         equipCardInfo.setUpdtTime(updateTime != null ? updateTime : getCurrentTime());
         equipCardInfo.setDeleted("0");
-        // 直接使用默认日期，避免 Oracle null 值错误
-        equipCardInfo.setDeletedTime(parseDate("2025-08-18 00:00:00"));
+        // 设置为 null，让 SQL 中的 CASE 语句处理
+        // equipCardInfo.setDeletedTime(null);
 
         return equipCardInfo;
     }

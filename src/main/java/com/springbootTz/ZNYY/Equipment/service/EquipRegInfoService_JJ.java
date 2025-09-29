@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.ArrayList;
 
 @Service
 public class EquipRegInfoService_JJ {
@@ -115,10 +116,12 @@ public class EquipRegInfoService_JJ {
                 // 添加到当前RID集合
                 currentRids.add(equipRegInfo.getRid());
 
-                // 检查是否已存在
+                // 检查是否已存在（包括已删除的记录）
                 int exists = equipRegInfoMapper.checkEquipRegInfoExists(equipRegInfo.getRid());
+
                 if (exists > 0) {
-                    // 存在则更新
+                    // 存在则更新（包括恢复已删除的记录）
+                    equipRegInfo.setDeleted("0"); // 确保标记为未删除
                     equipRegInfoMapper.updateEquipRegInfo(equipRegInfo);
                     updateCount++;
                 } else {
@@ -134,17 +137,29 @@ public class EquipRegInfoService_JJ {
 
         // 处理删除逻辑
         try {
-            List<String> existingRids = equipRegInfoMapper.selectActiveRidsBySysPrdrCode("FJZZZYKJYXGS");
-            Set<String> existingRidSet = new HashSet<>(existingRids);
+            // 获取seeyon中已删除的设备信息
+            List<AssetRegistrationHomeQueryMapper.DeletedHomeInfo> deletedHomeInfoList = assetRegistrationHomeQueryMapper
+                    .selectDeletedHomeInfo();
 
-            Set<String> toDeleteRids = new HashSet<>(existingRidSet);
-            toDeleteRids.removeAll(currentRids);
+            if (!deletedHomeInfoList.isEmpty()) {
+                // 生成被删除的RID
+                List<String> deletedRids = new ArrayList<>();
+                for (AssetRegistrationHomeQueryMapper.DeletedHomeInfo deletedInfo : deletedHomeInfoList) {
+                    if (deletedInfo.getField0001() != null && !deletedInfo.getField0001().trim().isEmpty()) {
+                        // 获取单位代码（就像正常数据处理一样）
+                        String unitCode = String
+                                .valueOf(unitInfoToolMapper.selectUnitCodeByName(deletedInfo.getField0152()));
+                        String deletedRid = unitCode + "FJZZZYKJYXGS" + deletedInfo.getField0001();
+                        deletedRids.add(deletedRid);
+                    }
+                }
 
-            if (!toDeleteRids.isEmpty()) {
-                String ridsToDelete = String.join("','", toDeleteRids);
-                deleteCount = equipRegInfoMapper.batchMarkAsDeleted("'" + ridsToDelete + "'");
-                System.out.println("标记删除的RID数量: " + deleteCount);
-                System.out.println("被删除的RID: " + toDeleteRids);
+                if (!deletedRids.isEmpty()) {
+                    String ridsToDelete = String.join("','", deletedRids);
+                    deleteCount = equipRegInfoMapper.batchMarkAsDeleted("'" + ridsToDelete + "'");
+                    System.out.println("基于seeyon删除状态标记删除的家居RID数量: " + deleteCount);
+                    System.out.println("被删除的家居RID: " + deletedRids);
+                }
             }
         } catch (Exception e) {
             System.out.println("处理删除逻辑时发生错误: " + e.getMessage());
@@ -190,9 +205,12 @@ public class EquipRegInfoService_JJ {
         equipRegInfo.setUnitName("个");
         equipRegInfo.setDisableFlag("0");
         equipRegInfo.setManufacturerCode("无");
-        equipRegInfo.setManufacturerName(Home.getField0161());
 
-        // 处理设备使用年限，如果为null则使用默认值
+        // 处理生产厂商名称，确保不为null
+        String manufacturerName = Home.getField0161();
+        equipRegInfo.setManufacturerName(manufacturerName != null ? manufacturerName : "无");
+
+        // 处理设备使用年限，如果为null则不设置，让 SQL 中的 NULL 处理
         BigDecimal devUsefulLife = Home.getField0156();
         if (devUsefulLife != null) {
             // 将年限转为日期（假设当前日期开始计算）
@@ -200,10 +218,8 @@ public class EquipRegInfoService_JJ {
             LocalDate endDate = startDate.plusYears(devUsefulLife.longValue());
             Date usefulLifeDate = Date.from(endDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
             equipRegInfo.setDevUsefulLife(usefulLifeDate);
-        } else {
-            // 使用默认日期
-            equipRegInfo.setDevUsefulLife(parseDate("2025-08-18 00:00:00"));
         }
+        // 如果为 null，不设置，让 SQL 中的 NULL 处理
 
         equipRegInfo.setProdplacInfo("无");
         // 处理用途代码和名称
@@ -222,13 +238,12 @@ public class EquipRegInfoService_JJ {
         equipRegInfo.setReserve1("无");
         equipRegInfo.setReserve2("无");
         equipRegInfo.setDataClctPrdrName("福建众智政友科技有限公司");
-        equipRegInfo.setCrteTime(parseDate("2025-08-18 00:00:00"));
-        equipRegInfo.setUpdtTime(Home.getStartDate() != null ? Home.getStartDate() : getCurrentTime());
+        // 不设置 crteTime，让 SQL 中的 SYSDATE 处理
+        // 不设置 updtTime，让 SQL 中的 SYSDATE 处理
         equipRegInfo.setDeleted("0");
-        equipRegInfo.setDeletedTime(parseDate("2025-08-18 00:00:00"));
+        // 不设置 deletedTime，让 SQL 中的 NULL 处理
 
         return equipRegInfo;
-
     }
 
     /**

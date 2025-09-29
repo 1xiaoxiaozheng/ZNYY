@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class EquipDeprRecordService {
@@ -46,11 +48,18 @@ public class EquipDeprRecordService {
         int insertCount = 0;
         int updateCount = 0;
         int errorCount = 0;
+        int deleteCount = 0;
+
+        // 收集本次推送的所有RID
+        Set<String> currentRids = new HashSet<>();
 
         for (LexmisN6_Depreciation depreciation : depreciationList) {
             try {
                 // 映射数据
                 EquipDeprRecord equipDeprRecord = mapToEquipDeprRecord(depreciation);
+
+                // 添加到当前RID集合
+                currentRids.add(equipDeprRecord.getRid());
 
                 // 检查是否已存在
                 int exists = equipDeprRecordMapper.checkEquipDeprRecordExists(equipDeprRecord.getRid());
@@ -71,11 +80,32 @@ public class EquipDeprRecordService {
             }
         }
 
+        // 处理删除逻辑：标记目标库中存在但源库中不存在的记录为已删除
+        try {
+            // 查询目标库中所有未删除的RID
+            List<String> existingRids = equipDeprRecordMapper.selectActiveRidsBySysPrdrCode("FJZZZYKJYXGS");
+            Set<String> existingRidSet = new HashSet<>(existingRids);
+
+            // 找出需要删除的RID（目标库有但源库没有的）
+            Set<String> toDeleteRids = new HashSet<>(existingRidSet);
+            toDeleteRids.removeAll(currentRids);
+
+            if (!toDeleteRids.isEmpty()) {
+                String ridsToDelete = String.join("','", toDeleteRids);
+                deleteCount = equipDeprRecordMapper.batchMarkAsDeleted("'" + ridsToDelete + "'");
+                System.out.println("标记删除的RID数量: " + deleteCount);
+                System.out.println("被删除的RID: " + toDeleteRids);
+            }
+        } catch (Exception e) {
+            System.out.println("处理删除逻辑时发生错误: " + e.getMessage());
+        }
+
         System.out.println("=== 设备折旧记录推送完成统计 ===");
         System.out.println("新增: " + insertCount + " 条");
         System.out.println("更新: " + updateCount + " 条");
+        System.out.println("删除: " + deleteCount + " 条");
         System.out.println("错误: " + errorCount + " 条");
-        System.out.println("总计处理: " + (insertCount + updateCount + errorCount) + " 条");
+        System.out.println("总计处理: " + (insertCount + updateCount + deleteCount + errorCount) + " 条");
     }
 
     /**
@@ -110,19 +140,28 @@ public class EquipDeprRecordService {
         equipDeprRecord.setCurrentDepr(depreciation.getDDeprAmount());
         equipDeprRecord.setDeprCumAmt(BigDecimal.ZERO); // 无对应字段
         equipDeprRecord.setOperatorName(depreciation.getDCreateName());
-        if (depreciation.getDVoucherDate() == null) {
-            equipDeprRecord.setDealDate(parseDate("2025-08-18 00:00:00")); // 无对应字段
+
+        // 处理必填的日期字段
+        if (depreciation.getDCreateDate() != null) {
+            equipDeprRecord.setDealDate(depreciation.getDCreateDate());
         } else {
-            equipDeprRecord.setDealDate(depreciation.getDVoucherDate());// 如果为空那就使用默认值，
+            equipDeprRecord.setDealDate(getCurrentTime());
         }
-        equipDeprRecord.setCreateCertFlag("无"); // 无对应字段，设为空字符串
-        equipDeprRecord.setCreateCertDate(parseDate("2025-08-18 00:00:00")); // 无对应字段
-        equipDeprRecord.setAccruedCostFlag("无"); // 无对应字段，设为空字符串
-        equipDeprRecord.setAccruedCostDate(parseDate("2025-08-18 00:00:00")); // 无对应字段
+
+        equipDeprRecord.setCreateCertFlag("0"); // 必填字段，设为"0"（否）
+        equipDeprRecord.setCreateCertDate(getCurrentTime()); // 强制设置为当前时间
+
+        equipDeprRecord.setAccruedCostFlag("0"); // 必填字段，设为"0"（否）
+        if (depreciation.getDCreateDate() != null) {
+            equipDeprRecord.setAccruedCostDate(depreciation.getDCreateDate()); // 强制设置为当前时间
+        } else {
+            equipDeprRecord.setAccruedCostDate(getCurrentTime()); // 强制设置为当前时间
+        }
+
         equipDeprRecord.setDeprMean(depreciation.getDDeprKind().toString());
         equipDeprRecord.setDeprMeanName(getDeprMeanName(depreciation.getDDeprKind()));
-        equipDeprRecord.setStroomCode("无"); // 无对应字段，设为空字符串
-        equipDeprRecord.setStroomName("无"); // 无对应字段，设为空字符串
+        equipDeprRecord.setStroomCode("无"); // 必填字段，设为"无"
+        equipDeprRecord.setStroomName("无"); // 必填字段，设为"无"
 
         // 查询折旧率：D_NO=A_NO，查询LexmisN6_AssetCard的AC_DeprRate
         BigDecimal deprecRate = getDeprecRate(depreciation.getDNo());
@@ -132,10 +171,10 @@ public class EquipDeprRecordService {
         equipDeprRecord.setReserve1("无");
         equipDeprRecord.setReserve2("无");
         equipDeprRecord.setDataClctPrdrName("福建众智政友科技有限公司");
-        equipDeprRecord.setCrteTime(parseDate("2025-08-18 00:00:00"));
-        equipDeprRecord.setUpdtTime(parseDate("2025-08-18 00:00:00"));
+        // 不设置 crteTime，让 SQL 中的 SYSDATE 处理
+        // 不设置 updtTime，让 SQL 中的 SYSDATE 处理
         equipDeprRecord.setDeleted("0");
-        equipDeprRecord.setDeletedTime(parseDate("2025-08-18 00:00:00"));
+        // 不设置 deletedTime，让 SQL 中的 NULL 处理
 
         return equipDeprRecord;
     }

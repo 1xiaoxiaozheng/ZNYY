@@ -24,16 +24,21 @@ public interface EquipDiscardedRecordMapper extends BaseMapper<EquipDiscardedRec
                         "unit_name, use_dep, equip_pric, purc_date, used_life, " +
                         "estima_residual_value, discarded_rea, applyer_name, apply_date, " +
                         "audit_operator_name, audit_date, manufacturer_code, manufacturer_name, " +
-                        "state, reserve1, reserve2, data_clct_prdr_name, crte_time, updt_time, " +
-                        "deleted, deleted_time" +
+                        "state, reserve1, reserve2, data_clct_prdr_name, crte_time, " +
+                        "updt_time, deleted, deleted_time" +
                         ") VALUES (" +
                         "#{rid}, #{orgName}, #{uscid}, #{uploadTime}, #{sysPrdrCode}, #{sysPrdrName}, " +
                         "#{discardedNo}, #{equipCode}, #{equipName}, #{spec}, #{equipModel}, #{unit}, " +
                         "#{unitName}, #{useDep}, #{equipPric}, #{purcDate}, #{usedLife}, " +
-                        "#{estimaResidualValue}, #{discardedRea}, #{applyerName}, #{applyDate}, " +
-                        "#{auditOperatorName}, #{auditDate}, #{manufacturerCode}, #{manufacturerName}, " +
-                        "#{state}, #{reserve1}, #{reserve2}, #{dataClctPrdrName}, #{crteTime}, #{updtTime}, " +
-                        "#{deleted}, #{deletedTime}" +
+                        "#{estimaResidualValue}, #{discardedRea}, #{applyerName}, " +
+                        "NULL, " + // apply_date 可选字段，设置为 NULL
+                        "#{auditOperatorName}, " +
+                        "CASE WHEN #{auditDate} IS NULL THEN SYSDATE ELSE #{auditDate} END, " + // 必填字段，null时用当前时间
+                        "#{manufacturerCode}, #{manufacturerName}, #{state}, #{reserve1}, #{reserve2}, " +
+                        "#{dataClctPrdrName}, " +
+                        "SYSDATE, " + // crte_time 必填字段，使用当前时间
+                        "SYSDATE, #{deleted}, " + // updt_time 必填字段，使用当前时间
+                        "NULL" + // deleted_time 可选字段，设置为 NULL
                         ")")
         int insertEquipDiscardedRecord(EquipDiscardedRecord equipDiscardedRecord);
 
@@ -96,12 +101,13 @@ public interface EquipDiscardedRecordMapper extends BaseMapper<EquipDiscardedRec
          */
         @Select("SELECT * FROM equip_discarded_record WHERE applyer_name = #{applyerName}")
         List<EquipDiscardedRecord> selectByApplyerName(String applyerName);
-
-        /**
-         * 检查设备报废记录是否存在
-         */
-        @Select("SELECT COUNT(*) FROM equip_discarded_record WHERE rid = #{rid}")
-        int checkEquipDiscardedRecordExists(String rid);
+        //
+        // /**
+        // * 检查设备报废记录是否存在
+        // */
+        // @Select("SELECT COUNT(*) FROM equip_discarded_record WHERE rid = #{rid} AND
+        // (deleted IS NULL OR deleted = '0')")
+        // int checkEquipDiscardedRecordExists(String rid);
 
         /**
          * 根据审核人查询
@@ -195,14 +201,19 @@ public interface EquipDiscardedRecordMapper extends BaseMapper<EquipDiscardedRec
                         "org_name = #{orgName}, uscid = #{uscid}, upload_time = #{uploadTime}, " +
                         "sys_prdr_code = #{sysPrdrCode}, sys_prdr_name = #{sysPrdrName}, " +
                         "discarded_no = #{discardedNo}, equip_code = #{equipCode}, equip_name = #{equipName}, " +
-                        "spec = #{spec}, equip_model = #{equipModel}, unit = #{unit}, unit_name = #{unitName}, " +
-                        "use_dep = #{useDep}, equip_pric = #{equipPric}, purc_date = #{purcDate}, " +
-                        "used_life = #{usedLife}, estima_residual_value = #{estimaResidualValue}, " +
-                        "discarded_rea = #{discardedRea}, applyer_name = #{applyerName}, apply_date = #{applyDate}, " +
-                        "audit_operator_name = #{auditOperatorName}, audit_date = #{auditDate}, " +
+                        "spec = #{spec}, equip_model = #{equipModel}, unit = #{unit}, " +
+                        "unit_name = #{unitName}, use_dep = #{useDep}, equip_pric = #{equipPric}, " +
+                        "purc_date = #{purcDate}, used_life = #{usedLife}, " +
+                        "estima_residual_value = #{estimaResidualValue}, discarded_rea = #{discardedRea}, " +
+                        "applyer_name = #{applyerName}, " +
+                        "apply_date = NULL, " + // apply_date 可选字段，设置为 NULL
+                        "audit_operator_name = #{auditOperatorName}, " +
+                        "audit_date = CASE WHEN #{auditDate} IS NULL THEN SYSDATE ELSE #{auditDate} END, " + // 必填字段，null时用当前时间
                         "manufacturer_code = #{manufacturerCode}, manufacturer_name = #{manufacturerName}, " +
                         "state = #{state}, reserve1 = #{reserve1}, reserve2 = #{reserve2}, " +
-                        "data_clct_prdr_name = #{dataClctPrdrName}, updt_time = SYSDATE " +
+                        "data_clct_prdr_name = #{dataClctPrdrName}, " +
+                        "updt_time = SYSDATE, deleted = #{deleted}, " + // updt_time 必填字段，使用当前时间
+                        "deleted_time = NULL " + // deleted_time 可选字段，设置为 NULL
                         "WHERE rid = #{rid}")
         int updateEquipDiscardedRecord(EquipDiscardedRecord equipDiscardedRecord);
 
@@ -338,4 +349,22 @@ public interface EquipDiscardedRecordMapper extends BaseMapper<EquipDiscardedRec
          */
         @Select("SELECT * FROM equip_discarded_record WHERE audit_date BETWEEN #{startDate} AND #{endDate} AND (deleted IS NULL OR deleted = '0')")
         List<EquipDiscardedRecord> selectByAuditDateRangeActive(String startDate, String endDate);
+
+        /**
+         * 根据RID检查设备报废记录是否存在
+         */
+        @Select("SELECT COUNT(*) FROM equip_discarded_record WHERE rid = #{rid} AND (deleted IS NULL OR deleted = '0')")
+        int checkEquipDiscardedRecordExists(String rid);
+
+        /**
+         * 根据系统提供商代码查询所有活跃的RID
+         */
+        @Select("SELECT rid FROM equip_discarded_record WHERE sys_prdr_code = #{sysPrdrCode} AND (deleted IS NULL OR deleted = '0')")
+        List<String> selectActiveRidsBySysPrdrCode(String sysPrdrCode);
+
+        /**
+         * 批量标记为已删除
+         */
+        @Update("UPDATE equip_discarded_record SET deleted = '1', deleted_time = SYSDATE WHERE rid IN (${rids})")
+        int batchMarkAsDeleted(String rids);
 }

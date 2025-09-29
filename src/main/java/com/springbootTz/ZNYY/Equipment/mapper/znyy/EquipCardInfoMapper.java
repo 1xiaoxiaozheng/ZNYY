@@ -21,6 +21,39 @@ public interface EquipCardInfoMapper extends BaseMapper<EquipCardInfo> {
          * 使用 MyBatis-Plus 的 BaseMapper.insert() 方法，让 @TableField 注解生效
          */
         // 删除自定义的 @Insert 注解，使用 BaseMapper.insert() 方法
+        @Insert("INSERT INTO equip_card_info (" +
+                        "rid, org_name, uscid, upload_time, sys_prdr_code, sys_prdr_name, " +
+                        "card_recno, equip_card_no, apply_no, bill_sub_no, batch_no, " +
+                        "equip_code, equip_name, buy_cost, now_cost, buy_date, " +
+                        "start_use_date, expire_date, use_dept_code, use_dept_name, " +
+                        "useful_life, manufacturer_code, manufacturer_name, manufacture_no, " +
+                        "purchase_operator, accept_operator, manage_operator, invo_no, " +
+                        "equip_hospital_code, measure_code, retest_period, retest_unit, " +
+                        "finance_fund, science_fund, self_fund, receive_no, " +
+                        "receive_operator, house_area_square, deprec_flag, " +
+                        "deprec_type_code, deprec_type_name, deprec_rate, mon_derp_amt, " +
+                        "net_salvage_rate, net_salvage_cost, equip_status_code, " +
+                        "equip_status_name, audit_flag, reserve1, reserve2, " +
+                        "data_clct_prdr_name, crte_time, updt_time, deleted, deleted_time" +
+                        ") VALUES (" +
+                        "#{rid}, #{orgName}, #{uscid}, #{uploadTime}, #{sysPrdrCode}, #{sysPrdrName}, " +
+                        "#{cardRecno}, #{equipCardNo}, #{applyNo}, #{billSubNo}, #{batchNo}, " +
+                        "#{equipCode}, #{equipName}, #{buyCost}, #{nowCost}, #{buyDate}, " +
+                        "#{startUseDate}, #{expireDate}, #{useDeptCode}, #{useDeptName}, " +
+                        "#{usefulLife}, #{manufacturerCode}, #{manufacturerName}, #{manufactureNo}, " +
+                        "#{purchaseOperator}, #{acceptOperator}, #{manageOperator}, #{invoNo}, " +
+                        "#{equipHospitalCode}, #{measureCode}, #{retestPeriod}, #{retestUnit}, " +
+                        "#{financeFund}, #{scienceFund}, #{selfFund}, #{receiveNo}, " +
+                        "#{receiveOperator}, #{houseAreaSquare}, #{deprecFlag}, " +
+                        "#{deprecTypeCode}, #{deprecTypeName}, #{deprecRate}, #{monDerpAmt}, " +
+                        "#{netSalvageRate}, #{netSalvageCost}, #{equipStatusCode}, " +
+                        "#{equipStatusName}, #{auditFlag}, #{reserve1}, #{reserve2}, " +
+                        "#{dataClctPrdrName}, " +
+                        "SYSDATE, " + // crte_time 使用当前时间
+                        "SYSDATE, #{deleted}, " +
+                        "NULL" + // deleted_time 设置为 NULL
+                        ")")
+        int insertEquipCardInfo(EquipCardInfo equipCardInfo);
 
         /**
          * 根据RID查询设备卡片信息
@@ -70,29 +103,35 @@ public interface EquipCardInfoMapper extends BaseMapper<EquipCardInfo> {
         @Update("UPDATE equip_card_info SET " +
                         "org_name = #{orgName}, uscid = #{uscid}, upload_time = #{uploadTime}, " +
                         "sys_prdr_code = #{sysPrdrCode}, sys_prdr_name = #{sysPrdrName}, " +
-                        "card_recno = #{cardRecno}, equip_card_no = #{equipCardNo}, apply_no = #{applyNo}, " +
-                        "bill_sub_no = #{billSubNo}, batch_no = #{batchNo}, equip_code = #{equipCode}, " +
-                        "equip_name = #{equipName}, buy_cost = #{buyCost}, now_cost = #{nowCost}, " +
-                        "buy_date = #{buyDate}, start_use_date = #{startUseDate}, expire_date = #{expireDate}, " +
-                        "use_dept_code = #{useDeptCode}, use_dept_name = #{useDeptName}, useful_life = #{usefulLife}, "
-                        +
-                        "manufacturer_code = #{manufacturerCode}, manufacturer_name = #{manufacturerName}, " +
-                        "manufacture_no = #{manufactureNo}, purchase_operator = #{purchaseOperator}, " +
-                        "accept_operator = #{acceptOperator}, manage_operator = #{manageOperator}, " +
-                        "invo_no = #{invoNo}, equip_hospital_code = #{equipHospitalCode}, measure_code = #{measureCode}, "
-                        +
-                        "retest_period = #{retestPeriod}, retest_unit = #{retestUnit}, finance_fund = #{financeFund}, "
-                        +
-                        "science_fund = #{scienceFund}, self_fund = #{selfFund}, receive_no = #{receiveNo}, " +
-                        "receive_date = #{receiveDate}, receive_operator = #{receiveOperator}, " +
-                        "house_area_square = #{houseAreaSquare}, deprec_start_date = #{deprecStartDate}, " +
+                        "card_recno = #{cardRecno}, equip_card_no = #{equipCardNo}, " +
+                        "apply_no = #{applyNo}, bill_sub_no = #{billSubNo}, " +
+                        "batch_no = #{batchNo}, equip_code = #{equipCode}, " +
+                        "equip_name = #{equipName}, buy_cost = #{buyCost}, " +
+                        "now_cost = #{nowCost}, buy_date = #{buyDate}, " +
+                        "start_use_date = #{startUseDate}, expire_date = #{expireDate}, " +
+                        "use_dept_code = #{useDeptCode}, use_dept_name = #{useDeptName}, " +
+                        "useful_life = #{usefulLife}, manufacturer_code = #{manufacturerCode}, " +
+                        "manufacturer_name = #{manufacturerName}, manufacture_no = #{manufactureNo}, " +
+                        "purchase_operator = #{purchaseOperator}, accept_operator = #{acceptOperator}, " +
+                        "manage_operator = #{manageOperator}, invo_no = #{invoNo}, " +
+                        "equip_hospital_code = #{equipHospitalCode}, measure_code = #{measureCode}, " +
+                        "retest_period = #{retestPeriod}, retest_unit = #{retestUnit}, " +
+                        "finance_fund = #{financeFund}, science_fund = #{scienceFund}, " +
+                        "self_fund = #{selfFund}, receive_no = #{receiveNo}, " +
+                        "receive_operator = #{receiveOperator}, " +
+                        "house_area_square = #{houseAreaSquare}, " +
                         "deprec_flag = #{deprecFlag}, deprec_type_code = #{deprecTypeCode}, " +
                         "deprec_type_name = #{deprecTypeName}, deprec_rate = #{deprecRate}, " +
                         "mon_derp_amt = #{monDerpAmt}, net_salvage_rate = #{netSalvageRate}, " +
                         "net_salvage_cost = #{netSalvageCost}, equip_status_code = #{equipStatusCode}, " +
                         "equip_status_name = #{equipStatusName}, audit_flag = #{auditFlag}, " +
-                        "reserve1 = #{reserve1}, reserve2 = #{reserve2}, data_clct_prdr_name = #{dataClctPrdrName}, " +
-                        "updt_time = SYSDATE " +
+                        "reserve1 = #{reserve1}, reserve2 = #{reserve2}, " +
+                        "data_clct_prdr_name = #{dataClctPrdrName}, " +
+                        "updt_time = SYSDATE, deleted = #{deleted}, " +
+                        "receive_date = NULL, " +
+                        "deprec_start_date = NULL, " +
+                        "crte_time = NULL, " +
+                        "deleted_time = CASE WHEN #{deleted} = '0' THEN NULL ELSE SYSDATE END " +
                         "WHERE rid = #{rid}")
         int updateEquipCardInfo(EquipCardInfo equipCardInfo);
 
@@ -207,4 +246,22 @@ public interface EquipCardInfoMapper extends BaseMapper<EquipCardInfo> {
          */
         @Select("SELECT COUNT(*) FROM equip_card_info WHERE equip_card_no = #{equipCardNo} AND (deleted IS NULL OR deleted = '0')")
         int checkEquipCardExists(String equipCardNo);
+
+        /**
+         * 根据RID检查设备卡片是否存在
+         */
+        @Select("SELECT COUNT(*) FROM equip_card_info WHERE rid = #{rid} AND (deleted IS NULL OR deleted = '0')")
+        int checkEquipCardExistsByRid(String rid);
+
+        /**
+         * 根据系统提供商代码查询所有活跃的RID
+         */
+        @Select("SELECT rid FROM equip_card_info WHERE sys_prdr_code = #{sysPrdrCode} AND (deleted IS NULL OR deleted = '0')")
+        List<String> selectActiveRidsBySysPrdrCode(String sysPrdrCode);
+
+        /**
+         * 批量标记为已删除
+         */
+        @Update("UPDATE equip_card_info SET deleted = '1', deleted_time = SYSDATE WHERE rid IN (${rids})")
+        int batchMarkAsDeleted(String rids);
 }

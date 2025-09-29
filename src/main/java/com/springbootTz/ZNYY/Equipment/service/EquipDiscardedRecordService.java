@@ -20,6 +20,8 @@ import java.util.Date;
 import java.util.List;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class EquipDiscardedRecordService {
@@ -95,6 +97,10 @@ public class EquipDiscardedRecordService {
         int updateCount = 0;
         int skipCount = 0;
         int errorCount = 0;
+        int deleteCount = 0;
+
+        // 收集本次推送的所有RID
+        Set<String> currentRids = new HashSet<>();
 
         for (AssetDisposalWithDetailDTO disposal : disposalList) {
             try {
@@ -110,6 +116,9 @@ public class EquipDiscardedRecordService {
 
                 // 映射数据
                 EquipDiscardedRecord equipDiscardedRecord = mapToEquipDiscardedRecord(disposal);
+
+                // 添加到当前RID集合
+                currentRids.add(equipDiscardedRecord.getRid());
 
                 // 检查是否已存在
                 int exists = equipDiscardedRecordMapper.checkEquipDiscardedRecordExists(equipDiscardedRecord.getRid());
@@ -129,12 +138,33 @@ public class EquipDiscardedRecordService {
             }
         }
 
+        // 处理删除逻辑：标记目标库中存在但源库中不存在的记录为已删除
+        try {
+            // 查询目标库中所有未删除的RID
+            List<String> existingRids = equipDiscardedRecordMapper.selectActiveRidsBySysPrdrCode("FJZZZYKJYXGS");
+            Set<String> existingRidSet = new HashSet<>(existingRids);
+
+            // 找出需要删除的RID（目标库有但源库没有的）
+            Set<String> toDeleteRids = new HashSet<>(existingRidSet);
+            toDeleteRids.removeAll(currentRids);
+
+            if (!toDeleteRids.isEmpty()) {
+                String ridsToDelete = String.join("','", toDeleteRids);
+                deleteCount = equipDiscardedRecordMapper.batchMarkAsDeleted("'" + ridsToDelete + "'");
+                System.out.println("标记删除的RID数量: " + deleteCount);
+                System.out.println("被删除的RID: " + toDeleteRids);
+            }
+        } catch (Exception e) {
+            System.out.println("处理删除逻辑时发生错误: " + e.getMessage());
+        }
+
         System.out.println("=== 报废记录推送完成统计 ===");
         System.out.println("新增: " + insertCount + " 条");
         System.out.println("更新: " + updateCount + " 条");
+        System.out.println("删除: " + deleteCount + " 条");
         System.out.println("跳过: " + skipCount + " 条");
         System.out.println("错误: " + errorCount + " 条");
-        System.out.println("总计处理: " + (insertCount + updateCount + skipCount + errorCount) + " 条");
+        System.out.println("总计处理: " + (insertCount + updateCount + deleteCount + skipCount + errorCount) + " 条");
     }
 
     /**
@@ -162,19 +192,26 @@ public class EquipDiscardedRecordService {
         equipDiscardedRecord.setEquipCode(disposal.getField0023());
         equipDiscardedRecord.setEquipName(disposal.getField0006());
 
-        // 获取规格
+        // 必填字段：项目规格
         equipDiscardedRecord.setSpec("无");
 
+        // 必填字段：设备型号
         equipDiscardedRecord.setEquipModel(disposal.getField0013() != null ? disposal.getField0013() : "无");
+
+        // 必填字段：计量单位
         equipDiscardedRecord.setUnit("1");
+
+        // 必填字段：计量单位名称
         equipDiscardedRecord.setUnitName("个");
+
+        // 必填字段：使用部门
         equipDiscardedRecord.setUseDep(disposal.getField0019() != null ? disposal.getField0019() : "无");
 
-        // 处理设备价格，如果为null则使用0
+        // 必填字段：设备单价
         BigDecimal equipPric = disposal.getField0015();
         equipDiscardedRecord.setEquipPric(equipPric != null ? equipPric : BigDecimal.ZERO);
 
-        // 处理购买日期，如果为null则使用默认时间
+        // 必填字段：采购日期
         String dateStr = disposal.getField0014();
         Date purcDate = null;
 
@@ -191,40 +228,62 @@ public class EquipDiscardedRecordService {
                 LocalDateTime localDateTime = LocalDateTime.parse(dateStr, formatter);
                 purcDate = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
             } catch (DateTimeParseException e) {
-                // 解析失败时使用默认日期
-                purcDate = parseDate("2025-08-18 00:00:00");
+                // 解析失败时使用当前时间
+                purcDate = getCurrentTime();
             }
         } else {
-            // 日期字符串为null或空时使用默认日期
-            purcDate = parseDate("2025-08-18 00:00:00");
+            // 日期字符串为null或空时使用当前时间
+            purcDate = getCurrentTime();
         }
         equipDiscardedRecord.setPurcDate(purcDate);
 
-        // 计算已用年限
+        // 必填字段：已用年限
         Integer usedLife = calculateUsedLife(purcDate);
         equipDiscardedRecord.setUsedLife(usedLife);
 
-        // 设置其他字段
+        // 必填字段：估计残值
         equipDiscardedRecord.setEstimaResidualValue(BigDecimal.ZERO);
-        equipDiscardedRecord.setDiscardedRea(disposal.getField0009() != null ? disposal.getField0009() : "");
+
+        // 必填字段：报废原因
+        equipDiscardedRecord.setDiscardedRea(disposal.getField0009() != null ? disposal.getField0009() : "无");
+
+        // 可选字段：申请人姓名
         equipDiscardedRecord.setApplyerName("无");
-        equipDiscardedRecord.setApplyDate(getCurrentTime()); // 使用当前时间
+        // 可选字段：申请日期 - 不设置，让 SQL 中的 NULL 处理
+
+        // 可选字段：审核人姓名
         equipDiscardedRecord.setAuditOperatorName("无");
-        equipDiscardedRecord.setAuditDate(disposal.getStartDate() != null ? disposal.getStartDate() : getCurrentTime());
+
+        // 必填字段：审核日期
+        if (disposal.getStartDate() != null) {
+            equipDiscardedRecord.setAuditDate(disposal.getStartDate());
+        }
+        // 如果 startDate 为 null，让 SQL 中的 CASE 语句处理（使用当前时间）
+
+        // 必填字段：生产厂商代码
         equipDiscardedRecord.setManufacturerCode("无");
 
-        // 获取厂商名称
+        // 必填字段：生产厂商名称
         String manufacturerName = getManufacturerName(disposal.getField0023());
         equipDiscardedRecord.setManufacturerName(manufacturerName);
 
+        // 必填字段：修改标志
         equipDiscardedRecord.setState("0");
+
+        // 可选字段：预留一
         equipDiscardedRecord.setReserve1("无");
+
+        // 可选字段：预留二
         equipDiscardedRecord.setReserve2("无");
+
+        // 必填字段：数据改造厂商名称
         equipDiscardedRecord.setDataClctPrdrName("福建众智政友科技有限公司");
-        equipDiscardedRecord.setCrteTime(parseDate("2025-08-18 00:00:00"));
-        equipDiscardedRecord.setUpdtTime(disposal.getStartDate() != null ? disposal.getStartDate() : getCurrentTime());
+
+        // 必填字段：数据创建时间 - 不设置，让 SQL 中的 SYSDATE 处理
+        // 必填字段：数据更新时间 - 不设置，让 SQL 中的 SYSDATE 处理
+        // 必填字段：数据删除状态
         equipDiscardedRecord.setDeleted("0");
-        equipDiscardedRecord.setDeletedTime(parseDate("2025-08-18 00:00:00"));
+        // 可选字段：数据删除时间 - 不设置，让 SQL 中的 NULL 处理
 
         return equipDiscardedRecord;
     }
