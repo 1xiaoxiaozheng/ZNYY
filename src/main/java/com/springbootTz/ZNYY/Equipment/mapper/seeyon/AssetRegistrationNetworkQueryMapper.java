@@ -33,7 +33,6 @@ public interface AssetRegistrationNetworkQueryMapper {
                         "m.field0058, " +
                         "m.field0059, " +
                         "m.field0060, " +
-                        "m.field0063, " +
                         "m.start_date as startDate, " +
                         "d.ID as detailId, " +
                         "d.field0007, " +

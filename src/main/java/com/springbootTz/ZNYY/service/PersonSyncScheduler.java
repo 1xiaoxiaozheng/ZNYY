@@ -300,7 +300,7 @@ public class PersonSyncScheduler implements CommandLineRunner {
          }
 
          try {
-         logger.info("开始同步个人奖励称号信息");
+         logger.info("开始同步个人奖励信息");
          personSyncService.syncHonorInfoAll();
          } catch (Exception e) {
          logger.error("个人奖励称号信息同步失败", e);

@@ -24,6 +24,7 @@ import com.springbootTz.ZNYY.entity.OraclePersonPatent;
 import com.springbootTz.ZNYY.entity.OraclePersonProf;
 import com.springbootTz.ZNYY.entity.OraclePersonResearch;
 import com.springbootTz.ZNYY.entity.OraclePersonRewards;
+import com.springbootTz.ZNYY.entity.OraclePersonTrain;
 import com.springbootTz.ZNYY.entity.OracleStaffCorp;
 import com.springbootTz.ZNYY.entity.OracleStaffStudy;
 import com.springbootTz.ZNYY.entity.PostgresPerson;
@@ -1277,7 +1278,7 @@ public class PersonSyncService {
                 return oraclePersonRewardsMapper.delete(oracleQueryWrapper);
             });
 
-            // logger.info("正在从PostgreSQL查询荣誉信息数据...");
+            logger.info("正在从PostgreSQL查询荣誉信息数据...");
             List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
             // logger.info("PostgreSQL查询完成，共获取{}条记录", pgList.size());
 
@@ -1286,12 +1287,12 @@ public class PersonSyncService {
             int insertCount = 0;
 
             for (PostgresPersonDetailCustom pg : pgList) {
-                // logger.debug("正在处理第{}条记录，ID: {}", ++processCount, pg.getId());
+                logger.debug("正在处理第{}条记录，ID: {}", ++processCount, pg.getId());
 
                 // 检查detail_id是否符合条件
                 if (!"person_detail_IvMVko5s".equals(pg.getDetailId())) {
-                    // logger.debug("跳过非目标detail_id记录，当前detail_id: {}, ID: {}", pg.getDetailId(),
-                    // pg.getId());
+                    logger.debug("跳过非目标detail_id记录，当前detail_id: {}, ID: {}", pg.getDetailId(),
+                            pg.getId());
                     continue;
                 }
 
@@ -1307,24 +1308,24 @@ public class PersonSyncService {
                         fieldValues.put(fieldName, fieldValue);
 
                         // 打印每个字段的映射结果
-                        // logger.info("字段映射 - {}: [{}]", fieldName, fieldValue);
+                        logger.info("字段映射 - {}: [{}]", fieldName, fieldValue);
 
                         personRewardsFieldMapper.setOracleField(oracleRewards, fieldName, fieldValue);
                     }
 
                     // 打印关键字段的值
-                    // logger.info("记录ID: {} 的字段值:", pg.getId());
-                    // logger.info("UPLOAD_TIME: [{}]", fieldValues.get("UPLOAD_TIME"));
-                    // logger.info("GET_DATE: [{}]", fieldValues.get("GET_DATE"));
-                    // logger.info("CRTE_TIME: [{}]", fieldValues.get("CRTE_TIME"));
-                    // logger.info("UPDT_TIME: [{}]", fieldValues.get("UPDT_TIME"));
-                    // logger.info("DELETED_TIME: [{}]", fieldValues.get("DELETED_TIME"));
-                    // logger.info("USCID: [{}]", fieldValues.get("USCID"));
-                    // logger.info("ORG_NAME: [{}]", fieldValues.get("ORG_NAME"));
+                    logger.info("记录ID: {} 的字段值:", pg.getId());
+                    logger.info("UPLOAD_TIME: [{}]", fieldValues.get("uploadTime"));
+                    logger.info("GET_DATE: [{}]", fieldValues.get("awardsDate"));
+                    logger.info("CRTE_TIME: [{}]", fieldValues.get("crteTime"));
+                    logger.info("UPDT_TIME: [{}]", fieldValues.get("updtTime"));
+                    logger.info("DELETED_TIME: [{}]", fieldValues.get("deletedTime"));
+                    logger.info("USCID: [{}]", fieldValues.get("uscid"));
+                    logger.info("ORG_NAME: [{}]", fieldValues.get("orgName"));
 
-                    String uscid = (String) fieldValues.get("USCID");
-                    if (uscid == null || uscid.trim().isEmpty()) {
-                        // logger.debug("跳过空USCID记录，ID: {}", pg.getId());
+                    String uscid = (String) fieldValues.get("uscid");
+                    if (uscid == null || uscid.trim().isEmpty() || uscid.trim().equals(" ")) {
+                        logger.debug("跳过空USCID记录，ID: {}", pg.getId());
                         continue;
                     }
                     // if (!"12352230490632333M".equals(uscid.trim())) {
@@ -1333,34 +1334,34 @@ public class PersonSyncService {
                     // }
 
                     // logger.info("准备同步记录到Oracle，ORIGINAL_ID: {}, USCID: {}",
-                    // fieldValues.get("ORIGINAL_ID"), uscid);
+                    // fieldValues.get("originalId"), uscid);
 
                     try {
                         QueryWrapper<OraclePersonRewards> qw = new QueryWrapper<>();
-                        qw.eq("ORIGINAL_ID", fieldValues.get("ORIGINAL_ID"));
-                        // logger.debug("正在Oracle中查询是否存在记录，ORIGINAL_ID: {}",
-                        // fieldValues.get("ORIGINAL_ID"));
+                        qw.eq("ORIGINAL_ID", fieldValues.get("originalId"));
+                        logger.debug("正在Oracle中查询是否存在记录，ORIGINAL_ID: {}",
+                                fieldValues.get("originalId"));
                         OraclePersonRewards exist = oraclePersonRewardsMapper.selectOne(qw);
 
                         if (exist != null) {
-                            // logger.info("找到已存在记录，准备更新，RID: {}", exist.getRid());
+                            logger.info("找到已存在记录，准备更新，RID: {}", exist.getRid());
                             oracleRewards.setRid(exist.getRid());
                             oraclePersonRewardsMapper.updateById(oracleRewards);
                             updateCount++;
-                            // logger.info("更新成功");
+                            logger.info("更新成功");
                         } else {
-                            // logger.info("未找到已存在记录，准备插入新记录");
+                            logger.info("未找到已存在记录，准备插入新记录");
                             if (oracleRewards.getRid() == null || oracleRewards.getRid().trim().isEmpty()) {
-                                // logger.warn("RID为空，跳过插入，ORIGINAL_ID: {}", fieldValues.get("ORIGINAL_ID"));
+                                logger.warn("RID为空，跳过插入，ORIGINAL_ID: {}", fieldValues.get("originalId"));
                                 continue;
                             }
                             oraclePersonRewardsMapper.insert(oracleRewards);
                             insertCount++;
-                            // logger.info("插入成功");
+                            logger.info("插入成功");
                         }
                     } catch (Exception e) {
-                        // logger.error("Oracle操作失败，ORIGINAL_ID: {}, 错误: {}",
-                        // fieldValues.get("ORIGINAL_ID"),e.getMessage(), e);
+                        logger.error("Oracle操作失败，ORIGINAL_ID: {}, 错误: {}",
+                                fieldValues.get("originalId"), e.getMessage(), e);
                     }
 
                 } catch (Exception e) {
@@ -1369,8 +1370,8 @@ public class PersonSyncService {
                 }
             }
 
-            // logger.info("同步完成，总处理: {}条，更新: {}条，插入: {}条", processCount, updateCount,
-            // insertCount);
+            logger.info("同步完成，总处理: {}条，更新: {}条，插入: {}条", processCount, updateCount,
+                    insertCount);
         } catch (Exception e) {
             logger.error("同步过程发生异常: {}", e.getMessage(), e);
             throw e;
@@ -1604,8 +1605,9 @@ public class PersonSyncService {
     }
 
     /**
-     * 全量同步Postgres研究生导师标到Oracle，original_id存在则update，不存在则insert
+     * 全量同步Postgres上级单位进修信息到Oracle，original_id存在则update，不存在则insert
      * 只同步USCID有值且为指定机构代码的数据
+     * Oracle表：HUM_PSN_TRAIN
      */
     public void syncSuperviseInfoAll() {
         logger.info("开始执行syncSuperviseInfoAll同步...");
@@ -1621,21 +1623,21 @@ public class PersonSyncService {
 
             // 使用批量删除工具方法删除Oracle表中的记录
             batchDelete(toDeleteIds, batchIds -> {
-                QueryWrapper<OracleStaffStudy> oracleQueryWrapper = new QueryWrapper<>();
+                QueryWrapper<OraclePersonTrain> oracleQueryWrapper = new QueryWrapper<>();
                 oracleQueryWrapper.in("ORIGINAL_ID", batchIds);
-                return oracleStaffStudyMapper.delete(oracleQueryWrapper);
+                return oraclePersonTrainMapper.delete(oracleQueryWrapper);
             });
 
-            // logger.info("正在从PostgreSQL查询研究生导师数据...");
+            logger.info("正在从PostgreSQL查询上级单位进修数据...");
             List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
-            // logger.info("PostgreSQL查询完成，共获取{}条记录", pgList.size());
+            logger.info("PostgreSQL查询完成，共获取{}条记录", pgList.size());
 
             int processCount = 0;
             int updateCount = 0;
             int insertCount = 0;
 
             for (PostgresPersonDetailCustom pg : pgList) {
-                // logger.debug("正在处理第{}条记录，ID: {}", ++processCount, pg.getId());
+                logger.debug("正在处理第{}条记录，ID: {}", ++processCount, pg.getId());
 
                 // 检查detail_id是否符合条件
                 if (!"person_detail_ZrcjY4VG".equals(pg.getDetailId())) {
@@ -1645,7 +1647,7 @@ public class PersonSyncService {
                 }
 
                 Map<String, Function<PostgresPersonDetailCustom, String>> mapping = personTrainingFieldMapper.FIELD_MAPPING;
-                OracleStaffStudy oracleStaffStudy = new OracleStaffStudy();
+                OraclePersonTrain oraclePersonTrain = new OraclePersonTrain();
 
                 try {
                     // 记录所有字段的映射过程
@@ -1656,25 +1658,25 @@ public class PersonSyncService {
                         fieldValues.put(fieldName, fieldValue);
 
                         // 打印每个字段的映射结果
-                        // logger.info("字段映射 - {}: [{}]", fieldName, fieldValue);
+                        logger.info("字段映射 - {}: [{}]", fieldName, fieldValue);
 
-                        personStudyFieldMapper.setOracleField(oracleStaffStudy, fieldName, fieldValue);
+                        personTrainingFieldMapper.setOracleField(oraclePersonTrain, fieldName, fieldValue);
                     }
 
                     // 打印关键字段的值
-                    // logger.info("记录ID: {} 的字段值:", pg.getId());
-                    // logger.info("UPLOAD_TIME: [{}]", fieldValues.get("UPLOAD_TIME"));
-                    // logger.info("START_TIME: [{}]", fieldValues.get("START_TIME"));
-                    // logger.info("END_TIME: [{}]", fieldValues.get("END_TIME"));
-                    // logger.info("CRTE_TIME: [{}]", fieldValues.get("CRTE_TIME"));
-                    // logger.info("UPDT_TIME: [{}]", fieldValues.get("UPDT_TIME"));
-                    // logger.info("DELETED_TIME: [{}]", fieldValues.get("DELETED_TIME"));
-                    // logger.info("USCID: [{}]", fieldValues.get("USCID"));
-                    // logger.info("ORG_NAME: [{}]", fieldValues.get("ORG_NAME"));
+                    logger.info("记录ID: {} 的字段值:", pg.getId());
+                    logger.info("UPLOAD_TIME: [{}]", fieldValues.get("UPLOAD_TIME"));
+                    logger.info("TRAIN_BEGNDATE: [{}]", fieldValues.get("TRAIN_BEGNDATE"));
+                    logger.info("TRAIN_ENDDATE: [{}]", fieldValues.get("TRAIN_ENDDATE"));
+                    logger.info("CRTE_TIME: [{}]", fieldValues.get("CRTE_TIME"));
+                    logger.info("UPDT_TIME: [{}]", fieldValues.get("UPDT_TIME"));
+                    logger.info("DELETED_TIME: [{}]", fieldValues.get("DELETED_TIME"));
+                    logger.info("USCID: [{}]", fieldValues.get("USCID"));
+                    logger.info("ORG_NAME: [{}]", fieldValues.get("ORG_NAME"));
 
                     String uscid = (String) fieldValues.get("USCID");
-                    if (uscid == null || uscid.trim().isEmpty()) {
-                        // logger.debug("跳过空USCID记录，ID: {}", pg.getId());
+                    if (uscid == null || uscid.trim().isEmpty() || uscid.trim().equals(" ")) {
+                        logger.debug("跳过空USCID记录，ID: {}", pg.getId());
                         continue;
                     }
                     // if (!"12352230490632333M".equals(uscid.trim())) {
@@ -1686,25 +1688,25 @@ public class PersonSyncService {
                     // fieldValues.get("ORIGINAL_ID"), uscid);
 
                     try {
-                        QueryWrapper<OracleStaffStudy> qw = new QueryWrapper<>();
+                        QueryWrapper<OraclePersonTrain> qw = new QueryWrapper<>();
                         qw.eq("ORIGINAL_ID", fieldValues.get("ORIGINAL_ID"));
                         // logger.debug("正在Oracle中查询是否存在记录，ORIGINAL_ID: {}",
                         // fieldValues.get("ORIGINAL_ID"));
-                        OracleStaffStudy exist = oracleStaffStudyMapper.selectOne(qw);
+                        OraclePersonTrain exist = oraclePersonTrainMapper.selectOne(qw);
 
                         if (exist != null) {
                             // logger.info("找到已存在记录，准备更新，RID: {}", exist.getRid());
-                            oracleStaffStudy.setRid(exist.getRid());
-                            oracleStaffStudyMapper.updateById(oracleStaffStudy);
+                            oraclePersonTrain.setRid(exist.getRid());
+                            oraclePersonTrainMapper.updateById(oraclePersonTrain);
                             updateCount++;
                             // logger.info("更新成功");
                         } else {
                             // logger.info("未找到已存在记录，准备插入新记录");
-                            if (oracleStaffStudy.getRid() == null || oracleStaffStudy.getRid().trim().isEmpty()) {
-                                // logger.warn("RID为空，跳过插入，ORIGINAL_ID: {}", fieldValues.get("ORIGINAL_ID"));
+                            if (oraclePersonTrain.getRid() == null || oraclePersonTrain.getRid().trim().isEmpty()) {
+                                logger.warn("RID为空，跳过插入，ORIGINAL_ID: {}", fieldValues.get("ORIGINAL_ID"));
                                 continue;
                             }
-                            oracleStaffStudyMapper.insert(oracleStaffStudy);
+                            oraclePersonTrainMapper.insert(oraclePersonTrain);
                             insertCount++;
                             // logger.info("插入成功");
                         }
@@ -1719,8 +1721,7 @@ public class PersonSyncService {
                 }
             }
 
-            // logger.info("同步完成，总处理: {}条，更新: {}条，插入: {}条", processCount, updateCount,
-            // insertCount);
+            logger.info("同步完成，总处理: {}条，更新: {}条，插入: {}条", processCount, updateCount, insertCount);
         } catch (Exception e) {
             logger.error("同步过程发生异常: {}", e.getMessage(), e);
             throw e;

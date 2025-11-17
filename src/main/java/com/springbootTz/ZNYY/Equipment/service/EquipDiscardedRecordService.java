@@ -178,8 +178,19 @@ public class EquipDiscardedRecordService {
                 .valueOf(unitInfoToolMapper.selectUnitCodeByName(Long.parseLong(disposal.getField0034())));
         String unitName = unitInfoToolMapper.selectUnitNameById(Long.parseLong((disposal.getField0034())));
 
-        // 生成RID: uscid+FJZZZYKJYXGS+discarded_no
-        String rid = unitCode + "FJZZZYKJYXGS" + disposal.getField0001();
+        // 生成RID: uscid+FJZZZYKJYXGS+discarded_no+detailId（或equipCode）
+        // 使用detailId确保同一报废单的多条明细记录有唯一的RID
+        String ridSuffix;
+        if (disposal.getDetailId() != null) {
+            ridSuffix = disposal.getField0001() + "_" + disposal.getDetailId();
+        } else if (disposal.getField0023() != null && !disposal.getField0023().trim().isEmpty()) {
+            // 如果detailId为空，使用设备代码作为备选
+            ridSuffix = disposal.getField0001() + "_" + disposal.getField0023();
+        } else {
+            // 如果都为空，使用主表ID作为备选
+            ridSuffix = disposal.getField0001() + "_" + (disposal.getId() != null ? disposal.getId() : "UNKNOWN");
+        }
+        String rid = unitCode + "FJZZZYKJYXGS" + ridSuffix;
 
         // 设置基本信息
         equipDiscardedRecord.setRid(rid);

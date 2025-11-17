@@ -31,7 +31,7 @@ public interface AssetRegistrationMedicalQueryMapper {
                         "m.field0065, " +
                         "m.field0066, " +
                         "m.field0067, " +
-                        "m.field0069, " +
+
                         "m.start_date as startDate, " +
                         "d.ID as detailId, " +
                         "d.field0006, " +

@@ -181,7 +181,6 @@ public class PushZNYYService implements CommandLineRunner {
             logger.info("【定时任务】推送设备折旧记录到znyy完成");
         } catch (Exception e) {
             logger.error("【定时任务】推送设备折旧记录到znyy失败", e);
-            throw e;
         }
 
         logger.info("【定时任务】开始推送seeyon设备报废记录到znyy...");
@@ -190,7 +189,6 @@ public class PushZNYYService implements CommandLineRunner {
             logger.info("【定时任务】推送seeyon设备报废记录到znyy完成");
         } catch (Exception e) {
             logger.error("【定时任务】推送seeyon设备报废记录到znyy失败", e);
-            throw e;
         }
 
         logger.info("【定时任务】开始推送设备登记表————车辆登记数据到znyy...");
@@ -199,7 +197,6 @@ public class PushZNYYService implements CommandLineRunner {
             logger.info("【定时任务】推送设备登记表————车辆登记数据到znyy完成");
         } catch (Exception e) {
             logger.error("【定时任务】推送设备登记表————车辆登记数据到znyy失败", e);
-            throw e;
         }
 
         logger.info("【定时任务】开始推送设备登记表————家居设备数据到znyy...");
@@ -208,7 +205,6 @@ public class PushZNYYService implements CommandLineRunner {
             logger.info("【定时任务】推送设备登记表————家居设备数据到znyy完成");
         } catch (Exception e) {
             logger.error("【定时任务】推送设备登记表————家居设备数据到znyy失败", e);
-            throw e;
         }
 
         logger.info("【定时任务】开始推送设备登记表————房屋土地数据到znyy...");
@@ -217,7 +213,6 @@ public class PushZNYYService implements CommandLineRunner {
             logger.info("【定时任务】推送设备登记表————房屋土地数据到znyy完成");
         } catch (Exception e) {
             logger.error("【定时任务】推送设备登记表————房屋土地数据到znyy失败", e);
-            throw e;
         }
 
         logger.info("【定时任务】开始推送设备登记表————网络设备数据到znyy...");
@@ -226,7 +221,6 @@ public class PushZNYYService implements CommandLineRunner {
             logger.info("【定时任务】推送设备登记表————网络设备数据到znyy完成");
         } catch (Exception e) {
             logger.error("【定时任务】推送设备登记表————网络设备数据到znyy失败", e);
-            throw e;
         }
 
         logger.info("【定时任务】开始推送设备登记表————无形资产数据到znyy...");
@@ -235,7 +229,6 @@ public class PushZNYYService implements CommandLineRunner {
             logger.info("【定时任务】推送设备登记表————无形资产数据到znyy完成");
         } catch (Exception e) {
             logger.error("【定时任务】推送设备登记表————无形资产数据到znyy失败", e);
-            throw e;
         }
 
         logger.info("【定时任务】开始推送设备登记表————医疗设备数据到znyy...");
@@ -244,14 +237,12 @@ public class PushZNYYService implements CommandLineRunner {
             logger.info("【定时任务】推送设备登记表————医疗设备数据到znyy完成");
         } catch (Exception e) {
             logger.error("【定时任务】推送设备登记表————医疗设备数据到znyy失败", e);
-            throw e;
         }
     }
 
     // 开机自启
     @Override
     public void run(String... args) {
-
 
         logger.info("【定时任务】开始推送seeyon设备折旧记录到znyy...");
         try {
