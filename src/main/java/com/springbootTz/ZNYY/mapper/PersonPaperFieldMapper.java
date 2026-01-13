@@ -90,7 +90,7 @@ public class PersonPaperFieldMapper {
             put("SYS_PRDR_CODE", toSafeString(p -> SYS_PRDR_CODE));
             put("SYS_PRDR_NAME", toSafeString(p -> SYS_PRDR_NAME));
             put("DATA_CLCT_PRDR_NAME", toSafeString(p -> DATA_CLCT_PRDR_NAME));
-            put("ORIGINAL_ID", toSafeString(p -> p.getId() == null ? " " : p.getId()));
+            put("ORIGINAL_ID", toSafeString(p -> p.getId() == null ? " " : p.getPersonId()));
             put("STAFF_ID", toSafeString(p -> p.getPersonId() == null ? " " : p.getPersonId()));
             put("STAFF_NO", toSafeString(p -> {
                 PostgresPerson person = postgresPersonMapper.selectById(p.getPersonId());
@@ -109,35 +109,46 @@ public class PersonPaperFieldMapper {
             put("DELETED_TIME", toSafeString(p -> " "));
             put("PAPER_DATE", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_nPYXR5Ob");
-                return v == null ? new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) : v;
+                // 空值（null/空字符串/纯空格）返回默认无效日期 1900-01-01 00:00:00
+                if (v == null || v.trim().isEmpty()) {
+                    return "1900-01-01 00:00:00";
+                }
+                // 非空值去空格，保留原始日期格式（假设原始格式符合 yyyy-MM-dd HH:mm:ss 或兼容格式）
+                return v.trim();
             }));
             put("PERIODICAL_NAME", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_YSgpMOCI");
-                return v == null ? " " : v;
+                // 刊物名称不能为空，如果为空返回"-"
+                return (v == null || v.trim().isEmpty()) ? "-" : v.trim();
             }));
             put("PERIODICAL_LEV_CODE", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_tQfCIhAp");
-                return v == null ? " " : v;
+                // 刊物级别代码不能为空，如果为空返回"-"
+                return (v == null || v.trim().isEmpty()) ? "-" : v.trim();
             }));
             put("PERIODICAL_LEV_NAME", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_tQfCIhAp");
-                return v == null ? " " : v;
+                // 刊物级别名称不能为空，如果为空返回"-"
+                return (v == null || v.trim().isEmpty()) ? "-" : v.trim();
             }));
             put("PAPER_TITLE", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_fKUFpd4o");
-                return v == null ? " " : v;
+                // 论文标题不能为空，如果为空返回"-"
+                return (v == null || v.trim().isEmpty()) ? "-" : v.trim();
             }));
             put("IS_SCI", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_InaqBBym");
-                return v == null ? " " : v;
+                return v == null ? "否" : v;
             }));
             put("PAPER_FACTORS", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_sWZvSjtj");
-                return v == null ? " " : v;
+                // SCI论文影响因子不能为空，如果为空返回"-"
+                return (v == null || v.trim().isEmpty()) ? "-" : v.trim();
             }));
             put("PAPER_SORT", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_pStfKDeQ");
-                return v == null ? " " : v;
+                // 作者排名不能为空，如果为空返回"-"
+                return (v == null || v.trim().isEmpty()) ? "-" : v.trim();
             }));
         }
     };

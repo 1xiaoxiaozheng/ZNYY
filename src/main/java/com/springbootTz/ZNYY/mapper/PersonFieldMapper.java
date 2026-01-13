@@ -3,6 +3,8 @@ package com.springbootTz.ZNYY.mapper;
 import com.springbootTz.ZNYY.entity.PostgresPerson;
 import com.springbootTz.ZNYY.entity.OraclePerson;
 import com.springbootTz.ZNYY.mapper.oracle.OraclePersonMapper;
+import com.springbootTz.ZNYY.mapper.postgresql.OursEnumValueMapper;
+import com.springbootTz.ZNYY.mapper.postgresql.PostgresPersonDetailEducationExperienceMapper;
 import com.springbootTz.ZNYY.mapper.postgresql.PostgresPersonMapper;
 import com.springbootTz.ZNYY.service.OursEnumValueService;
 import com.springbootTz.ZNYY.tool.DepartmentQueryTool;
@@ -38,12 +40,18 @@ public class PersonFieldMapper {
         private static final Logger logger = LoggerFactory.getLogger(PersonFieldMapper.class);
         @Autowired
         private DepartmentQueryTool departmentQueryTool;
+
+        @Autowired
+        private PostgresPersonDetailEducationExperienceMapper postgresPersonDetailEducationExperienceMapper;
         @Autowired
         private OrgCodeQueryTool orgCodeQueryTool;
         @Autowired
         private OrgCodeConcatTool orgCodeConcatTool;
         @Autowired
         private EnumValueQueryTool enumValueQueryTool;
+
+        @Autowired
+        private OursEnumValueMapper oursEnumValueMapper;
         @Autowired
         @Qualifier("postgresDataSource")
         private DataSource postgresqlDataSource;
@@ -127,11 +135,11 @@ public class PersonFieldMapper {
                         put("DEPT_NAME", toSafeString(p -> departmentQueryTool.getOrgNameByDeptId(p.getDeptId())));
                         put("PERSON_PROP_CODE", toSafeString(p -> {
                                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_xLIaqBeW");
-                                return v == null ? " " : v;
+                                return v == null ? "-" : v;
                         }));
                         put("PERSON_PROP_NAME", toSafeString(p ->{
                                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_xLIaqBeW");
-                                return v == null ? " " : oursEnumValueService.getDisplayById(v);
+                                return v == null ? "-" : oursEnumValueService.getDisplayById(v);
                         }));
                         put("COME_FROM_ORG", toSafeString(p -> COME_FROM_ORG));
                         put("WORK_YM", toSafeString(p -> {
@@ -145,20 +153,66 @@ public class PersonFieldMapper {
                                         return null;
                                 return p.getStartTime().toLocalDateTime().toLocalDate().toString();
                         }));
-                        put("DUTY_CODE", toSafeString(PostgresPerson::getJobId));
-                        put("DUTY_NAME", toSafeString(PostgresPerson::getJobName));
-                        put("MAX_EDU_BACKGROUND_CODE", toSafeString(p -> p.getEducationType()));
-                        put("MAX_EDU_BACKGROUND_NAME", toSafeString(p -> p.getEducationType() == null ? null
-                                        : enumValueQueryTool.getDisplayByEnumNameAndValue("学历类型枚举",
-                                                        p.getEducationType())));
+                        put("DUTY_CODE", toSafeString(p -> {
+                                String jobId = p.getJobId();
+                                // 空值（null/空字符串/纯空格）返回 "-"，非空返回去空格后的值
+                                return (jobId == null || jobId.trim().isEmpty()) ? "-" : jobId.trim();
+                        }));
+                        put("DUTY_NAME", toSafeString(
+                                p ->{
+                                        String id = p.getJobId();
+                                        if (id == null){
+                                                return "-";
+                                        }
+                                         String name = oursEnumValueMapper.selectNameById(id);
+
+                                        return name == null ? "-" : name;}
+                        ));
+                        put("MAX_EDU_BACKGROUND_CODE", toSafeString(p -> {
+                                Integer v = p.getEducationType();
+                                if (v == null) {
+                                        return "-";
+                                }
+                                return String.valueOf(v);
+                        }));
+                        put("MAX_EDU_BACKGROUND_NAME", toSafeString(p ->
+                                {
+                                        Integer v = p.getEducationType();
+                                        String name = oursEnumValueMapper.selectDisplayByValue(v);
+                                        return name == null ? "-" : name;
+                                }
+                                ));
                         put("INOROUT_DATE", toSafeString(p -> {
                                 if (p.getEndTime() == null)
                                         return null;
                                 return p.getEndTime().toLocalDateTime().toLocalDate().toString();
                         }));
                         put("HIRE_STATUS_CODE", toSafeString(p -> p.getState()));
-                        put("HIRE_STATUS_NAME", toSafeString(p -> p.getState() == null ? null
-                                        : enumValueQueryTool.getDisplayByEnumNameAndValue("人员状态枚举", p.getState())));
+                        //6 种状态：正式、试用、非正式、返聘、离职、退休
+                        put("HIRE_STATUS_NAME", toSafeString(p ->
+                                {
+                                     Integer state = p.getState();
+                                     if (state == null) {
+                                             return "-";
+                                     }
+                                      switch (state) {
+                                             case 1:
+                                                     return "正式";
+                                             case 2:
+                                                     return "试用";
+                                             case 3:
+                                                     return "非正式";
+                                             case 4:
+                                                     return "返聘";
+                                             case 5:
+                                                     return "离职";
+                                             case 6:
+                                                     return "退休";
+                                             default:
+                                                     return "-";
+                                      }
+                                }
+                                ));
                         put("OUT_TYPE_CODE", toSafeString(p -> p.getEndReasonType()));
                         put("OUT_TYPE_NAME", toSafeString(p -> {
                                 if (p.getEndReasonType() == null)
@@ -193,7 +247,11 @@ public class PersonFieldMapper {
                         put("DELETED_TIME", toSafeString(p -> ""));
                         put("UPLOAD_TIME", toSafeString(p -> java.time.LocalDateTime.now()
                                         .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))));
-                        put("CURR_ADDR", toSafeString(PostgresPerson::getAddress));
+                        put("CURR_ADDR", toSafeString(p -> {
+                                String address = p.getAddress();
+                                // 空值（null/空字符串/纯空格）返回 "-"，非空返回去空格后的值
+                                return (address == null || address.trim().isEmpty()) ? "-" : address.trim();
+                        }));
                         put("PSN_TEL", toSafeString(PostgresPerson::getPhone));
                         put("EMPR_POSCODE",
                                         toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
@@ -201,46 +259,136 @@ public class PersonFieldMapper {
                         put("JOIN_PARTY_YM",
                                         toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
                                                         "person_hvsLnzBc")));
-                        put("MAJOR_TYPE_CODE",
-                                        toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
-                                                        "person_uJhLfKxb")));
-                        put("MAJOR_TYPE_NAME",
-                                        toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
-                                                        "person_uJhLfKxb")));
+                        // MAJOR_TYPE_CODE：空值返回 "-"，非空去空格
+                        put("MAJOR_TYPE_CODE", toSafeString(p -> {
+                                String v = JsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_uJhLfKxb");
+                                return (v == null || v.trim().isEmpty()) ? "-" : v.trim();
+                        }));
+
+                        // MAJOR_TYPE_NAME：逻辑与 CODE 完全一致（空值 "-"，非空去空格）
+                        put("MAJOR_TYPE_NAME", toSafeString(p -> {
+                                String v = JsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_uJhLfKxb");
+                                return (v == null || v.trim().isEmpty()) ? "-" : v.trim();
+                        }));
                         put("WORK_UNIT", toSafeString(
                                         p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_xsM0Ez44")));
-                        put("COME_PROP_CODE",
-                                        toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
-                                                        "person_vJMvshZ8")));
+                        put("COME_PROP_CODE", toSafeString(p -> {
+                                String v = JsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_vJMvshZ8");
+                                return (v == null || v.trim().isEmpty()) ? "-" : v.trim();
+                        }));
                         put("COME_PROP_NAME", toSafeString(
                                 p ->{
                                         String v = JsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_vJMvshZ8");
-                                        return v == null ? " " : oursEnumValueService.getDisplayById(v);
+                                        return v == null ? "-" : oursEnumValueService.getDisplayById(v);
                                 } ));
-                        put("COME_TYPE_CODE",
-                                        toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
-                                                        "person_3RAFf7Nh")));
-                        put("COME_TYPE_NAME",
-                                        toSafeString(p ->{
-                                                String v = JsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_3RAFf7Nh");
-                                                return v == null ? " " : oursEnumValueService.getDisplayById(v);
-                                        } ));
+                        // COME_TYPE_CODE：空值（null/空字符串/纯空格）返回 "-"，非空返回去空格后的值
+                        put("COME_TYPE_CODE", toSafeString(p -> {
+                                String v = JsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_3RAFf7Nh");
+                                return (v == null || v.trim().isEmpty()) ? "-" : v.trim();
+                        }));
+
+                        // COME_TYPE_NAME：空值返回 "-"，非空按 code 查 display，查不到也返回 "-"
+                        put("COME_TYPE_NAME", toSafeString(p -> {
+                                String code = JsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_3RAFf7Nh");
+                                // 1. 空值直接返回 "-"
+                                if (code == null || code.trim().isEmpty()) {
+                                        return "-";
+                                }
+                                // 2. 非空查枚举，查不到返回 "-"（避免返回 null）
+                                String display = oursEnumValueService.getDisplayById(code.trim());
+                                return display != null && !display.trim().isEmpty() ? display.trim() : "-";
+                        }));
+
                         put("FIRST_EDU_BACKGROUND_CODE",
-                                        toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
-                                                        "person_MBYwLXDw")));
+                                        toSafeString(p ->
+                                                {
+                                                        String v = postgresPersonDetailEducationExperienceMapper.selectDegreeTypeByPersonId(p.getId());
+                                                        if (v == null){
+                                                                return "-";
+                                                        }
+                                                         switch (v) {
+                                                                case "1":
+                                                                        return "20";
+                                                                case "2":
+                                                                        return "14";
+                                                                case "3":
+                                                                        return "21";
+                                                                default:
+                                                                        return "-";
+                                                         }
+                                                }
+                                                ));
                         put("FIRST_EDU_BACKGROUND_NAME",
                                         toSafeString(p -> {
-                                                String v = JsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_MBYwLXDw");
-                                                return v == null ? " " : oursEnumValueService.getDisplayById(v);
+                                                String v = postgresPersonDetailEducationExperienceMapper.selectDegreeTypeByPersonId(p.getId());
+                                                if (v == null){
+                                                        return "-";
+                                                }
+                                                 switch (v) {
+                                                        case "1":
+                                                                return "博士研究生毕业";
+                                                        case "2":
+                                                                return "硕士研究生毕业";
+                                                        case "3":
+                                                                return "大学本科毕业";
+                                                        default:
+                                                                return "-";
+                                                 }
                                         }));
-                        put("DEGREE_CODE",
-                                        toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
-                                                        "person_EL6UH78b")));
+                       //学位代码和学位名称——>更改成三一网的内容
+                        // 01博士
+                        //02硕士
+                        //03学士
+                        /**
+                         * 这是新势力目前的
+                         * 学士	1
+                         * 硕士	2
+                         * 博士	3
+                         * 名誉博士	4
+                         * 未取得学位	5
+                         */
+                        /**
+                         * SELECT degree_type from ehr_org_person_detail_education_experience  WHERE person_id ='';
+                         * 也就是要用这边的主键id去查教育明细表
+                         */
                         put("DEGREE_NAME",
-                                        toSafeString(p -> {
-                                                String v = JsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_EL6UH78b");
-                                                 return v == null ? " " : oursEnumValueService.getDisplayById(v);
-                                        }));
+                                toSafeString(p -> {
+                                        String v = postgresPersonDetailEducationExperienceMapper.selectDegreeTypeByPersonId(p.getId());
+                                        if (v == null) {
+                                                return "-"; // 已处理 null，没问题
+                                        }
+                                        switch (v) {
+                                                case "1":
+                                                        return "学士";
+                                                case "2":
+                                                        return "硕士";
+                                                case "3":
+                                                        return "博士";
+                                                default: // 补充 default，避免漏判
+                                                        return "-";
+                                        }
+                                }));
+
+                        put("DEGREE_CODE",
+                                toSafeString(p -> {
+                                        String v = postgresPersonDetailEducationExperienceMapper.selectDegreeTypeByPersonId(p.getId());
+                                        if (v == null) { // 关键修复：处理 v 为 null 的情况
+                                                return "-";
+                                        }
+                                        switch (v) {
+                                                case "1":
+                                                        return "3";
+                                                case "2":
+                                                        return "2";
+                                                case "3":
+                                                        return "1";
+                                                default:
+                                                        return "-";
+                                        }
+                                }));
+
+
+
                         put("FIRST_LEVEL_DISC_CODE",
                                         toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
                                                         "person_j4dW8oSZ")));
@@ -256,36 +404,59 @@ public class PersonFieldMapper {
                         put("LEVEL_SPECIAL",
                                         toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
                                                         "person_x3S8YcGe")));
-                        put("TECHNOLOGY_GET_CODE",
-                                        toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
-                                                        "person_bfyynNCJ")));
-                        put("TECHNOLOGY_GET_NAME",
-                                        toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
-                                                        "person_bfyynNCJ")));
-                        put("TECHNOLOGY_GET_LEVEL_CODE",
-                                        toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
-                                                        "person_NdOd7wLk")));
-                        put("TECHNOLOGY_GET_LEVEL_NAME",
-                                        toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
-                                                        "person_NdOd7wLk")));
+                        // TECHNOLOGY_GET_CODE：空值（null/空字符串/纯空格）返回 "-"，非空去空格
+                        put("TECHNOLOGY_GET_CODE", toSafeString(p -> {
+                                String v = JsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_bfyynNCJ");
+                                return (v == null || v.trim().isEmpty()) ? "-" : v.trim();
+                        }));
+
+                        // TECHNOLOGY_GET_NAME：逻辑与 CODE 完全一致，空值返回 "-"，非空去空格
+                        put("TECHNOLOGY_GET_NAME", toSafeString(p -> {
+                                String v = JsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_bfyynNCJ");
+                                return (v == null || v.trim().isEmpty()) ? "-" : v.trim();
+                        }));
+                        // TECHNOLOGY_GET_LEVEL_CODE：空值（null/空字符串/纯空格）返回 "-"，非空去空格
+                        put("TECHNOLOGY_GET_LEVEL_CODE", toSafeString(p -> {
+                                String v = JsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_NdOd7wLk");
+                                return (v == null || v.trim().isEmpty()) ? "-" : v.trim();
+                        }));
+
+                        // TECHNOLOGY_GET_LEVEL_NAME：逻辑与 CODE 完全一致，空值返回 "-"，非空去空格
+                        put("TECHNOLOGY_GET_LEVEL_NAME", toSafeString(p -> {
+                                String v = JsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_NdOd7wLk");
+                                return (v == null || v.trim().isEmpty()) ? "-" : v.trim();
+                        }));
                         put("TECHNOLOGY_GET_YM",
                                         toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
                                                         "person_10Eltjqi")));
-                        put("PROFTECHTTL_APPO_CODE",
-                                        toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
-                                                        "person_BCrHmhQg")));
-                        put("PROFTECHTTL_APPO_NAME",
-                                        toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
-                                                        "person_BCrHmhQg")));
-                        put("RES_PROFTECHTTL_CODE",
-                                        toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
-                                                        "person_MEPKPpNn")));
-                        put("RES_PROFTECHTTL_NAME",
-                                        toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
-                                                        "person_MEPKPpNn")));
-                        put("PROFTECHTTL_APPO_YM",
-                                        toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
-                                                        "person_tb3prk1G")));
+                        // PROFTECHTTL_APPO_CODE：空值（null/空字符串/纯空格）返回 "-"，非空去空格
+                        put("PROFTECHTTL_APPO_CODE", toSafeString(p -> {
+                                String v = JsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_BCrHmhQg");
+                                return (v == null || v.trim().isEmpty()) ? "-" : v.trim();
+                        }));
+
+                        // PROFTECHTTL_APPO_NAME：逻辑与 CODE 完全一致，空值返回 "-"，非空去空格
+                        put("PROFTECHTTL_APPO_NAME", toSafeString(p -> {
+                                String v = JsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_BCrHmhQg");
+                                return (v == null || v.trim().isEmpty()) ? "-" : v.trim();
+                        }));
+                        // RES_PROFTECHTTL_CODE：空值（null/空字符串/纯空格）返回 "-"，非空去空格
+                        put("RES_PROFTECHTTL_CODE", toSafeString(p -> {
+                                String v = JsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_MEPKPpNn");
+                                return (v == null || v.trim().isEmpty()) ? "-" : v.trim();
+                        }));
+
+                        // RES_PROFTECHTTL_NAME：逻辑与 CODE 完全一致，空值返回 "-"，非空去空格
+                        put("RES_PROFTECHTTL_NAME", toSafeString(p -> {
+                                String v = JsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_MEPKPpNn");
+                                return (v == null || v.trim().isEmpty()) ? "-" : v.trim();
+                        }));
+                        // PROFTECHTTL_APPO_YM：空值返回无效时间 1900-01-01，非空去空格
+                        put("PROFTECHTTL_APPO_YM", toSafeString(p -> {
+                                String v = JsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_tb3prk1G");
+                                // 空值（null/空字符串/纯空格）返回统一无效日期，非空返回去空格后的值
+                                return (v == null || v.trim().isEmpty()) ? "1900-01-01 00:00:00" : v.trim();
+                        }));
                         put("PRACTICE_NUMBER",
                                         toSafeString(p -> JsonKeyValueTool.getValueByKey(p.getCustomFields(),
                                                         "person_9Rmob2Sg")));

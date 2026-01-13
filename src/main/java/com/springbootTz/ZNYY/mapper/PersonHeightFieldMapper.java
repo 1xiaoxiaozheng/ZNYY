@@ -13,6 +13,7 @@ import com.springbootTz.ZNYY.mapper.postgresql.PostgresPersonDetailCustomMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -30,6 +31,8 @@ import java.util.function.Function;
  */
 @Component
 public class PersonHeightFieldMapper {
+    private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
+
     @Autowired
     private DepartmentQueryTool departmentQueryTool;
     @Autowired
@@ -93,7 +96,7 @@ public class PersonHeightFieldMapper {
             put("SYS_PRDR_CODE", toSafeString(p -> SYS_PRDR_CODE));
             put("SYS_PRDR_NAME", toSafeString(p -> SYS_PRDR_NAME));
             put("DATA_CLCT_PRDR_NAME", toSafeString(p -> DATA_CLCT_PRDR_NAME));
-            put("ORIGINAL_ID", toSafeString(p -> p.getId() == null ? " " : p.getId()));
+            put("ORIGINAL_ID", toSafeString(p -> p.getId() == null ? " " : p.getPersonId()));
             put("STAFF_ID", toSafeString(p -> p.getPersonId() == null ? " " : p.getPersonId()));
             put("STAFF_NO", toSafeString(p -> {
                 PostgresPerson person = postgresPersonMapper.selectById(p.getPersonId());
@@ -112,31 +115,32 @@ public class PersonHeightFieldMapper {
             put("DELETED_TIME", toSafeString(p -> " "));
             put("HEIGTH_TYPE_CODE", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_U70xmuEa");
-                return v == null ? " " : v;
+                return v == null ? "-" : v;
             }));
             put("HEIGTH_TYPE_NAME", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_U70xmuEa");
-                return v == null ? " " : v;
+                return v == null ? "-" : v;
             }));
             put("HEIGTH_NAME", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_7DlbEz1i");
-                return v == null ? " " : v;
+                return v == null ? "-" : v;
             }));
             put("HEIGTH_TIME", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_s165rnZo");
-                return v == null ? LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) : v;
+                // 空值（null/空字符串/纯空格）返回统一无效时间，非空则返回去空格后的原始值（需确保格式为 yyyy-MM-dd HH:mm:ss）
+                return (v == null || v.trim().isEmpty()) ? "1900-01-01 00:00:00" : v.trim();
             }));
             put("HEIGTH_DEMO", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_Jduog8eJ");
-                return v == null ? " " : v;
+                return v == null ? "-" : v;
             }));
             put("DEPT_CODE", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_UdICIK1o");
-                return v == null ? " " : v;
+                return v == null ? "-" : v;
             }));
             put("DEPT_NAME", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_UdICIK1o");
-                return v == null ? " " : v;
+                return v == null ? "-" : v;
             }));
         }
     };

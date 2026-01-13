@@ -242,37 +242,49 @@ public class EquipCardInfoService {
         // 计算使用年限
         equipCardInfo
                 .setUsefulLife(calculateUsefulLife(getStartUseDate(assetCard), getExpireDate(assetCard, unitName)));
-        equipCardInfo.setManufacturerCode("");
+        equipCardInfo.setManufacturerCode(getManufactureNo(assetCard, unitName));
 
-        // 设置厂商名称
-        equipCardInfo.setManufacturerName(getManufacturerName(assetCard, unitName));
+        // 设置厂商名称：优先使用AC_Supplier，如果为null则使用原来的逻辑，如果原来的逻辑返回"无"或null，则设为"-"
+        String manufacturerName = getManufacturerName(assetCard, unitName);
+        if (manufacturerName == null || "无".equals(manufacturerName)) {
+            // 如果原来的逻辑返回"无"或null，则使用AC_Supplier
+            String acSupplier = assetCard.getAcSupplier();
+            equipCardInfo.setManufacturerName(acSupplier != null && !acSupplier.trim().isEmpty() ? acSupplier : "-");
+        } else {
+            equipCardInfo.setManufacturerName(manufacturerName);
+        }
 
         // 设置厂商编号
         equipCardInfo.setManufactureNo(getManufactureNo(assetCard, unitName));
 
         // 设置操作员信息
-        equipCardInfo.setPurchaseOperator(" ");
-        equipCardInfo.setAcceptOperator("   ");
-        equipCardInfo.setManageOperator("   ");
+        equipCardInfo.setPurchaseOperator("-");
+        equipCardInfo.setAcceptOperator("-");
+        equipCardInfo.setManageOperator("-");
 
         // 设置发票号
         equipCardInfo.setInvoNo(getInvoNo(assetCard, unitName));
 
         // 设置其他字段
-        equipCardInfo.setEquipHospitalCode(" ");
-        equipCardInfo.setMeasureCode(" ");
-        equipCardInfo.setRetestPeriod(" ");
-        equipCardInfo.setRetestUnit(" ");
+        equipCardInfo.setEquipHospitalCode(assetCard.getAcId().toString());
+        equipCardInfo.setMeasureCode("-");
+        equipCardInfo.setRetestPeriod("-");
+        equipCardInfo.setRetestUnit("-");
         equipCardInfo.setFinanceFund(BigDecimal.ZERO);
         equipCardInfo.setScienceFund(BigDecimal.ZERO);
         equipCardInfo.setSelfFund(BigDecimal.ZERO);
         equipCardInfo.setHouseAreaSquare(BigDecimal.ZERO);
         equipCardInfo.setNetSalvageRate(BigDecimal.ZERO);
         equipCardInfo.setNetSalvageCost(BigDecimal.ZERO);
-        equipCardInfo.setReceiveNo(" ");
-        // 设置为 null，让 SQL 中的 CASE 语句处理
-        // equipCardInfo.setReceiveDate(null);
-        equipCardInfo.setReceiveOperator(" ");
+
+        // 设置领用单号：使用AC_ID，如果为null则设为"-"
+        String receiveNo = assetCard.getAcId() != null ? assetCard.getAcId().toString() : "-";
+        equipCardInfo.setReceiveNo(receiveNo);
+
+        // 设置领用人员：使用AC_UsePersonNm，如果为null或空字符串则设为"-"
+        String receiveOperator = assetCard.getAcUsePersonNm();
+        equipCardInfo.setReceiveOperator(
+                receiveOperator != null && !receiveOperator.trim().isEmpty() ? receiveOperator : "-");
         equipCardInfo.setHouseAreaSquare(BigDecimal.ZERO);
         // 设置为 null，让 SQL 中的 CASE 语句处理
         // equipCardInfo.setDeprecStartDate(null);
@@ -303,8 +315,12 @@ public class EquipCardInfoService {
         Date updateTime = assetCard.getAcUpdateTime();
         equipCardInfo.setUpdtTime(updateTime != null ? updateTime : getCurrentTime());
         equipCardInfo.setDeleted("0");
-        // 设置为 null，让 SQL 中的 CASE 语句处理
-        // equipCardInfo.setDeletedTime(null);
+
+        // 设置验收日期和处置日期：都使用AC_ScrapDate，如果为null则设为无效日期"1900-01-01 00:00:00"
+        Date scrapDate = assetCard.getAcScrapDate();
+        Date defaultDate = parseDate("1900-01-01 00:00:00");
+        equipCardInfo.setReceiveDate(scrapDate != null ? scrapDate : defaultDate);
+        equipCardInfo.setDeletedTime(scrapDate != null ? scrapDate : defaultDate);
 
         return equipCardInfo;
     }

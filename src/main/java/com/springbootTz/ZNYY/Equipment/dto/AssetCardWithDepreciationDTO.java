@@ -25,6 +25,9 @@ public class AssetCardWithDepreciationDTO {
     private Long acBudgetOrg;
     private String acBvName2;
     private Date acUpdateTime;
+    private String acSupplier; // 生产厂商
+    private String acUsePersonNm; // 领用人
+    private Date acScrapDate; // 处置日期
 
     // 折旧明细信息
     private Long dId;

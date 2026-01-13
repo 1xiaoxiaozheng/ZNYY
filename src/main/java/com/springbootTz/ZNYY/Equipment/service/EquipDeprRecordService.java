@@ -119,7 +119,9 @@ public class EquipDeprRecordService {
         String unitName = unitInfoToolMapper.selectUnitNameById(depreciation.getDBudgetOrg());
 
         // 生成RID: uscid+FJZZZYKJYXGS+depr_month+equip_card_no
-        String rid = unitCode + "FJZZZYKJYXGS" + depreciation.getDDeprBeginMonth() + depreciation.getDId();
+        // equip_card_no应该使用资产编号(D_NO)，而不是UUID(D_ID)，这样才能与EQUIP_CARD_INFO表中的equip_card_no对应
+        String equipCardNo = depreciation.getDNo(); // 使用资产编号作为设备卡片号
+        String rid = unitCode + "FJZZZYKJYXGS" + depreciation.getDDeprBeginMonth() + equipCardNo;
 
         // 设置基本信息
         equipDeprRecord.setRid(rid);
@@ -129,7 +131,7 @@ public class EquipDeprRecordService {
         equipDeprRecord.setSysPrdrCode("FJZZZYKJYXGS");
         equipDeprRecord.setSysPrdrName("福建众智政友科技有限公司");
         equipDeprRecord.setDeprMonth(String.valueOf(depreciation.getDDeprBeginMonth())); // Integer转String
-        equipDeprRecord.setEquipCardNo(String.valueOf(depreciation.getDId())); // Long转String
+        equipDeprRecord.setEquipCardNo(equipCardNo); // 使用资产编号(D_NO)，与EQUIP_CARD_INFO表中的equip_card_no对应
         equipDeprRecord.setEquipCode(depreciation.getDNo());
         equipDeprRecord.setEquipName(depreciation.getDName());
         equipDeprRecord.setDeprPeriod(depreciation.getDDeprMonthTotal());

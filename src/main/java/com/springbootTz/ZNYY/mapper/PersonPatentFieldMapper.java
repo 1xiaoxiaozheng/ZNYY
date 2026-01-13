@@ -89,7 +89,7 @@ public class PersonPatentFieldMapper {
             put("UPLOAD_TIME", toSafeString(p -> new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())));
             put("SYS_PRDR_CODE", toSafeString(p -> SYS_PRDR_CODE));
             put("SYS_PRDR_NAME", toSafeString(p -> SYS_PRDR_NAME));
-            put("ORIGINAL_ID", toSafeString(p -> p.getId() == null ? " " : p.getId()));
+            put("ORIGINAL_ID", toSafeString(p -> p.getId() == null ? " " : p.getPersonId()));
             put("STAFF_ID", toSafeString(p -> p.getPersonId() == null ? " " : p.getPersonId()));
             put("STAFF_NO", toSafeString(p -> {
                 PostgresPerson person = postgresPersonMapper.selectById(p.getPersonId());

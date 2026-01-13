@@ -92,7 +92,7 @@ public class PersonTrainFieldMapper {
             put("SYS_PRDR_CODE", toSafeString(p -> SYS_PRDR_CODE));
             put("SYS_PRDR_NAME", toSafeString(p -> SYS_PRDR_NAME));
             put("DATA_CLCT_PRDR_NAME", toSafeString(p -> DATA_CLCT_PRDR_NAME));
-            put("ORIGINAL_ID", toSafeString(p -> p.getId() == null ? " " : p.getId()));
+            put("ORIGINAL_ID", toSafeString(p -> p.getId() == null ? " " : p.getPersonId()));
             put("STAFF_ID", toSafeString(p -> p.getPersonId() == null ? " " : p.getPersonId()));
             put("STAFF_NO", toSafeString(p -> {
                 PostgresPerson person = postgresPersonMapper.selectById(p.getPersonId());
@@ -111,11 +111,13 @@ public class PersonTrainFieldMapper {
             put("DELETED_TIME", toSafeString(p -> " "));
             put("TRAIN_GRADE_CODE", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_yCNsmMGX");
-                return v == null ? " " : v;
+                // 进修级别代码不能为空，如果为空返回"-"
+                return (v == null || v.trim().isEmpty()) ? "-" : v.trim();
             }));
             put("TRAIN_GRADE_NAME", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_yCNsmMGX");
-                return v == null ? " " : v;
+                // 进修级别名称不能为空，如果为空返回"-"
+                return (v == null || v.trim().isEmpty()) ? "-" : v.trim();
             }));
             put("TRAIN_EMP", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_a7WHba77");
@@ -127,11 +129,13 @@ public class PersonTrainFieldMapper {
             }));
             put("TRAIN_BEGNDATE", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_V3ThCCt6");
-                return v == null ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) : v;
+                // 日期字段为空时返回默认无效日期
+                return (v == null || v.trim().isEmpty()) ? "1900-01-01 00:00:00" : v.trim();
             }));
             put("TRAIN_ENDDATE", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_NrucmSye");
-                return v == null ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) : v;
+                // 日期字段为空时返回默认无效日期
+                return (v == null || v.trim().isEmpty()) ? "1900-01-01 00:00:00" : v.trim();
             }));
         }
     };

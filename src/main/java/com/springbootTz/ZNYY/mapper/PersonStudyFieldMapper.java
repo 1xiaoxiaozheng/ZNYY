@@ -92,7 +92,7 @@ public class PersonStudyFieldMapper {
             put("SYS_PRDR_CODE", toSafeString(p -> SYS_PRDR_CODE));
             put("SYS_PRDR_NAME", toSafeString(p -> SYS_PRDR_NAME));
             put("DATA_CLCT_PRDR_NAME", toSafeString(p -> DATA_CLCT_PRDR_NAME));
-            put("ORIGINAL_ID", toSafeString(p -> p.getId() == null ? " " : p.getId()));
+            put("ORIGINAL_ID", toSafeString(p -> p.getId() == null ? " " : p.getPersonId()));
             put("STAFF_ID", toSafeString(p -> p.getPersonId() == null ? " " : p.getPersonId()));
             put("STAFF_NO", toSafeString(p -> {
                 PostgresPerson person = postgresPersonMapper.selectById(p.getPersonId());
@@ -109,33 +109,70 @@ public class PersonStudyFieldMapper {
                 return (delFlag != null && delFlag == 1) ? "0" : "1";
             }));
             put("DELETED_TIME", toSafeString(p -> " "));
-            put("STUDY_TYPE_CODE", toSafeString(p -> {
+            put("STUDY_TYPE_CODE", p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_q4BUYeeI");
-                return v == null ? " " : v;
-            }));
-            put("STUDY_TYPE_NAME", toSafeString(p -> {
+                // 培训类型代码不能为空，如果为空返回"-"
+                if (v == null || v.trim().isEmpty()) {
+                    return "-";
+                }
+                return v.trim();
+            });
+            put("STUDY_TYPE_NAME", p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_q4BUYeeI");
-                return v == null ? " " : v;
-            }));
-            put("STUDY_EMPR_NAME", toSafeString(p -> p.getCompany() == null ? " " : p.getCompany()));
+                // 培训类型名称不能为空，如果为空返回"-"
+                if (v == null || v.trim().isEmpty()) {
+                    return "-";
+                }
+                return v.trim();
+            });
+            put("STUDY_EMPR_NAME", p -> {
+                String v = p.getCompany();
+                // 培训主办单位不能为空，如果为空返回"-"
+                if (v == null || v.trim().isEmpty()) {
+                    return "-";
+                }
+                return v.trim();
+            });
             put("STUDY_ADDR", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_6Hv4n1Xz");
                 return v == null ? " " : v;
             }));
             put("STUDY_CERTIFICATE_NO", toSafeString(p -> p.getCertNo() == null ? " " : p.getCertNo()));
             put("STUDY_MAJOR", toSafeString(p -> p.getName() == null ? " " : p.getName()));
-            put("BEGNDATE",
-                    toSafeString(p -> p.getStartTime() == null
-                            ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
-                            : p.getStartTime().toString()));
-            put("ENDDATE",
-                    toSafeString(
-                            p -> p.getEndTime() == null ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
-                                    : p.getEndTime().toString()));
-            put("STUDY_ITEM", toSafeString(p -> {
+            put("BEGNDATE", p -> {
+                // 开始日期不能为空，日期字段为空时返回默认无效日期
+                if (p.getStartTime() == null) {
+                    return "1900-01-01 00:00:00";
+                }
+                try {
+                    // 使用 SimpleDateFormat 格式化 Timestamp
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    return sdf.format(p.getStartTime());
+                } catch (Exception e) {
+                    return "1900-01-01 00:00:00";
+                }
+            });
+            put("ENDDATE", p -> {
+                // 结束日期为空时返回默认无效日期
+                if (p.getEndTime() == null) {
+                    return "1900-01-01 00:00:00";
+                }
+                try {
+                    // 使用 SimpleDateFormat 格式化 Timestamp
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    return sdf.format(p.getEndTime());
+                } catch (Exception e) {
+                    return "1900-01-01 00:00:00";
+                }
+            });
+            put("STUDY_ITEM", p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_i24s5S5D");
-                return v == null ? " " : v;
-            }));
+                // 培训内容不能为空，如果为空返回"-"
+                if (v == null || v.trim().isEmpty()) {
+                    return "-";
+                }
+                return v.trim();
+            });
         }
     };
 

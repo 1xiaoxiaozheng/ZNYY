@@ -92,7 +92,7 @@ public class PersonStaffCorpFieldMapper {
             put("SYS_PRDR_CODE", toSafeString(p -> SYS_PRDR_CODE));
             put("SYS_PRDR_NAME", toSafeString(p -> SYS_PRDR_NAME));
             put("DATA_CLCT_PRDR_NAME", toSafeString(p -> DATA_CLCT_PRDR_NAME));
-            put("ORIGINAL_ID", toSafeString(p -> p.getId() == null ? " " : p.getId()));
+            put("ORIGINAL_ID", toSafeString(p -> p.getId() == null ? " " : p.getPersonId()));
             put("STAFF_ID", toSafeString(p -> p.getPersonId() == null ? " " : p.getPersonId()));
             put("STAFF_NO", toSafeString(p -> {
                 PostgresPerson person = postgresPersonMapper.selectById(p.getPersonId());
@@ -115,11 +115,13 @@ public class PersonStaffCorpFieldMapper {
             }));
             put("CORP_LEVEL_CODE", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_i9pjxcTE");
-                return v == null ? " " : v;
+                // 社团级别代码不能为空，如果为空返回"-"
+                return (v == null || v.trim().isEmpty()) ? "-" : v.trim();
             }));
             put("CORP_LEVEL_NAME", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_i9pjxcTE");
-                return v == null ? " " : v;
+                // 社团级别名称不能为空，如果为空返回"-"
+                return (v == null || v.trim().isEmpty()) ? "-" : v.trim();
             }));
             put("DUTY_COUNT", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_GGZck3n0");
@@ -139,12 +141,16 @@ public class PersonStaffCorpFieldMapper {
             }));
             put("BEGNDATE", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_tfFAeJn0");
-                return v == null ? new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) : v;
+                // 日期字段为空时返回默认无效日期
+                return (v == null || v.trim().isEmpty()) ? "1900-01-01 00:00:00" : v.trim();
             }));
             put("ENDDATE", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_2us5ZNZI");
-                return v == null ? new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) : v;
+                // 日期字段为空时返回默认无效日期
+                return (v == null || v.trim().isEmpty()) ? "1900-01-01 00:00:00" : v.trim();
             }));
+            //study_empr_name对应
+
         }
     };
 

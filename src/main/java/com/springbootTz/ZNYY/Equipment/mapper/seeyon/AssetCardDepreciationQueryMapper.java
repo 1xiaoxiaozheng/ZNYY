@@ -25,6 +25,7 @@ public interface AssetCardDepreciationQueryMapper {
                         "ac.AC_GetDate, ac.AC_UseDeptNo, ac.AC_UseDeptNm, ac.AC_DeprKind, " +
                         "ac.AC_DeprRate, ac.AC_BVCode2, ac.AC_BVName1, ac.AC_BudgetOrg, ac.AC_BVName2, ac.AC_UpdateTime, "
                         +
+                        "ac.AC_Supplier, ac.AC_UsePersonNm, ac.AC_ScrapDate, " +
                         "d.D_ID, d.D_BudgetOrg, d.D_DeprBeginMonth, d.D_NO, d.D_Name, " +
                         "d.D_DeprMonthTotal, d.D_FundNo, d.D_FundNm, d.D_UseDeptNo, d.D_UseDeptNm, " +
                         "d.D_DeprAmount, d.D_CreateName, d.D_VoucherDate, d.D_DeprKind, d.D_CreateDate " +
@@ -47,6 +48,9 @@ public interface AssetCardDepreciationQueryMapper {
                         @Result(property = "acBudgetOrg", column = "AC_BudgetOrg"),
                         @Result(property = "acBvName2", column = "AC_BVName2"),
                         @Result(property = "acUpdateTime", column = "AC_UpdateTime"),
+                        @Result(property = "acSupplier", column = "AC_Supplier"),
+                        @Result(property = "acUsePersonNm", column = "AC_UsePersonNm"),
+                        @Result(property = "acScrapDate", column = "AC_ScrapDate", jdbcType = org.apache.ibatis.type.JdbcType.DATE),
                         // 折旧明细字段映射
                         @Result(property = "dId", column = "D_ID"),
                         @Result(property = "dBudgetOrg", column = "D_BudgetOrg"),

@@ -91,7 +91,7 @@ public class PersonRewardsFieldMapper {
             put("sysPrdrCode", toSafeString(p -> SYS_PRDR_CODE));
             put("sysPrdrName", toSafeString(p -> SYS_PRDR_NAME));
             put("dataClctPrdrName", toSafeString(p -> DATA_CLCT_PRDR_NAME));
-            put("originalId", toSafeString(p -> p.getId() == null ? " " : p.getId()));
+            put("originalId", toSafeString(p -> p.getId() == null ? " " : p.getPersonId()));
             put("staffId", toSafeString(p -> p.getPersonId() == null ? " " : p.getPersonId()));
             put("staffNo", toSafeString(p -> {
                 PostgresPerson person = postgresPersonMapper.selectById(p.getPersonId());
@@ -125,7 +125,8 @@ public class PersonRewardsFieldMapper {
             }));
             put("awardsDate", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_qdKqLV3F");
-                return v == null ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) : v;
+                // 日期字段为空时返回默认无效日期
+                return (v == null || v.trim().isEmpty()) ? "1900-01-01 00:00:00" : v.trim();
             }));
             put("awardsUnit", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_VcziFtzn");
@@ -133,11 +134,13 @@ public class PersonRewardsFieldMapper {
             }));
             put("awardsGradeCode", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_FnIv3tfj");
-                return v == null ? " " : v;
+                // 获奖级别代码不能为空，如果为空返回"-"
+                return (v == null || v.trim().isEmpty()) ? "-" : v.trim();
             }));
             put("awardsGradeName", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_FnIv3tfj");
-                return v == null ? " " : v;
+                // 获奖级别名称不能为空，如果为空返回"-"
+                return (v == null || v.trim().isEmpty()) ? "-" : v.trim();
             }));
         }
     };

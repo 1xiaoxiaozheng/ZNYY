@@ -30,7 +30,7 @@ public interface EquipCardInfoMapper extends BaseMapper<EquipCardInfo> {
                         "purchase_operator, accept_operator, manage_operator, invo_no, " +
                         "equip_hospital_code, measure_code, retest_period, retest_unit, " +
                         "finance_fund, science_fund, self_fund, receive_no, " +
-                        "receive_operator, house_area_square, deprec_flag, " +
+                        "receive_date, receive_operator, house_area_square, deprec_flag, " +
                         "deprec_type_code, deprec_type_name, deprec_rate, mon_derp_amt, " +
                         "net_salvage_rate, net_salvage_cost, equip_status_code, " +
                         "equip_status_name, audit_flag, reserve1, reserve2, " +
@@ -44,6 +44,8 @@ public interface EquipCardInfoMapper extends BaseMapper<EquipCardInfo> {
                         "#{purchaseOperator}, #{acceptOperator}, #{manageOperator}, #{invoNo}, " +
                         "#{equipHospitalCode}, #{measureCode}, #{retestPeriod}, #{retestUnit}, " +
                         "#{financeFund}, #{scienceFund}, #{selfFund}, #{receiveNo}, " +
+                        "CASE WHEN #{receiveDate} IS NULL THEN TO_DATE('1900-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS') ELSE #{receiveDate} END, "
+                        +
                         "#{receiveOperator}, #{houseAreaSquare}, #{deprecFlag}, " +
                         "#{deprecTypeCode}, #{deprecTypeName}, #{deprecRate}, #{monDerpAmt}, " +
                         "#{netSalvageRate}, #{netSalvageCost}, #{equipStatusCode}, " +
@@ -51,7 +53,8 @@ public interface EquipCardInfoMapper extends BaseMapper<EquipCardInfo> {
                         "#{dataClctPrdrName}, " +
                         "SYSDATE, " + // crte_time 使用当前时间
                         "SYSDATE, #{deleted}, " +
-                        "NULL" + // deleted_time 设置为 NULL
+                        "CASE WHEN #{deletedTime} IS NULL THEN TO_DATE('1900-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS') ELSE #{deletedTime} END"
+                        +
                         ")")
         int insertEquipCardInfo(EquipCardInfo equipCardInfo);
 
@@ -128,10 +131,12 @@ public interface EquipCardInfoMapper extends BaseMapper<EquipCardInfo> {
                         "reserve1 = #{reserve1}, reserve2 = #{reserve2}, " +
                         "data_clct_prdr_name = #{dataClctPrdrName}, " +
                         "updt_time = SYSDATE, deleted = #{deleted}, " +
-                        "receive_date = NULL, " +
+                        "receive_date = CASE WHEN #{receiveDate} IS NULL THEN TO_DATE('1900-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS') ELSE #{receiveDate} END, "
+                        +
                         "deprec_start_date = NULL, " +
                         "crte_time = NULL, " +
-                        "deleted_time = CASE WHEN #{deleted} = '0' THEN NULL ELSE SYSDATE END " +
+                        "deleted_time = CASE WHEN #{deletedTime} IS NULL THEN TO_DATE('1900-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS') ELSE #{deletedTime} END "
+                        +
                         "WHERE rid = #{rid}")
         int updateEquipCardInfo(EquipCardInfo equipCardInfo);
 

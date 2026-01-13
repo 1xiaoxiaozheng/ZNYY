@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -27,6 +29,7 @@ import java.util.function.Function;
  */
 @Component
 public class PersonEmpFieldMapper {
+    private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
 
     private static final Logger logger = LoggerFactory.getLogger(PersonEmpFieldMapper.class);
 
@@ -102,7 +105,7 @@ public class PersonEmpFieldMapper {
                     toSafeString(p -> new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())));
             put("SYS_PRDR_CODE", toSafeString(p -> SYS_PRDR_CODE));
             put("SYS_PRDR_NAME", toSafeString(p -> SYS_PRDR_NAME));
-            put("ORIGINAL_ID", toSafeString(p -> p.getId() == null ? " " : p.getId()));
+            put("ORIGINAL_ID", toSafeString(p -> p.getId() == null ? " " : p.getPersonId()));
             put("STAFF_ID", toSafeString(p -> p.getPersonId() == null ? " " : p.getPersonId()));
             put("STAFF_NO", toSafeString(p -> {
                 PostgresPerson person = postgresPersonMapper.selectById(p.getPersonId());
@@ -142,11 +145,11 @@ public class PersonEmpFieldMapper {
                         return empStartDate == null ? " " : empStartDate;
                             }
             ));
-            put("EMP_END_DATE", toSafeString(p ->{
-                        String empEndDate = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_SqvXuxOU");
-                        return empEndDate == null ? " " : empEndDate;
-                    }
-            ));
+            put("EMP_END_DATE", toSafeString(p -> {
+                String empEndDate = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_SqvXuxOU");
+                // 空值/空字符串直接返回无效日期，非空则返回原始值（已确保格式正确）
+                return (empEndDate == null || empEndDate.trim().isEmpty()) ? "1900-01-01" : empEndDate.trim();
+            }));
             put("TECH_JOB_TITLE_CODE", toSafeString(p ->
             {
                 String techJobTitleCode = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_gd4dwPAf");

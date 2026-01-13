@@ -3,6 +3,7 @@ package com.springbootTz.ZNYY.mapper.postgresql;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.springbootTz.ZNYY.entity.OursEnumValue;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -28,4 +29,12 @@ public interface OursEnumValueMapper extends BaseMapper<OursEnumValue> {
      */
     @Select("SELECT code FROM ours_enum_value WHERE display = #{enumId} LIMIT 1")
     String selectCodeByDisplay(String display);
+
+
+    @Select("select name from ehr_org_job where id = #{id}")
+    String selectNameById( @Param("id") String id);
+
+
+    @Select("SELECT display from ours_enum_value where enum_id ='7866623247535329346_education_type' and value = #{value}")
+    String selectDisplayByValue( @Param("value") Integer value);
 }

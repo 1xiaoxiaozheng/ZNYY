@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -34,6 +36,8 @@ import java.util.function.Function;
 @Component
 public class PersonEmperFieldMapper {
     private static final Logger logger = LoggerFactory.getLogger(PersonEmperFieldMapper.class);
+
+    private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
 
     @Autowired
     private DepartmentQueryTool departmentQueryTool;
@@ -122,15 +126,15 @@ public class PersonEmperFieldMapper {
                     toSafeString(p -> new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())));
             put("SYS_PRDR_CODE", toSafeString(p -> SYS_PRDR_CODE));
             put("SYS_PRDR_NAME", toSafeString(p -> SYS_PRDR_NAME));
-            put("ORIGINAL_ID", toSafeString(p -> p.getId() == null ? " " : p.getId()));
-            put("STAFF_ID", toSafeString(p -> p.getPersonId() == null ? " " : p.getPersonId()));
+            put("ORIGINAL_ID", toSafeString(p -> p.getId() == null ? "-" : p.getPersonId()));
+            put("STAFF_ID", toSafeString(p -> p.getPersonId() == null ? "-" : p.getPersonId()));
             put("STAFF_NO", toSafeString(p -> {
                 PostgresPerson person = postgresPersonMapper.selectById(p.getPersonId());
-                return person == null ? " " : person.getNumber();
+                return person == null ? "-" : person.getNumber();
             }));
             put("STAFF_NAME", toSafeString(p -> {
                 PostgresPerson person = postgresPersonMapper.selectById(p.getPersonId());
-                return person == null ? " " : person.getName();
+                return person == null ? "-" : person.getName();
             }));
             put("CRTE_TIME", toSafeString(p -> "2025-06-30 00:00:00"));
             put("UPDT_TIME", toSafeString(p -> p.getModifyTime() == null ? " " : p.getModifyTime().toString()));
@@ -141,25 +145,55 @@ public class PersonEmperFieldMapper {
             }));
             put("DELETED_TIME", toSafeString(p -> " "));
             put("DATA_CLCT_PRDR_NAME", toSafeString(p -> DATA_CLCT_PRDR_NAME));
+            // WKBEGN_DATE 增强版
             put("WKBEGN_DATE", toSafeString(p -> {
                 String wkbegnDate = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_duqtB5bp");
-                return wkbegnDate == null ? " " : wkbegnDate;
+                // 1. 先处理 null/空字符串/纯空格
+                if (wkbegnDate == null || wkbegnDate.trim().isEmpty()) {
+                    return "1900-01-01 00:00:00";
+                }
+                // 2. 处理隐性无效值："null" 字符串、"undefined" 字符串
+                String trimmedVal = wkbegnDate.trim();
+                if ("null".equalsIgnoreCase(trimmedVal) || "undefined".equalsIgnoreCase(trimmedVal)) {
+                    return "1900-01-01 00:00:00";
+                }
+                // 3. 如果只有日期部分（yyyy-MM-dd），补充时间部分
+                if (trimmedVal.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                    return trimmedVal + " 00:00:00";
+                }
+                // 4. 非空且有效，返回原始去空格后的值（确保格式为 yyyy-MM-dd HH:mm:ss）
+                return trimmedVal;
             }));
+
+            // WKEND_DATE 增强版（逻辑完全一致）
             put("WKEND_DATE", toSafeString(p -> {
                 String wkendDate = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_7SwcKsXi");
-                return wkendDate == null ? " " : wkendDate;
+                if (wkendDate == null || wkendDate.trim().isEmpty()) {
+                    return "1900-01-01 00:00:00";
+                }
+                String trimmedVal = wkendDate.trim();
+                if ("null".equalsIgnoreCase(trimmedVal) || "undefined".equalsIgnoreCase(trimmedVal)) {
+                    return "1900-01-01 00:00:00";
+                }
+                // 如果只有日期部分（yyyy-MM-dd），补充时间部分
+                if (trimmedVal.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                    return trimmedVal + " 00:00:00";
+                }
+                return trimmedVal;
             }));
             put("EMPR_NAME", toSafeString(p -> {
                 String emprName = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_lpdeGEnj");
-                return emprName == null ? " " : emprName;
+                return emprName == null ? "-" : emprName;
             }));
-            put("POST_DEPT_NAME", toSafeString(p -> {
+
+            put("POST_DEPT", toSafeString(p -> {
                 String postDeptName = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_mSyEbqbD");
-                return postDeptName == null ? " " : postDeptName;
+                return postDeptName == null ? "-" : postDeptName;
             }));
+
             put("APPOINT_NAME", toSafeString(p -> {
                 String appointName = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_XURDm7wV");
-                return appointName == null ? " " : appointName;
+                return appointName == null ? "-" : appointName;
             }));
         }
     };

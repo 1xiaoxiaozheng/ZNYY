@@ -49,7 +49,6 @@ public class PersonPsnProfFieldMapper {
     @Autowired
     private EnumValueQueryTool enumValueQueryTool;
 
-
     @Autowired
     private OursEnumValueService oursEnumValueService;
 
@@ -103,7 +102,7 @@ public class PersonPsnProfFieldMapper {
             put("SYS_PRDR_CODE", toSafeString(p -> SYS_PRDR_CODE));
             put("SYS_PRDR_NAME", toSafeString(p -> SYS_PRDR_NAME));
             put("DATA_CLCT_PRDR_NAME", toSafeString(p -> DATA_CLCT_PRDR_NAME));
-            put("ORIGINAL_ID", toSafeString(p -> p.getId() == null ? " " : p.getId()));
+            put("ORIGINAL_ID", toSafeString(p -> p.getId() == null ? " " : p.getPersonId()));
             put("STAFF_ID", toSafeString(p -> p.getPersonId() == null ? " " : p.getPersonId()));
             put("STAFF_NO", toSafeString(p -> {
                 PostgresPerson person = postgresPersonMapper.selectById(p.getPersonId());
@@ -122,7 +121,8 @@ public class PersonPsnProfFieldMapper {
             put("DELETED_TIME", toSafeString(p -> " "));
             put("PROFTECHTTL_CERTIFICATE_NO", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_GFWRWZIK");
-                return v == null ? " " : v;
+                // 专业技术资格证书编号不能为空，如果为空返回"-"
+                return (v == null || v.trim().isEmpty()) ? "-" : v.trim();
             }));
             put("PROFTECHTTL_CERTIFICATE_CODE", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_LTbb9qSY");
@@ -153,19 +153,23 @@ public class PersonPsnProfFieldMapper {
 
             put("GET_DATE", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_3hp4V3sp");
-                return v == null ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) : v;
+                // 日期字段为空时返回默认无效日期
+                return (v == null || v.trim().isEmpty()) ? "1900-01-01 00:00:00" : v.trim();
             }));
             put("EXPYSTARTTIME", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_3hp4V3sp");
-                return v == null ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) : v;
+                // 日期字段为空时返回默认无效日期
+                return (v == null || v.trim().isEmpty()) ? "1900-01-01 00:00:00" : v.trim();
             }));
             put("CERTIFICATE_MECHANISM", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_akmmGFLC");
-                return v == null ? " " : v;
+                // 发证机构不能为空，如果为空返回"-"
+                return (v == null || v.trim().isEmpty()) ? "-" : v.trim();
             }));
             put("EXCH_CERTIFICATE_SN", toSafeString(p -> {
                 String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_1m7qNAon");
-                return v == null ? " " : v;
+                // 换发证书编号不能为空，如果为空返回"-"
+                return (v == null || v.trim().isEmpty()) ? "-" : v.trim();
             }));
 
         }

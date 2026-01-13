@@ -37,9 +37,27 @@ public class FieldSetterTool {
                 field.set(target, value == null ? " " : (value.trim().isEmpty() ? " " : value));
             } else if (fieldType == Date.class) {
                 if (value == null || value.trim().isEmpty()) {
-                    field.set(target, null);
+                    // 对于日期字段，空值使用默认日期而不是null，避免数据库约束错误
+                    try {
+                        SimpleDateFormat defaultFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        field.set(target, defaultFormat.parse("1900-01-01 00:00:00"));
+                    } catch (Exception e) {
+                        logger.warn("Failed to set default date for field {}: {}", fieldName, e.getMessage());
+                        field.set(target, null);
+                    }
                 } else {
                     Date date = parseDate(value);
+                    // 如果解析失败，使用默认日期而不是null
+                    if (date == null) {
+                        try {
+                            SimpleDateFormat defaultFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                            date = defaultFormat.parse("1900-01-01 00:00:00");
+                            logger.warn("Date parsing failed for field {} with value {}, using default date", fieldName,
+                                    value);
+                        } catch (Exception e) {
+                            logger.warn("Failed to set default date for field {}: {}", fieldName, e.getMessage());
+                        }
+                    }
                     field.set(target, date);
                 }
             } else if (fieldType == BigDecimal.class) {
