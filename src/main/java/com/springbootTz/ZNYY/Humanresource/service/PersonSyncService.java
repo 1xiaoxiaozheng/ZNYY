@@ -1,0 +1,2161 @@
+package com.springbootTz.ZNYY.Humanresource.service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.springbootTz.ZNYY.Humanresource.entity.OraclePerson;
+import com.springbootTz.ZNYY.Humanresource.entity.OraclePersonEduInfo;
+import com.springbootTz.ZNYY.Humanresource.entity.OraclePersonEmpType;
+import com.springbootTz.ZNYY.Humanresource.entity.OraclePersonEmprInfo;
+import com.springbootTz.ZNYY.Humanresource.entity.OraclePersonHeigth;
+import com.springbootTz.ZNYY.Humanresource.entity.OraclePersonHeigthAward;
+import com.springbootTz.ZNYY.Humanresource.entity.OraclePersonPaper;
+import com.springbootTz.ZNYY.Humanresource.entity.OraclePersonPatent;
+import com.springbootTz.ZNYY.Humanresource.entity.OraclePersonProf;
+import com.springbootTz.ZNYY.Humanresource.entity.OraclePersonResearch;
+import com.springbootTz.ZNYY.Humanresource.entity.OraclePersonRewards;
+import com.springbootTz.ZNYY.Humanresource.entity.OraclePersonTrain;
+import com.springbootTz.ZNYY.Humanresource.entity.OracleStaffCorp;
+import com.springbootTz.ZNYY.Humanresource.entity.OracleStaffStudy;
+import com.springbootTz.ZNYY.Humanresource.entity.PostgresPerson;
+import com.springbootTz.ZNYY.Humanresource.entity.PostgresPersonDetailCustom;
+import com.springbootTz.ZNYY.Humanresource.entity.PostgresPersonDetailEducationExperience;
+import com.springbootTz.ZNYY.Humanresource.entity.PostgresPersonDetailTraining;
+import com.springbootTz.ZNYY.Humanresource.mapper.Converter.PersonEduInfoFieldMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.Converter.PersonEmpFieldMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.Converter.PersonEmperFieldMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.Converter.PersonFieldMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.Converter.PersonHeightAward;
+import com.springbootTz.ZNYY.Humanresource.mapper.Converter.PersonHeightFieldMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.Converter.PersonPaperFieldMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.Converter.PersonPatentFieldMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.Converter.PersonPsnProfFieldMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.Converter.PersonResearchMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.Converter.PersonRewardsFieldMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.Converter.PersonStaffCorpFieldMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.Converter.PersonStudyFieldMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.Converter.PersonTrainFieldMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.Converter.PersonWorkFieldMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.oracle.OraclePersonEduInfoMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.oracle.OraclePersonEmpTypeMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.oracle.OraclePersonEmprInfoMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.oracle.OraclePersonHeigthAwardMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.oracle.OraclePersonHeigthMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.oracle.OraclePersonMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.oracle.OraclePersonPaperMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.oracle.OraclePersonPatentMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.oracle.OraclePersonProfMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.oracle.OraclePersonResearchMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.oracle.OraclePersonRewardsMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.oracle.OraclePersonTrainMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.oracle.OraclePersonWorkMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.oracle.OracleStaffCorpMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.oracle.OracleStaffStudyMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.postgresql.PostgresPersonDetailCustomMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.postgresql.PostgresPersonDetailEducationExperienceMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.postgresql.PostgresPersonDetailTrainingMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.postgresql.PostgresPersonDetailWorkExperienceMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.postgresql.PostgresPersonMapper;
+
+@Service
+@Transactional
+public class PersonSyncService {
+
+    private static final Logger logger = LoggerFactory.getLogger(PersonSyncService.class);
+
+    @Autowired
+    private PostgresPersonMapper postgresPersonMapper;
+    @Autowired
+    private OraclePersonMapper oraclePersonMapper;
+    @Autowired
+    private PersonFieldMapper personFieldMapper;
+    @Autowired
+    private OraclePersonEduInfoMapper oraclePersonEduInfoMapper;
+    @Autowired
+    private PostgresPersonDetailEducationExperienceMapper postgresPersonDetailEducationExperienceMapper;
+    @Autowired
+    private PersonEduInfoFieldMapper personEduInfoFieldMapper;
+    @Autowired
+    private OraclePersonEmprInfoMapper oraclePersonEmprInfoMapper;
+    @Autowired
+    private PostgresPersonDetailCustomMapper postgresPersonDetailCustomMapper;
+    @Autowired
+    private PersonEmperFieldMapper personEmperFieldMapper;
+
+    @Autowired
+    private PersonTrainFieldMapper personTrainingFieldMapper;
+    @Autowired
+    private PostgresPersonDetailTrainingMapper postgresPersonDetailTrainingMapper;
+    @Autowired
+    private PostgresPersonDetailWorkExperienceMapper postgresPersonDetailWorkExperienceMapper;
+    @Autowired
+    private OraclePersonEmpTypeMapper oraclePersonEmpTypeMapper;
+
+    @Autowired
+    private PersonEmpFieldMapper personEmpFieldMapper;
+
+    @Autowired
+    private PersonHeightAward personHeightAward;
+
+    @Autowired
+    private OraclePersonHeigthAwardMapper oraclePersonHeigthAwardMapper;
+
+    @Autowired
+    private PersonHeightFieldMapper personHeightFieldMapper;
+
+    @Autowired
+    private OraclePersonHeigthMapper oraclePersonHeigthMapper;
+
+    @Autowired
+    private PersonPaperFieldMapper personPaperFieldMapper;
+
+    @Autowired
+    private OraclePersonPaperMapper oraclePersonPaperMapper;
+
+    @Autowired
+    private PersonPatentFieldMapper personPatentFieldMapper;
+
+    @Autowired
+    private OraclePersonPatentMapper oraclePersonPatentMapper;
+
+    @Autowired
+    private PersonPsnProfFieldMapper personPsnProfFieldMapper;
+
+    @Autowired
+    private OraclePersonProfMapper oraclePersonProfMapper;
+
+    @Autowired
+    private PersonResearchMapper personResearchMapper;
+
+    @Autowired
+    private OraclePersonResearchMapper oraclePersonResearchMapper;
+
+    @Autowired
+    private PersonRewardsFieldMapper personRewardsFieldMapper;
+
+    @Autowired
+    private OraclePersonRewardsMapper oraclePersonRewardsMapper;
+
+    @Autowired
+    private PersonStaffCorpFieldMapper personStaffCorpFieldMapper;
+
+    @Autowired
+    private OracleStaffCorpMapper oracleStaffCorpMapper;
+
+    @Autowired
+    private PersonStudyFieldMapper personStudyFieldMapper;
+
+    @Autowired
+    private OracleStaffStudyMapper oracleStaffStudyMapper;
+
+    @Autowired
+    private PersonTrainFieldMapper personTrainFieldMapper;
+
+    @Autowired
+    private OraclePersonTrainMapper oraclePersonTrainMapper;
+
+    @Autowired
+    private PersonWorkFieldMapper personWorkFieldMapper;
+
+    @Autowired
+    private OraclePersonWorkMapper oraclePersonWorkMapper;
+
+    /**
+     * 批量删除工具方法，处理Oracle IN子句最大1000个值的限制
+     *
+     * @param deleteIds      需要删除的ID列表
+     * @param deleteFunction 执行删除的函数
+     */
+    private void batchDelete(List<String> deleteIds, Function<List<String>, Integer> deleteFunction) {
+        if (deleteIds == null || deleteIds.isEmpty()) {
+            return;
+        }
+
+        // 分批处理，每批最多900条（预留一些余量，避免刚好到1000的边界）
+        int batchSize = 900;
+        int totalSize = deleteIds.size();
+        int batchCount = (totalSize + batchSize - 1) / batchSize; // 向上取整得到批次数
+
+        int totalDeleted = 0;
+        for (int i = 0; i < batchCount; i++) {
+            int fromIndex = i * batchSize;
+            int toIndex = Math.min((i + 1) * batchSize, totalSize);
+            List<String> batchIds = deleteIds.subList(fromIndex, toIndex);
+
+            int deletedCount = deleteFunction.apply(batchIds);
+            totalDeleted += deletedCount;
+
+            // logger.info("完成第{}批删除，本批删除{}条记录", i + 1, deletedCount);
+        }
+
+        // logger.info("批量删除完成，共删除{}条记录", totalDeleted);
+    }
+
+    /**
+     * 全量同步人员基本信息Postgres到Oracle，original_id存在则update，不存在则insert
+     */
+    public void syncAll() {
+        List<PostgresPerson> pgList = postgresPersonMapper.selectList(null);
+        for (PostgresPerson pg : pgList) {
+            // 字段映射
+            Map<String, Function<PostgresPerson, String>> mapping = personFieldMapper.FIELD_MAPPING;
+            OraclePerson oraclePerson = new OraclePerson();
+            for (Map.Entry<String, Function<PostgresPerson, String>> entry : mapping.entrySet()) {
+                personFieldMapper.setOracleField(oraclePerson, entry.getKey(), entry.getValue().apply(pg));
+            }
+            // 只同步 USCID 为指定值的数据，USCID 为空或null不推送
+            String uscid = oraclePerson.getUscid();
+            if (uscid == null || uscid.trim().isEmpty()) {
+                continue; // USCID 为空不推送
+            }
+            // 判断original_id是否已存在
+            QueryWrapper<OraclePerson> qw = new QueryWrapper<>();
+            qw.eq("ORIGINAL_ID", oraclePerson.getOriginalId());
+            OraclePerson exist = oraclePersonMapper.selectOne(qw);
+            if (exist != null) {
+                // 保持主键不变，更新
+                oraclePerson.setRid(exist.getRid());
+                oraclePersonMapper.updateById(oraclePerson);
+            } else {
+                oraclePersonMapper.insert(oraclePerson);
+            }
+        }
+    }
+
+    /**
+     * 全量同步Postgres教育经历到Oracle，original_id存在则update，不存在则insert
+     * 只同步USCID有值且为指定机构代码的数据
+     */
+    public void syncEducationInfoAll() {
+        // 2. 同步开始日志：记录任务启动和初始状态
+        logger.info("=== 教育经历数据同步任务开始 ===");
+
+        List<PostgresPersonDetailEducationExperience> pgList = null;
+        try {
+            // 3. 查询PostgreSQL数据日志：记录查询操作和结果数量
+            logger.debug("正在从PostgreSQL查询教育经历数据...");
+            pgList = postgresPersonDetailEducationExperienceMapper.selectList(null);
+            logger.info("PostgreSQL查询完成，共获取到[{}]条教育经历记录",
+                    (pgList == null ? 0 : pgList.size()));
+
+            int processCount = 0; // 总共处理记录数
+            int updateCount = 0; // 更新记录数
+            int insertCount = 0; // 插入记录数
+            int skipCount = 0; // 跳过记录数（如USCID为空）
+
+            if (pgList == null || pgList.isEmpty()) {
+                logger.info("无教育经历记录需要处理，同步任务提前结束");
+                return;
+            }
+
+            // 4. 循环处理每条记录：添加单条记录的上下文日志
+            for (PostgresPersonDetailEducationExperience pg : pgList) {
+                processCount++;
+                // 记录当前处理的记录标识（用pg的主键，如id，需确保pg有getId()方法）
+                String currentPgId = pg.getId() != null ? pg.getId().toString() : "未知ID";
+                logger.debug("正在处理第[{}]条记录，PostgreSQL记录ID: [{}]", processCount, currentPgId);
+
+                Map<String, Function<PostgresPersonDetailEducationExperience, String>> mapping = null;
+                OraclePersonEduInfo oracleEdu = new OraclePersonEduInfo();
+                try {
+                    // 5. 字段映射日志：记录映射开始和关键配置
+                    mapping = personEduInfoFieldMapper.FIELD_MAPPING;
+                    logger.debug("当前记录字段映射配置：共[{}]个字段需要映射", mapping.size());
+
+                    for (Map.Entry<String, Function<PostgresPersonDetailEducationExperience, String>> entry : mapping
+                            .entrySet()) {
+                        String oracleField = entry.getKey(); // Oracle表字段名
+                        String pgValue = entry.getValue().apply(pg); // PostgreSQL映射值
+                        // 调试级日志：记录每个字段的映射关系（可选，数据敏感时可注释）
+                        logger.trace("字段映射 - Oracle字段[{}]：PostgreSQL值[{}]", oracleField, pgValue);
+
+                        personEduInfoFieldMapper.setOracleField(oracleEdu, oracleField, pgValue);
+                    }
+                    logger.debug("第[{}]条记录字段映射完成，Oracle记录ORIGINAL_ID: [{}]",
+                            processCount, oracleEdu.getOriginalId());
+
+                    // 6. USCID过滤日志：记录过滤原因
+                    //// 跳过原表中的del_flag不为1的记录
+                    Integer delFlag = pg.getDelFlag();
+                    if (delFlag != null && delFlag != 1) {
+                        skipCount++;
+                        logger.debug("第[{}]条记录跳过处理：del_flag不为1（PostgreSQL记录ID: [{}]）",
+                                processCount, currentPgId);
+                        continue; // del_flag不为1的记录不处理
+                    }
+
+                    // 7. Oracle查询日志：根据ORIGINAL_ID和USCID的组合判断是否存在，因为这两个字段的组合是唯一的
+                    String uscid = oracleEdu.getUscid();
+                    logger.trace("第[{}]条记录USCID值：[{}]", processCount, uscid);
+                    if (uscid == null || uscid.trim().isEmpty()) {
+                        skipCount++;
+                        logger.debug("第[{}]条记录跳过处理：USCID为空（PostgreSQL记录ID: [{}]）",
+                                processCount, currentPgId);
+                        continue; // USCID为空不推送
+                    }
+
+                    // 7. Oracle查询日志：根据ORIGINAL_ID和USCID的组合判断是否存在，因为这两个字段的组合是唯一的
+                    String originalId = oracleEdu.getOriginalId();
+                    if (originalId == null || originalId.trim().isEmpty() || originalId.trim().equals(" ")) {
+                        logger.warn("第[{}]条记录ORIGINAL_ID为空，跳过处理", processCount);
+                        skipCount++;
+                        continue;
+                    }
+
+                    QueryWrapper<OraclePersonEduInfo> qw = new QueryWrapper<>();
+                    qw.eq("ORIGINAL_ID", originalId);
+                    qw.eq("USCID", uscid);
+                    logger.debug("第[{}]条记录：查询Oracle是否存在，条件ORIGINAL_ID: [{}], USCID: [{}]",
+                            processCount, originalId, uscid);
+
+                    OraclePersonEduInfo exist = oraclePersonEduInfoMapper.selectOne(qw);
+                    if (exist != null) {
+                        // 8. 更新操作日志：记录更新的关键标识
+                        // 更新时，必须使用已存在记录的RID，并重新创建一个对象，避免使用已设置的RID（可能已被字段映射设置）
+                        OraclePersonEduInfo updateObj = new OraclePersonEduInfo();
+                        updateObj.setRid(exist.getRid()); // 使用已存在记录的RID
+                        // 重新设置所有字段，确保使用最新的映射值
+                        for (Map.Entry<String, Function<PostgresPersonDetailEducationExperience, String>> entry : mapping
+                                .entrySet()) {
+                            String fieldName = entry.getKey();
+                            if (!"RID".equals(fieldName)) { // RID已经设置，跳过
+                                String fieldValue = entry.getValue().apply(pg);
+                                personEduInfoFieldMapper.setOracleField(updateObj, fieldName, fieldValue);
+                            }
+                        }
+                        oraclePersonEduInfoMapper.updateById(updateObj);
+                        updateCount++;
+                        logger.info("第[{}]条记录更新成功 - Oracle RID: [{}], ORIGINAL_ID: [{}]",
+                                processCount, exist.getRid(), oracleEdu.getOriginalId());
+                    } else {
+                        // 9. 插入操作日志：记录插入的关键标识
+                        oraclePersonEduInfoMapper.insert(oracleEdu);
+                        insertCount++;
+                        logger.info("第[{}]条记录插入成功 - Oracle ORIGINAL_ID: [{}], USCID: [{}]",
+                                processCount, oracleEdu.getOriginalId(), uscid);
+                    }
+
+                } catch (Exception e) {
+                    // 10. 异常日志：记录详细错误信息和上下文（便于排查）
+                    logger.error("第[{}]条记录处理失败（PostgreSQL记录ID: [{}]），错误信息：{}",
+                            processCount, currentPgId, e.getMessage(), e);
+                    skipCount++; // 异常记录计入跳过数
+                }
+            }
+
+            // 11. 同步结束统计日志：清晰展示核心指标
+            logger.info("=== 教育经历数据同步任务结束 ===");
+            logger.info("同步统计：总查询记录数[{}]，总处理记录数[{}]，更新记录数[{}]，插入记录数[{}]，跳过记录数[{}]",
+                    pgList.size(), processCount, updateCount, insertCount, skipCount);
+
+        } catch (Exception e) {
+            // 12. 全局异常日志：捕获任务级别的严重异常
+            logger.error("教育经历数据同步任务整体失败，错误信息：{}", e.getMessage(), e);
+            throw e; // 若需要上层处理，可抛出异常；否则可仅记录日志
+        }
+    }
+
+    /**
+     * 全量同步Postgres工作经历标到Oracle，original_id存在则update，不存在则insert
+     * 只同步USCID有值且为指定机构代码的数据
+     */
+    public void syncWorkInfoAll() {
+        logger.info("开始执行syncWorkInfoAll同步...");
+
+        try {
+            // 先从PostgreSQL获取detail_id等于指定值的记录的id列表
+            QueryWrapper<PostgresPersonDetailCustom> pgQueryWrapper = new QueryWrapper<>();
+            pgQueryWrapper.eq("detail_id", "person_detail_DFIXZgBn");
+            List<PostgresPersonDetailCustom> toDeleteList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
+            List<String> toDeleteIds = toDeleteList.stream()
+                    .map(PostgresPersonDetailCustom::getId)
+                    .collect(Collectors.toList());
+
+            // 使用批量删除工具方法删除Oracle表中的记录
+            batchDelete(toDeleteIds, batchIds -> {
+                QueryWrapper<OraclePersonEmprInfo> oracleQueryWrapper = new QueryWrapper<>();
+                oracleQueryWrapper.in("ORIGINAL_ID", batchIds);
+                return oraclePersonEmprInfoMapper.delete(oracleQueryWrapper);
+            });
+
+            // logger.info("正在从PostgreSQL查询工作经历数据...");
+            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
+            // logger.info("PostgreSQL查询完成，共获取{}条记录", pgList.size());
+
+            int processCount = 0;
+            int updateCount = 0;
+            int insertCount = 0;
+
+            for (PostgresPersonDetailCustom pg : pgList) {
+                // logger.debug("正在处理第{}条记录，ID: {}", ++processCount, pg.getId());
+
+                // 检查detail_id是否符合条件
+                if (!"person_detail_DFIXZgBn".equals(pg.getDetailId())) {
+                    // logger.debug("跳过非目标detail_id记录，当前detail_id: {}, ID: {}", pg.getDetailId(),
+                    // pg.getId());
+                    continue;
+                }
+
+                // 跳过原表中的del_flag不为1的记录（在字段映射之前检查，避免不必要的处理）
+                Integer delFlag = pg.getDelFlag();
+                if (delFlag != null && delFlag != 1) {
+                    logger.debug("跳过del_flag不为1记录，ID: {}", pg.getId());
+                    continue;
+                }
+
+                Map<String, Function<PostgresPersonDetailCustom, String>> mapping = personEmperFieldMapper.FIELD_MAPPING;
+                OraclePersonEmprInfo oracleEmpr = new OraclePersonEmprInfo();
+
+                try {
+                    // 记录所有字段的映射过程
+                    Map<String, Object> fieldValues = new HashMap<>();
+                    for (Map.Entry<String, Function<PostgresPersonDetailCustom, String>> entry : mapping.entrySet()) {
+                        String fieldName = entry.getKey();
+                        String fieldValue = entry.getValue().apply(pg);
+                        fieldValues.put(fieldName, fieldValue);
+
+                        // 打印每个字段的映射结果
+                        // logger.info("字段映射 - {}: [{}]", fieldName, fieldValue);
+
+                        personEmperFieldMapper.setOracleField(oracleEmpr, fieldName, fieldValue);
+                    }
+
+                    // 打印关键字段的值
+                    // logger.info("记录ID: {} 的字段值:", pg.getId());
+                    // logger.info("UPLOAD_TIME: [{}]", fieldValues.get("UPLOAD_TIME"));
+                    // logger.info("WKBEGN_DATE: [{}]", fieldValues.get("WKBEGN_DATE"));
+                    // logger.info("WKEND_DATE: [{}]", fieldValues.get("WKEND_DATE"));
+                    // logger.info("CRTE_TIME: [{}]", fieldValues.get("CRTE_TIME"));
+                    // logger.info("UPDT_TIME: [{}]", fieldValues.get("UPDT_TIME"));
+                    // logger.info("DELETED_TIME: [{}]", fieldValues.get("DELETED_TIME"));
+                    // logger.info("USCID: [{}]", fieldValues.get("USCID"));
+                    // logger.info("ORG_NAME: [{}]", fieldValues.get("ORG_NAME"));
+
+                    String uscid = (String) fieldValues.get("USCID");
+                    if (uscid == null || uscid.trim().isEmpty()) {
+                        logger.debug("跳过空USCID记录，ID: {}", pg.getId());
+                        continue;
+                    }
+
+                    logger.info("准备同步记录到Oracle，ORIGINAL_ID: {}, USCID: {}", fieldValues.get("ORIGINAL_ID"), uscid);
+
+                    try {
+                        // 根据ORIGINAL_ID和USCID的组合判断是否存在，因为这两个字段的组合是唯一的
+                        String originalId = (String) fieldValues.get("ORIGINAL_ID");
+                        if (originalId == null || originalId.trim().isEmpty() || originalId.trim().equals(" ")) {
+                            logger.warn("ORIGINAL_ID为空，跳过处理，记录ID: {}", pg.getId());
+                            continue;
+                        }
+
+                        QueryWrapper<OraclePersonEmprInfo> qw = new QueryWrapper<>();
+                        qw.eq("ORIGINAL_ID", originalId);
+                        qw.eq("USCID", uscid);
+                        logger.debug("正在Oracle中查询是否存在记录，ORIGINAL_ID: {}, USCID: {}", originalId, uscid);
+                        OraclePersonEmprInfo exist = oraclePersonEmprInfoMapper.selectOne(qw);
+
+                        if (exist != null) {
+                            logger.info("找到已存在记录，准备更新，RID: {}", exist.getRid());
+                            // 更新时，必须使用已存在记录的RID，并重新创建一个对象，避免使用已设置的RID（可能已被字段映射设置）
+                            OraclePersonEmprInfo updateObj = new OraclePersonEmprInfo();
+                            updateObj.setRid(exist.getRid()); // 使用已存在记录的RID
+                            // 重新设置所有字段，确保使用最新的映射值
+                            for (Map.Entry<String, Function<PostgresPersonDetailCustom, String>> entry : mapping
+                                    .entrySet()) {
+                                String fieldName = entry.getKey();
+                                if (!"RID".equals(fieldName)) { // RID已经设置，跳过
+                                    String fieldValue = entry.getValue().apply(pg);
+                                    personEmperFieldMapper.setOracleField(updateObj, fieldName, fieldValue);
+                                }
+                            }
+                            oraclePersonEmprInfoMapper.updateById(updateObj);
+                            updateCount++;
+                            logger.info("更新成功");
+                        } else {
+                            logger.info("未找到已存在记录，准备插入新记录");
+                            oraclePersonEmprInfoMapper.insert(oracleEmpr);
+                            insertCount++;
+                            logger.info("插入成功");
+                        }
+                    } catch (Exception e) {
+                        logger.error("Oracle操作失败，ORIGINAL_ID: {}, USCID: {}, 错误: {}",
+                                fieldValues.get("ORIGINAL_ID"), uscid, e.getMessage(), e);
+                    }
+
+                } catch (Exception e) {
+                    logger.error("字段映射失败，记录ID: {}, 错误: {}", pg.getId(), e.getMessage(), e);
+                    continue;
+                }
+            }
+
+            logger.info("同步完成，总处理: {}条，更新: {}条，插入: {}条", processCount, updateCount, insertCount);
+        } catch (Exception e) {
+            logger.error("同步过程发生异常: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    /**
+     * * 全量同步Postgres聘任信息到Oracle，original_id存在则update，不存在则insert
+     * 只同步USCID有值且为指定机构代码的数据,detail_id = person_detail_9ZpRnS5U
+     */
+    public void syncEmpTypeInfoAll() {
+
+        try {
+            // 先从PostgreSQL获取detail_id等于指定值的记录的id列表
+            QueryWrapper<PostgresPersonDetailCustom> pgQueryWrapper = new QueryWrapper<>();
+            pgQueryWrapper.eq("detail_id", "person_detail_9ZpRnS5U");
+            List<PostgresPersonDetailCustom> toDeleteList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
+            List<String> toDeleteIds = toDeleteList.stream()
+                    .map(PostgresPersonDetailCustom::getId)
+                    .collect(Collectors.toList());
+
+            // 使用batchDelete方法删除Oracle表中的记录
+            if (!toDeleteIds.isEmpty()) {
+                batchDelete(toDeleteIds, ids -> {
+                    QueryWrapper<OraclePersonHeigthAward> oracleQueryWrapper = new QueryWrapper<>();
+                    oracleQueryWrapper.in("ORIGINAL_ID", ids);
+                    return oraclePersonHeigthAwardMapper.delete(oracleQueryWrapper);
+                });
+                // logger.info("成功清理不符合条件的数据");
+            }
+
+            // logger.info("正在从PostgreSQL查询height_award数据...");
+            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
+
+            int processCount = 0;
+            int updateCount = 0;
+            int insertCount = 0;
+
+            for (PostgresPersonDetailCustom pg : pgList) {
+                // logger.debug("正在处理第{}条记录，ID: {}", ++processCount, pg.getId());
+
+                Map<String, Function<PostgresPersonDetailCustom, String>> mapping = personEmpFieldMapper.FIELD_MAPPING;
+                // logger.debug("字段映射: {}", mapping);
+                // for (Map.Entry<String, Function<PostgresPersonDetailCustom, String>> entry :
+                // mapping.entrySet()) {
+                // logger.info("Oracle字段: {} -> PostgreSQL字段映射", entry.getKey());
+                // }
+                OraclePersonEmpType oracleEmpType = new OraclePersonEmpType();
+
+                try {
+                    for (Map.Entry<String, Function<PostgresPersonDetailCustom, String>> entry : mapping
+                            .entrySet()) {
+                        personEmpFieldMapper.setOracleField(oracleEmpType, entry.getKey(), entry.getValue().apply(pg));
+                    }
+                } catch (Exception e) {
+                    logger.error("字段映射失败，记录ID: {}, 错误: {}", pg.getId(), e.getMessage(), e);
+                    continue;
+                }
+
+                String uscid = oracleEmpType.getUscid();
+                if (uscid == null || uscid.trim().isEmpty()) {
+                    logger.debug("跳过空USCID记录，ID: {}", pg.getId());
+                    continue;
+                }
+                //
+                // logger.info("准备同步记录到Oracle，ORIGINAL_ID: {}, USCID: {}",
+                // oracleEmpType.getOriginalId(), uscid);
+                if (!"person_detail_9ZpRnS5U".equals(pg.getDetailId())) {
+                    logger.debug("跳过非目标detail_id记录，当前detail_id: {}, ID: {}", pg.getDetailId(), pg.getId());
+                    continue; // 跳过非工作经历的记录
+                }
+                // 跳过原表中的del_flag不为1的记录
+                Integer delFlag = pg.getDelFlag();
+                if (delFlag != null && delFlag != 1) {
+                    logger.debug("跳过del_flag不为1记录，ID: {}", pg.getId());
+                    continue;
+                }
+                try {
+                    // 根据ORIGINAL_ID和USCID的组合判断是否存在，因为这两个字段的组合是唯一的
+                    String originalId = oracleEmpType.getOriginalId();
+                    if (originalId == null || originalId.trim().isEmpty() || originalId.trim().equals(" ")) {
+                        logger.warn("ORIGINAL_ID为空，跳过处理，记录ID: {}", pg.getId());
+                        continue;
+                    }
+
+                    QueryWrapper<OraclePersonEmpType> qw = new QueryWrapper<>();
+                    qw.eq("ORIGINAL_ID", originalId);
+                    qw.eq("USCID", uscid);
+                    // logger.debug("正在Oracle中查询是否存在记录，ORIGINAL_ID: {}, USCID: {}", originalId,
+                    // uscid);
+                    OraclePersonEmpType exist = oraclePersonEmpTypeMapper.selectOne(qw);
+
+                    if (exist != null) {
+                        // logger.info("找到已存在记录，准备更新，RID: {}", exist.getRid());
+                        // 更新时，必须使用已存在记录的RID，并重新创建一个对象，避免使用已设置的RID（可能已被字段映射设置）
+                        OraclePersonEmpType updateObj = new OraclePersonEmpType();
+                        updateObj.setRid(exist.getRid()); // 使用已存在记录的RID
+                        // 重新设置所有字段，确保使用最新的映射值
+                        for (Map.Entry<String, Function<PostgresPersonDetailCustom, String>> entry : mapping
+                                .entrySet()) {
+                            String fieldName = entry.getKey();
+                            if (!"RID".equals(fieldName)) { // RID已经设置，跳过
+                                String fieldValue = entry.getValue().apply(pg);
+                                personEmpFieldMapper.setOracleField(updateObj, fieldName, fieldValue);
+                            }
+                        }
+                        oraclePersonEmpTypeMapper.updateById(updateObj);
+                        updateCount++;
+                        // logger.info("更新成功");
+                    } else {
+                        // logger.info("未找到已存在记录，准备插入新记录");
+                        oraclePersonEmpTypeMapper.insert(oracleEmpType);
+                        insertCount++;
+                        // logger.info("插入成功");
+                    }
+                } catch (Exception e) {
+                    logger.error("Oracle操作失败，ORIGINAL_ID: {}, USCID: {}, 错误: {}",
+                            oracleEmpType.getOriginalId(), uscid, e.getMessage(), e);
+                }
+            }
+
+            logger.info("同步完成，总处理: {}条，更新: {}条，插入: {}条", processCount, updateCount, insertCount);
+        } catch (Exception e) {
+            logger.error("同步过程发生异常: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    /**
+     * 全量同步Postgres高层次人才奖励信息到Oracle，original_id存在则update，不存在则insert
+     * 只同步USCID有值且为指定机构代码的数据
+     */
+    public void syncHeightAwardInfoAll() {
+        logger.info("开始执行syncHeightAwardInfoAll同步...");
+
+        try {
+            // 先从PostgreSQL获取detail_id等于指定值的记录的id列表
+            QueryWrapper<PostgresPersonDetailCustom> pgQueryWrapper = new QueryWrapper<>();
+            pgQueryWrapper.eq("detail_id", "person_detail_iMSAH8eL");
+            List<PostgresPersonDetailCustom> toDeleteList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
+            List<String> toDeleteIds = toDeleteList.stream()
+                    .map(PostgresPersonDetailCustom::getId)
+                    .collect(Collectors.toList());
+
+            // 使用batchDelete方法删除Oracle表中的记录
+            if (!toDeleteIds.isEmpty()) {
+                batchDelete(toDeleteIds, ids -> {
+                    QueryWrapper<OraclePersonHeigthAward> oracleQueryWrapper = new QueryWrapper<>();
+                    oracleQueryWrapper.in("ORIGINAL_ID", ids);
+                    return oraclePersonHeigthAwardMapper.delete(oracleQueryWrapper);
+                });
+                // logger.info("成功清理不符合条件的数据");
+            }
+
+            // logger.info("正在从PostgreSQL查询height_award数据...");
+            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
+            // logger.info("PostgreSQL查询完成，共获取{}条记录", pgList.size());
+
+            int processCount = 0;
+            int updateCount = 0;
+            int insertCount = 0;
+
+            for (PostgresPersonDetailCustom pg : pgList) {
+                // logger.debug("正在处理第{}条记录，ID: {}", ++processCount, pg.getId());
+
+                // 检查detail_id是否符合条件
+                if (!"person_detail_iMSAH8eL".equals(pg.getDetailId())) {
+                    // logger.debug("跳过非目标detail_id记录，当前detail_id: {}, ID: {}", pg.getDetailId(),
+                    // pg.getId());
+                    continue;
+                }
+
+                // 跳过原表中的del_flag不为1的记录
+                Integer delFlag = pg.getDelFlag();
+                if (delFlag != null && delFlag != 1) {
+                    logger.debug("跳过del_flag不为1记录，ID: {}", pg.getId());
+                    continue;
+                }
+
+                Map<String, Function<PostgresPersonDetailCustom, ?>> mapping = personHeightAward.FIELD_MAPPING;
+                OraclePersonHeigthAward oracleHeightAward = new OraclePersonHeigthAward();
+
+                try {
+                    // 记录所有字段的映射过程
+                    Map<String, Object> fieldValues = new HashMap<>();
+                    for (Map.Entry<String, Function<PostgresPersonDetailCustom, ?>> entry : mapping.entrySet()) {
+                        String fieldName = entry.getKey();
+                        Object fieldValue = entry.getValue().apply(pg);
+                        fieldValues.put(fieldName, fieldValue);
+
+                        // 所有值都转换为String并设置字段
+                        String strValue = fieldValue == null ? " " : fieldValue.toString();
+                        personHeightAward.setOracleField(oracleHeightAward, fieldName, strValue);
+                    }
+
+                    // 打印所有日期字段的值
+                    // logger.info("记录ID: {} 的字段值:", pg.getId());
+                    // logger.info("UPLOAD_TIME: [{}]", fieldValues.get("UPLOAD_TIME"));
+                    // logger.info("AWARDS_TIME: [{}]", fieldValues.get("AWARDS_TIME"));
+                    // logger.info("CRTE_TIME: [{}]", fieldValues.get("CRTE_TIME"));
+                    // logger.info("UPDT_TIME: [{}]", fieldValues.get("UPDT_TIME"));
+                    // logger.info("DELETED_TIME: [{}]", fieldValues.get("DELETED_TIME"));
+
+                } catch (Exception e) {
+                    logger.error("字段映射失败，记录ID: {}, 错误: {}", pg.getId(), e.getMessage(), e);
+                    continue;
+                }
+
+                String uscid = oracleHeightAward.getUscid();
+                if (uscid == null || uscid.trim().isEmpty()) {
+                    // logger.debug("跳过空USCID记录，ID: {}", pg.getId());
+                    continue;
+                }
+                // if (!"12352230490632333M".equals(uscid)) {
+                //// logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
+                // continue;
+                // }
+
+                // logger.info("准备同步记录到Oracle，ORIGINAL_ID: {}, USCID: {}",
+                // oracleHeightAward.getOriginalId(), uscid);
+
+                try {
+                    // 根据ORIGINAL_ID和USCID的组合判断是否存在，因为这两个字段的组合是唯一的
+                    String originalId = oracleHeightAward.getOriginalId();
+                    if (originalId == null || originalId.trim().isEmpty() || originalId.trim().equals(" ")) {
+                        logger.warn("ORIGINAL_ID为空，跳过处理，记录ID: {}", pg.getId());
+                        continue;
+                    }
+
+                    QueryWrapper<OraclePersonHeigthAward> qw = new QueryWrapper<>();
+                    qw.eq("ORIGINAL_ID", originalId);
+                    qw.eq("USCID", uscid);
+                    // logger.debug("正在Oracle中查询是否存在记录，ORIGINAL_ID: {}, USCID: {}", originalId,
+                    // uscid);
+                    OraclePersonHeigthAward exist = oraclePersonHeigthAwardMapper.selectOne(qw);
+
+                    if (exist != null) {
+                        // logger.info("找到已存在记录，准备更新，RID: {}", exist.getRid());
+                        // 更新时，必须使用已存在记录的RID，并重新创建一个对象，避免使用已设置的RID（可能已被字段映射设置）
+                        OraclePersonHeigthAward updateObj = new OraclePersonHeigthAward();
+                        updateObj.setRid(exist.getRid()); // 使用已存在记录的RID
+                        // 重新设置所有字段，确保使用最新的映射值
+                        for (Map.Entry<String, Function<PostgresPersonDetailCustom, ?>> entry : mapping.entrySet()) {
+                            String fieldName = entry.getKey();
+                            if (!"RID".equals(fieldName)) { // RID已经设置，跳过
+                                Object fieldValue = entry.getValue().apply(pg);
+                                String strValue = fieldValue == null ? " " : fieldValue.toString();
+                                personHeightAward.setOracleField(updateObj, fieldName, strValue);
+                            }
+                        }
+                        oraclePersonHeigthAwardMapper.updateById(updateObj);
+                        updateCount++;
+                        // logger.info("更新成功");
+                    } else {
+                        // logger.info("未找到已存在记录，准备插入新记录");
+                        oraclePersonHeigthAwardMapper.insert(oracleHeightAward);
+                        insertCount++;
+                        // logger.info("插入成功");
+                    }
+                } catch (Exception e) {
+                    logger.error("Oracle操作失败，ORIGINAL_ID: {}, USCID: {}, 错误: {}",
+                            oracleHeightAward.getOriginalId(), uscid, e.getMessage(), e);
+                }
+            }
+
+            logger.info("同步完成，总处理: {}条，更新: {}条，插入: {}条", processCount, updateCount, insertCount);
+        } catch (Exception e) {
+            logger.error("同步过程发生异常: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    /**
+     * 全量同步高层次人才类型信息到Oracle，original_id存在则update，不存在则insert
+     * 只同步USCID有值且为指定机构代码的数据
+     */
+    public void syncHeightInfoAll() {
+        logger.info("开始执行syncHeightInfoAll同步...");
+
+        try {
+            // 先从PostgreSQL获取detail_id等于指定值的记录的id列表
+            QueryWrapper<PostgresPersonDetailCustom> pgQueryWrapper = new QueryWrapper<>();
+            pgQueryWrapper.eq("detail_id", "person_detail_1ajwVmzB");
+            List<PostgresPersonDetailCustom> toDeleteList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
+            List<String> toDeleteIds = toDeleteList.stream()
+                    .map(PostgresPersonDetailCustom::getId)
+                    .collect(Collectors.toList());
+
+            // 使用batchDelete方法删除Oracle表中的记录
+            if (!toDeleteIds.isEmpty()) {
+                batchDelete(toDeleteIds, ids -> {
+                    QueryWrapper<OraclePersonHeigth> oracleQueryWrapper = new QueryWrapper<>();
+                    oracleQueryWrapper.in("ORIGINAL_ID", ids);
+                    return oraclePersonHeigthMapper.delete(oracleQueryWrapper);
+                });
+                // logger.info("成功清理不符合条件的数据");
+            }
+
+            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
+            // logger.info("Found {} records in PostgreSQL height table", pgList.size());
+
+            int processCount = 0;
+            int updateCount = 0;
+            int insertCount = 0;
+
+            for (PostgresPersonDetailCustom pg : pgList) {
+                processCount++;
+
+                // 检查detail_id是否符合条件
+                if (!"person_detail_1ajwVmzB".equals(pg.getDetailId())) {
+                    // logger.debug("跳过非目标detail_id记录，当前detail_id: {}, ID: {}", pg.getDetailId(),
+                    // pg.getId());
+                    continue;
+                }
+
+                // 跳过原表中的del_flag不为1的记录
+                Integer delFlag = pg.getDelFlag();
+                if (delFlag != null && delFlag != 1) {
+                    logger.debug("跳过del_flag不为1记录，ID: {}", pg.getId());
+                    continue;
+                }
+
+                Map<String, Function<PostgresPersonDetailCustom, String>> mapping = personHeightFieldMapper.FIELD_MAPPING;
+                OraclePersonHeigth oracleHeight = new OraclePersonHeigth();
+
+                for (Map.Entry<String, Function<PostgresPersonDetailCustom, String>> entry : mapping.entrySet()) {
+                    try {
+                        personHeightFieldMapper.setOracleField(oracleHeight, entry.getKey(),
+                                entry.getValue().apply(pg));
+                    } catch (Exception e) {
+                        logger.error("Error mapping field {} for record {}: {}", entry.getKey(), pg.getId(),
+                                e.getMessage());
+                        continue;
+                    }
+                }
+
+                String uscid = oracleHeight.getUscid();
+                if (uscid == null || uscid.trim().isEmpty()) {
+                    // logger.debug("Skipping record with empty USCID, ORIGINAL_ID: {}",
+                    // oracleHeight.getOriginalId());
+                    continue; // USCID 为空不推送
+                }
+                // if (!"12352230490632333M".equals(uscid)) {
+                // // logger.debug("Skipping record with non-matching USCID: {}, ORIGINAL_ID:
+                // {}", uscid,oracleHeight.getOriginalId());
+                // continue; // 只推送指定 USCID
+                // }
+
+                // logger.info("Processing record with ORIGINAL_ID: {}, USCID: {}",
+                // oracleHeight.getOriginalId(), uscid);
+
+                // 根据ORIGINAL_ID和USCID的组合判断是否存在，因为这两个字段的组合是唯一的
+                String originalId = oracleHeight.getOriginalId();
+                if (originalId == null || originalId.trim().isEmpty() || originalId.trim().equals(" ")) {
+                    logger.warn("ORIGINAL_ID为空，跳过处理，记录ID: {}", pg.getId());
+                    continue;
+                }
+
+                QueryWrapper<OraclePersonHeigth> qw = new QueryWrapper<>();
+                qw.eq("ORIGINAL_ID", originalId);
+                qw.eq("USCID", uscid);
+                OraclePersonHeigth exist = oraclePersonHeigthMapper.selectOne(qw);
+
+                try {
+                    if (exist != null) {
+                        // logger.info("Updating existing record with RID: {}", exist.getRid());
+                        // 更新时，必须使用已存在记录的RID，并重新创建一个对象，避免使用已设置的RID（可能已被字段映射设置）
+                        OraclePersonHeigth updateObj = new OraclePersonHeigth();
+                        updateObj.setRid(exist.getRid()); // 使用已存在记录的RID
+                        // 重新设置所有字段，确保使用最新的映射值
+                        for (Map.Entry<String, Function<PostgresPersonDetailCustom, String>> entry : mapping
+                                .entrySet()) {
+                            String fieldName = entry.getKey();
+                            if (!"RID".equals(fieldName)) { // RID已经设置，跳过
+                                String fieldValue = entry.getValue().apply(pg);
+                                personHeightFieldMapper.setOracleField(updateObj, fieldName, fieldValue);
+                            }
+                        }
+                        oraclePersonHeigthMapper.updateById(updateObj);
+                        updateCount++;
+                    } else {
+                        // logger.info("Inserting new record");
+                        oraclePersonHeigthMapper.insert(oracleHeight);
+                        insertCount++;
+                    }
+                } catch (Exception e) {
+                    logger.error("Error saving record ORIGINAL_ID: {}, USCID: {}: {}",
+                            originalId, uscid, e.getMessage());
+                }
+            }
+
+            // logger.info("同步完成，总处理: {}条，更新: {}条，插入: {}条", processCount, updateCount,
+            // insertCount);
+        } catch (Exception e) {
+            logger.error("同步过程发生异常: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    /**
+     * 全量同步Postgres论文信息到Oracle，original_id存在则update，不存在则insert
+     * 只同步USCID有值且为指定机构代码的数据
+     */
+    public void syncPaperInfoAll() {
+        logger.info("开始执行syncPaperInfoAll同步...");
+
+        try {
+            // 先从PostgreSQL获取detail_id等于指定值的记录的id列表
+            QueryWrapper<PostgresPersonDetailCustom> pgQueryWrapper = new QueryWrapper<>();
+            pgQueryWrapper.eq("detail_id", "person_detail_LBISJEzo");
+            List<PostgresPersonDetailCustom> toDeleteList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
+            List<String> toDeleteIds = toDeleteList.stream()
+                    .map(PostgresPersonDetailCustom::getId)
+                    .collect(Collectors.toList());
+
+            // 使用batchDelete方法删除Oracle表中的记录
+            if (!toDeleteIds.isEmpty()) {
+                batchDelete(toDeleteIds, ids -> {
+                    QueryWrapper<OraclePersonPaper> oracleQueryWrapper = new QueryWrapper<>();
+                    oracleQueryWrapper.in("ORIGINAL_ID", ids);
+                    return oraclePersonPaperMapper.delete(oracleQueryWrapper);
+                });
+                // logger.info("成功清理不符合条件的数据");
+            }
+
+            // logger.info("正在从PostgreSQL查询论文数据...");
+            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
+            // logger.info("PostgreSQL查询完成，共获取{}条记录", pgList.size());
+
+            int processCount = 0;
+            int updateCount = 0;
+            int insertCount = 0;
+
+            for (PostgresPersonDetailCustom pg : pgList) {
+                // 检查detail_id是否符合条件
+                if (!"person_detail_LBISJEzo".equals(pg.getDetailId())) {
+                    // logger.debug("跳过非目标detail_id记录，当前detail_id: {}, ID: {}", pg.getDetailId(),
+                    // pg.getId());
+                    continue;
+                }
+                // 跳过原表中的del_flag不为1的记录
+                Integer delFlag = pg.getDelFlag();
+                if (delFlag != null && delFlag != 1) {
+                    logger.debug("跳过del_flag不为1记录，ID: {}", pg.getId());
+                    continue;
+                }
+
+                Map<String, Function<PostgresPersonDetailCustom, String>> mapping = personPaperFieldMapper.FIELD_MAPPING;
+                OraclePersonPaper oraclePaper = new OraclePersonPaper();
+
+                // 记录所有字段的映射过程
+                Map<String, Object> fieldValues = new HashMap<>();
+                try {
+                    for (Map.Entry<String, Function<PostgresPersonDetailCustom, String>> entry : mapping.entrySet()) {
+                        String fieldName = entry.getKey();
+                        String fieldValue = entry.getValue().apply(pg);
+                        fieldValues.put(fieldName, fieldValue);
+                        personPaperFieldMapper.setOracleField(oraclePaper, fieldName, fieldValue);
+                    }
+
+                } catch (Exception e) {
+                    logger.error("字段映射失败，记录ID: {}, 错误: {}", pg.getId(), e.getMessage(), e);
+                    continue;
+                }
+
+                String uscid = (String) fieldValues.get("USCID");
+                if (uscid == null || uscid.trim().isEmpty()) {
+                    continue;
+                }
+                // if (!"12352230490632333M".equals(uscid)) {
+                // continue;
+                // }
+
+                try {
+                    // 根据ORIGINAL_ID和USCID的组合判断是否存在，因为这两个字段的组合是唯一的
+                    String originalId = (String) fieldValues.get("ORIGINAL_ID");
+                    if (originalId == null || originalId.trim().isEmpty() || originalId.trim().equals(" ")) {
+                        logger.warn("ORIGINAL_ID为空，跳过处理，记录ID: {}", pg.getId());
+                        continue;
+                    }
+
+                    QueryWrapper<OraclePersonPaper> qw = new QueryWrapper<>();
+                    qw.eq("ORIGINAL_ID", originalId);
+                    qw.eq("USCID", uscid);
+                    OraclePersonPaper exist = oraclePersonPaperMapper.selectOne(qw);
+
+                    if (exist != null) {
+                        // 更新时，必须使用已存在记录的RID，并重新创建一个对象，避免使用已设置的RID（可能已被字段映射设置）
+                        OraclePersonPaper updateObj = new OraclePersonPaper();
+                        updateObj.setRid(exist.getRid()); // 使用已存在记录的RID
+                        // 重新设置所有字段，确保使用最新的映射值
+                        for (Map.Entry<String, Function<PostgresPersonDetailCustom, String>> entry : mapping
+                                .entrySet()) {
+                            String fieldName = entry.getKey();
+                            if (!"RID".equals(fieldName)) { // RID已经设置，跳过
+                                String fieldValue = entry.getValue().apply(pg);
+                                personPaperFieldMapper.setOracleField(updateObj, fieldName, fieldValue);
+                            }
+                        }
+                        oraclePersonPaperMapper.updateById(updateObj);
+                        updateCount++;
+                    } else {
+                        oraclePersonPaperMapper.insert(oraclePaper);
+                        insertCount++;
+                    }
+                } catch (Exception e) {
+                    logger.error("Oracle操作失败，ORIGINAL_ID: {}, USCID: {}, 错误: {}",
+                            fieldValues.get("ORIGINAL_ID"), uscid, e.getMessage(), e);
+                }
+            }
+
+            logger.info("同步完成，总处理: {}条，更新: {}条，插入: {}条", processCount, updateCount, insertCount);
+        } catch (Exception e) {
+            logger.error("同步过程发生异常: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    /**
+     * 全量同步Postgres专利信息到Oracle，original_id存在则update，不存在则insert
+     * 只同步USCID有值且为指定机构代码的数据
+     */
+    public void syncPatentInfoAll() {
+        // logger.info("开始执行syncPatentInfoAll同步...");
+
+        try {
+            // 先从PostgreSQL获取detail_id等于指定值的记录的id列表
+            QueryWrapper<PostgresPersonDetailCustom> pgQueryWrapper = new QueryWrapper<>();
+            pgQueryWrapper.eq("detail_id", "person_detail_zT5ssVbi");
+            List<PostgresPersonDetailCustom> toDeleteList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
+            List<String> toDeleteIds = toDeleteList.stream()
+                    .map(PostgresPersonDetailCustom::getId)
+                    .collect(Collectors.toList());
+
+            // 使用batchDelete方法删除Oracle表中的记录
+            if (!toDeleteIds.isEmpty()) {
+                batchDelete(toDeleteIds, ids -> {
+                    QueryWrapper<OraclePersonPatent> oracleQueryWrapper = new QueryWrapper<>();
+                    oracleQueryWrapper.in("ORIGINAL_ID", ids);
+                    return oraclePersonPatentMapper.delete(oracleQueryWrapper);
+                });
+                // logger.info("成功清理不符合条件的数据");
+            }
+
+            // logger.info("正在从PostgreSQL查询专利数据...");
+            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
+            // logger.info("PostgreSQL查询完成，共获取{}条记录", pgList.size());
+
+            int processCount = 0;
+            int updateCount = 0;
+            int insertCount = 0;
+
+            for (PostgresPersonDetailCustom pg : pgList) {
+                // logger.debug("正在处理第{}条记录，ID: {}", ++processCount, pg.getId());
+
+                // 检查detail_id是否符合条件
+                if (!"person_detail_rBtRIvSB".equals(pg.getDetailId())) {
+                    // logger.debug("跳过非目标detail_id记录，当前detail_id: {}, ID: {}", pg.getDetailId(),
+                    // pg.getId());
+                    continue;
+                }
+
+                // 跳过原表中的del_flag不为1的记录
+                Integer delFlag = pg.getDelFlag();
+                if (delFlag != null && delFlag != 1) {
+                    logger.debug("跳过del_flag不为1记录，ID: {}", pg.getId());
+                    continue;
+                }
+
+                // 打印custom_fields内容
+                // logger.info("记录的custom_fields内容: {}", pg.getCustomFields());
+
+                Map<String, Function<PostgresPersonDetailCustom, String>> mapping = personPatentFieldMapper.FIELD_MAPPING;
+                OraclePersonPatent oraclePatent = new OraclePersonPatent();
+
+                try {
+                    // 记录所有字段的映射过程
+                    Map<String, Object> fieldValues = new HashMap<>();
+                    for (Map.Entry<String, Function<PostgresPersonDetailCustom, String>> entry : mapping.entrySet()) {
+                        String fieldName = entry.getKey();
+                        String fieldValue = entry.getValue().apply(pg);
+                        fieldValues.put(fieldName, fieldValue);
+
+                        // 打印每个字段的映射结果
+                        // logger.info("字段映射 - {}: [{}]", fieldName, fieldValue);
+
+                        personPatentFieldMapper.setOracleField(oraclePatent, fieldName, fieldValue);
+                    }
+
+                    // 打印关键字段的值
+                    // logger.info("记录ID: {} 的字段值:", pg.getId());
+                    // logger.info("UPLOAD_TIME: [{}]", fieldValues.get("UPLOAD_TIME"));
+                    // logger.info("GRANT_DATE: [{}]", fieldValues.get("GRANT_DATE"));
+                    // logger.info("CRTE_TIME: [{}]", fieldValues.get("CRTE_TIME"));
+                    // logger.info("UPDT_TIME: [{}]", fieldValues.get("UPDT_TIME"));
+                    // logger.info("DELETED_TIME: [{}]", fieldValues.get("DELETED_TIME"));
+                    // logger.info("PATENT_NO: [{}]", fieldValues.get("PATENT_NO"));
+                    // logger.info("PATENT_NAME: [{}]", fieldValues.get("PATENT_NAME"));
+                    // logger.info("PATENT_OWNER: [{}]", fieldValues.get("PATENT_OWNER"));
+                    // logger.info("USCID: [{}]", fieldValues.get("USCID"));
+                    // logger.info("ORG_NAME: [{}]", fieldValues.get("ORG_NAME"));
+
+                    String uscid = (String) fieldValues.get("USCID");
+                    if (uscid == null || uscid.trim().isEmpty()) {
+                        // logger.debug("跳过空USCID记录，ID: {}", pg.getId());
+                        continue;
+                    }
+                    // if (!"12352230490632333M".equals(uscid.trim())) {
+                    // // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
+                    // continue;
+                    // }
+
+                    // logger.info("准备同步记录到Oracle，ORIGINAL_ID: {}, USCID: {}",
+                    // fieldValues.get("ORIGINAL_ID"), uscid);
+
+                    try {
+                        // 根据ORIGINAL_ID和USCID的组合判断是否存在，因为这两个字段的组合是唯一的
+                        String originalId = (String) fieldValues.get("ORIGINAL_ID");
+                        if (originalId == null || originalId.trim().isEmpty() || originalId.trim().equals(" ")) {
+                            logger.warn("ORIGINAL_ID为空，跳过处理，记录ID: {}", pg.getId());
+                            continue;
+                        }
+
+                        QueryWrapper<OraclePersonPatent> qw = new QueryWrapper<>();
+                        qw.eq("ORIGINAL_ID", originalId);
+                        qw.eq("USCID", uscid);
+                        // logger.debug("正在Oracle中查询是否存在记录，ORIGINAL_ID: {}, USCID: {}", originalId,
+                        // uscid);
+                        OraclePersonPatent exist = oraclePersonPatentMapper.selectOne(qw);
+
+                        if (exist != null) {
+                            // 更新时，必须使用已存在记录的RID，并重新创建一个对象，避免使用已设置的RID（可能已被字段映射设置）
+                            OraclePersonPatent updateObj = new OraclePersonPatent();
+                            updateObj.setRid(exist.getRid()); // 使用已存在记录的RID
+                            // 重新设置所有字段，确保使用最新的映射值
+                            for (Map.Entry<String, Function<PostgresPersonDetailCustom, String>> entry : mapping
+                                    .entrySet()) {
+                                String fieldName = entry.getKey();
+                                if (!"RID".equals(fieldName)) { // RID已经设置，跳过
+                                    String fieldValue = entry.getValue().apply(pg);
+                                    personPatentFieldMapper.setOracleField(updateObj, fieldName, fieldValue);
+                                }
+                            }
+                            oraclePersonPatentMapper.updateById(updateObj);
+                            updateCount++;
+                        } else {
+                            oraclePersonPatentMapper.insert(oraclePatent);
+                            insertCount++;
+                        }
+                    } catch (Exception e) {
+                        logger.error("Oracle操作失败，ORIGINAL_ID: {}, USCID: {}, 错误: {}",
+                                fieldValues.get("ORIGINAL_ID"), uscid, e.getMessage(), e);
+                    }
+
+                } catch (Exception e) {
+                    logger.error("字段映射失败，记录ID: {}, 错误: {}", pg.getId(), e.getMessage(), e);
+                    continue;
+                }
+            }
+
+            // logger.info("同步完成，总处理: {}条，更新: {}条，插入: {}条", processCount, updateCount,
+            // insertCount);
+        } catch (Exception e) {
+            logger.error("同步过程发生异常: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    /**
+     * 全量同步Postgres专业技术资格标到Oracle，original_id存在则update，不存在则insert
+     * 只同步USCID有值且为指定机构代码的数据
+     */
+    public void syncTechInfoAll() {
+        logger.info("开始执行syncTechInfoAll同步...");
+
+        try {
+            // 先从PostgreSQL获取detail_id等于指定值的记录的id列表
+            QueryWrapper<PostgresPersonDetailCustom> pgQueryWrapper = new QueryWrapper<>();
+            pgQueryWrapper.eq("detail_id", "person_detail_6oerH62E");
+            List<PostgresPersonDetailCustom> toDeleteList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
+            List<String> toDeleteIds = toDeleteList.stream()
+                    .map(PostgresPersonDetailCustom::getId)
+                    .collect(Collectors.toList());
+
+            // 使用batchDelete方法删除Oracle表中的记录
+            if (!toDeleteIds.isEmpty()) {
+                batchDelete(toDeleteIds, ids -> {
+                    QueryWrapper<OraclePersonProf> oracleQueryWrapper = new QueryWrapper<>();
+                    oracleQueryWrapper.in("ORIGINAL_ID", ids);
+                    return oraclePersonProfMapper.delete(oracleQueryWrapper);
+                });
+                // logger.info("成功清理不符合条件的数据");
+            }
+
+            // logger.info("正在从PostgreSQL查询专业技术资格数据...");
+            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
+            // logger.info("PostgreSQL查询完成，共获取{}条记录", pgList.size());
+
+            int processCount = 0;
+            int updateCount = 0;
+            int insertCount = 0;
+
+            for (PostgresPersonDetailCustom pg : pgList) {
+                // logger.debug("正在处理第{}条记录，ID: {}", ++processCount, pg.getId());
+
+                // 检查detail_id是否符合条件
+                if (!"person_detail_6oerH62E".equals(pg.getDetailId())) {
+                    // logger.debug("跳过非目标detail_id记录，当前detail_id: {}, ID: {}", pg.getDetailId(),
+                    // pg.getId());
+                    continue;
+                }
+
+                // 跳过原表中的del_flag不为1的记录
+                Integer delFlag = pg.getDelFlag();
+                if (delFlag != null && delFlag != 1) {
+                    logger.debug("跳过del_flag不为1记录，ID: {}", pg.getId());
+                    continue;
+                }
+
+                Map<String, Function<PostgresPersonDetailCustom, String>> mapping = personPsnProfFieldMapper.FIELD_MAPPING;
+                OraclePersonProf oracleProf = new OraclePersonProf();
+
+                try {
+                    // 记录所有字段的映射过程
+                    Map<String, Object> fieldValues = new HashMap<>();
+                    for (Map.Entry<String, Function<PostgresPersonDetailCustom, String>> entry : mapping.entrySet()) {
+                        String fieldName = entry.getKey();
+                        String fieldValue = entry.getValue().apply(pg);
+                        fieldValues.put(fieldName, fieldValue);
+
+                        // 打印每个字段的映射结果
+                        // logger.info("字段映射 - {}: [{}]", fieldName, fieldValue);
+
+                        personPsnProfFieldMapper.setOracleField(oracleProf, fieldName, fieldValue);
+                    }
+
+                    // 打印关键字段的值
+                    // logger.info("记录ID: {} 的字段值:", pg.getId());
+                    // logger.info("UPLOAD_TIME: [{}]", fieldValues.get("UPLOAD_TIME"));
+                    // logger.info("GET_DATE: [{}]", fieldValues.get("GET_DATE"));
+                    // logger.info("EXPY_START_TIME: [{}]", fieldValues.get("EXPY_START_TIME"));
+                    // logger.info("CRTE_TIME: [{}]", fieldValues.get("CRTE_TIME"));
+                    // logger.info("UPDT_TIME: [{}]", fieldValues.get("UPDT_TIME"));
+                    // logger.info("DELETED_TIME: [{}]", fieldValues.get("DELETED_TIME"));
+                    // logger.info("USCID: [{}]", fieldValues.get("USCID"));
+                    // logger.info("ORG_NAME: [{}]", fieldValues.get("ORG_NAME"));
+
+                    String uscid = (String) fieldValues.get("USCID");
+                    if (uscid == null || uscid.trim().isEmpty()) {
+                        // logger.debug("跳过空USCID记录，ID: {}", pg.getId());
+                        continue;
+                    }
+                    // if (!"12352230490632333M".equals(uscid.trim())) {
+                    // // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
+                    // continue;
+                    // }
+
+                    // logger.info("准备同步记录到Oracle，ORIGINAL_ID: {}, USCID: {}",
+                    // fieldValues.get("ORIGINAL_ID"), uscid);
+
+                    try {
+                        // 根据ORIGINAL_ID和USCID的组合判断是否存在，因为这两个字段的组合是唯一的
+                        String originalId = (String) fieldValues.get("ORIGINAL_ID");
+                        if (originalId == null || originalId.trim().isEmpty() || originalId.trim().equals(" ")) {
+                            logger.warn("ORIGINAL_ID为空，跳过处理，记录ID: {}", pg.getId());
+                            continue;
+                        }
+
+                        QueryWrapper<OraclePersonProf> qw = new QueryWrapper<>();
+                        qw.eq("ORIGINAL_ID", originalId);
+                        qw.eq("USCID", uscid);
+                        // logger.debug("正在Oracle中查询是否存在记录，ORIGINAL_ID: {}, USCID: {}", originalId,
+                        // uscid);
+                        OraclePersonProf exist = oraclePersonProfMapper.selectOne(qw);
+
+                        if (exist != null) {
+                            // logger.info("找到已存在记录，准备更新，RID: {}", exist.getRid());
+                            // 更新时，必须使用已存在记录的RID，并重新创建一个对象，避免使用已设置的RID（可能已被字段映射设置）
+                            OraclePersonProf updateObj = new OraclePersonProf();
+                            updateObj.setRid(exist.getRid()); // 使用已存在记录的RID
+                            // 重新设置所有字段，确保使用最新的映射值
+                            for (Map.Entry<String, Function<PostgresPersonDetailCustom, String>> entry : mapping
+                                    .entrySet()) {
+                                String fieldName = entry.getKey();
+                                if (!"RID".equals(fieldName)) { // RID已经设置，跳过
+                                    String fieldValue = entry.getValue().apply(pg);
+                                    personPsnProfFieldMapper.setOracleField(updateObj, fieldName, fieldValue);
+                                }
+                            }
+                            oraclePersonProfMapper.updateById(updateObj);
+                            updateCount++;
+                            // logger.info("更新成功");
+                        } else {
+                            // logger.info("未找到已存在记录，准备插入新记录");
+                            oraclePersonProfMapper.insert(oracleProf);
+                            insertCount++;
+                            // logger.info("插入成功");
+                        }
+                    } catch (Exception e) {
+                        logger.error("Oracle操作失败，ORIGINAL_ID: {}, USCID: {}, 错误: {}",
+                                fieldValues.get("ORIGINAL_ID"), uscid, e.getMessage(), e);
+                    }
+
+                } catch (Exception e) {
+                    logger.error("字段映射失败，记录ID: {}, 错误: {}", pg.getId(), e.getMessage(), e);
+                    continue;
+                }
+            }
+
+            logger.info("同步完成，总处理: {}条，更新: {}条，插入: {}条", processCount, updateCount, insertCount);
+        } catch (Exception e) {
+            logger.error("同步过程发生异常: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    /**
+     * 全量同步Postgres科研情况信息表到Oracle，original_id存在则update，不存在则insert
+     * 只同步USCID有值且为指定机构代码的数据
+     */
+    public void syncResearchInfoAll() {
+        logger.info("开始执行syncResearchInfoAll同步...");
+
+        try {
+            // 先从PostgreSQL获取detail_id等于指定值的记录的id列表
+            QueryWrapper<PostgresPersonDetailCustom> pgQueryWrapper = new QueryWrapper<>();
+            pgQueryWrapper.eq("detail_id", "person_detail_zT5ssVbi");
+            List<PostgresPersonDetailCustom> toDeleteList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
+            List<String> toDeleteIds = toDeleteList.stream()
+                    .map(PostgresPersonDetailCustom::getId)
+                    .collect(Collectors.toList());
+
+            // 使用批量删除工具方法删除Oracle表中的记录
+            batchDelete(toDeleteIds, batchIds -> {
+                QueryWrapper<OraclePersonResearch> oracleQueryWrapper = new QueryWrapper<>();
+                oracleQueryWrapper.in("ORIGINAL_ID", batchIds);
+                return oraclePersonResearchMapper.delete(oracleQueryWrapper);
+            });
+
+            // logger.info("正在从PostgreSQL查询科研项目数据...");
+            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
+            // logger.info("PostgreSQL查询完成，共获取{}条记录", pgList.size());
+
+            int processCount = 0;
+            int updateCount = 0;
+            int insertCount = 0;
+
+            for (PostgresPersonDetailCustom pg : pgList) {
+                // logger.debug("正在处理第{}条记录，ID: {}", ++processCount, pg.getId());
+
+                // 检查detail_id是否符合条件
+                if (!"person_detail_zT5ssVbi".equals(pg.getDetailId())) {
+                    // logger.debug("跳过非目标detail_id记录，当前detail_id: {}, ID: {}", pg.getDetailId(),
+                    // pg.getId());
+                    continue;
+                }
+
+                // 跳过原表中的del_flag不为1的记录
+                Integer delFlag = pg.getDelFlag();
+                if (delFlag != null && delFlag != 1) {
+                    logger.debug("跳过del_flag不为1记录，ID: {}", pg.getId());
+                    continue;
+                }
+
+                Map<String, Function<PostgresPersonDetailCustom, String>> mapping = personResearchMapper.FIELD_MAPPING;
+                OraclePersonResearch oracleResearch = new OraclePersonResearch();
+
+                try {
+                    // 记录所有字段的映射过程
+                    Map<String, Object> fieldValues = new HashMap<>();
+                    for (Map.Entry<String, Function<PostgresPersonDetailCustom, String>> entry : mapping.entrySet()) {
+                        String fieldName = entry.getKey();
+                        String fieldValue = entry.getValue().apply(pg);
+                        fieldValues.put(fieldName, fieldValue);
+
+                        // 打印每个字段的映射结果
+                        // logger.info("字段映射 - {}: [{}]", fieldName, fieldValue);
+
+                        personResearchMapper.setOracleField(oracleResearch, fieldName, fieldValue);
+                    }
+
+                    // 打印关键字段的值
+                    // logger.info("记录ID: {} 的字段值:", pg.getId());
+                    // logger.info("UPLOAD_TIME: [{}]", fieldValues.get("UPLOAD_TIME"));
+                    // logger.info("START_TIME: [{}]", fieldValues.get("START_TIME"));
+                    // logger.info("END_TIME: [{}]", fieldValues.get("END_TIME"));
+                    // logger.info("CRTE_TIME: [{}]", fieldValues.get("CRTE_TIME"));
+                    // logger.info("UPDT_TIME: [{}]", fieldValues.get("UPDT_TIME"));
+                    // logger.info("DELETED_TIME: [{}]", fieldValues.get("DELETED_TIME"));
+                    // logger.info("USCID: [{}]", fieldValues.get("USCID"));
+                    // logger.info("ORG_NAME: [{}]", fieldValues.get("ORG_NAME"));
+
+                    String uscid = (String) fieldValues.get("USCID");
+                    if (uscid == null || uscid.trim().isEmpty()) {
+                        // logger.debug("跳过空USCID记录，ID: {}", pg.getId());
+                        continue;
+                    }
+                    // if (!"12352230490632333M".equals(uscid.trim())) {
+                    // // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
+                    // continue;
+                    // }
+
+                    // logger.info("准备同步记录到Oracle，ORIGINAL_ID: {}, USCID: {}",
+                    // fieldValues.get("ORIGINAL_ID"), uscid);
+
+                    try {
+                        // 根据ORIGINAL_ID和USCID的组合判断是否存在，因为这两个字段的组合是唯一的
+                        String originalId = (String) fieldValues.get("ORIGINAL_ID");
+                        if (originalId == null || originalId.trim().isEmpty() || originalId.trim().equals(" ")) {
+                            logger.warn("ORIGINAL_ID为空，跳过处理，记录ID: {}", pg.getId());
+                            continue;
+                        }
+
+                        QueryWrapper<OraclePersonResearch> qw = new QueryWrapper<>();
+                        qw.eq("ORIGINAL_ID", originalId);
+                        qw.eq("USCID", uscid);
+                        // logger.debug("正在Oracle中查询是否存在记录，ORIGINAL_ID: {}, USCID: {}", originalId,
+                        // uscid);
+                        OraclePersonResearch exist = oraclePersonResearchMapper.selectOne(qw);
+
+                        if (exist != null) {
+                            // logger.info("找到已存在记录，准备更新，RID: {}", exist.getRid());
+                            // 更新时，必须使用已存在记录的RID，并重新创建一个对象，避免使用已设置的RID（可能已被字段映射设置）
+                            OraclePersonResearch updateObj = new OraclePersonResearch();
+                            updateObj.setRid(exist.getRid()); // 使用已存在记录的RID
+                            // 重新设置所有字段，确保使用最新的映射值
+                            for (Map.Entry<String, Function<PostgresPersonDetailCustom, String>> entry : mapping
+                                    .entrySet()) {
+                                String fieldName = entry.getKey();
+                                if (!"RID".equals(fieldName)) { // RID已经设置，跳过
+                                    String fieldValue = entry.getValue().apply(pg);
+                                    personResearchMapper.setOracleField(updateObj, fieldName, fieldValue);
+                                }
+                            }
+                            oraclePersonResearchMapper.updateById(updateObj);
+                            updateCount++;
+                            // logger.info("更新成功");
+                        } else {
+                            // logger.info("未找到已存在记录，准备插入新记录");
+                            oraclePersonResearchMapper.insert(oracleResearch);
+                            insertCount++;
+                            // logger.info("插入成功");
+                        }
+                    } catch (Exception e) {
+                        logger.error("Oracle操作失败，ORIGINAL_ID: {}, USCID: {}, 错误: {}",
+                                fieldValues.get("ORIGINAL_ID"), uscid, e.getMessage(), e);
+                    }
+
+                } catch (Exception e) {
+                    logger.error("字段映射失败，记录ID: {}, 错误: {}", pg.getId(), e.getMessage(), e);
+                    continue;
+                }
+            }
+
+            // logger.info("同步完成，总处理: {}条，更新: {}条，插入: {}条", processCount, updateCount,
+            // insertCount);
+        } catch (Exception e) {
+            logger.error("同步过程发生异常: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    /**
+     * 全量同步Postgres个人奖励称号信息表到Oracle，original_id存在则update，不存在则insert
+     * 只同步USCID有值且为指定机构代码的数据
+     */
+    public void syncHonorInfoAll() {
+        logger.info("开始执行syncHonorInfoAll同步...");
+
+        try {
+            // 先从PostgreSQL获取detail_id等于指定值的记录的id列表
+            QueryWrapper<PostgresPersonDetailCustom> pgQueryWrapper = new QueryWrapper<>();
+            pgQueryWrapper.eq("detail_id", "person_detail_IvMVko5s");
+            List<PostgresPersonDetailCustom> toDeleteList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
+            List<String> toDeleteIds = toDeleteList.stream()
+                    .map(PostgresPersonDetailCustom::getId)
+                    .collect(Collectors.toList());
+
+            // 使用批量删除工具方法删除Oracle表中的记录
+            batchDelete(toDeleteIds, batchIds -> {
+                QueryWrapper<OraclePersonRewards> oracleQueryWrapper = new QueryWrapper<>();
+                oracleQueryWrapper.in("ORIGINAL_ID", batchIds);
+                return oraclePersonRewardsMapper.delete(oracleQueryWrapper);
+            });
+
+            logger.info("正在从PostgreSQL查询荣誉信息数据...");
+            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
+            // logger.info("PostgreSQL查询完成，共获取{}条记录", pgList.size());
+
+            int processCount = 0;
+            int updateCount = 0;
+            int insertCount = 0;
+
+            for (PostgresPersonDetailCustom pg : pgList) {
+                logger.debug("正在处理第{}条记录，ID: {}", ++processCount, pg.getId());
+
+                // 检查detail_id是否符合条件
+                if (!"person_detail_IvMVko5s".equals(pg.getDetailId())) {
+                    logger.debug("跳过非目标detail_id记录，当前detail_id: {}, ID: {}", pg.getDetailId(),
+                            pg.getId());
+                    continue;
+                }
+
+                // 跳过原表中的del_flag不为1的记录
+                Integer delFlag = pg.getDelFlag();
+                if (delFlag != null && delFlag != 1) {
+                    logger.debug("跳过del_flag不为1记录，ID: {}", pg.getId());
+                    continue;
+                }
+
+                Map<String, Function<PostgresPersonDetailCustom, String>> mapping = personRewardsFieldMapper.FIELD_MAPPING;
+                OraclePersonRewards oracleRewards = new OraclePersonRewards();
+
+                try {
+                    // 记录所有字段的映射过程
+                    Map<String, Object> fieldValues = new HashMap<>();
+                    for (Map.Entry<String, Function<PostgresPersonDetailCustom, String>> entry : mapping.entrySet()) {
+                        String fieldName = entry.getKey();
+                        String fieldValue = entry.getValue().apply(pg);
+                        fieldValues.put(fieldName, fieldValue);
+
+                        // 打印每个字段的映射结果
+                        logger.info("字段映射 - {}: [{}]", fieldName, fieldValue);
+
+                        personRewardsFieldMapper.setOracleField(oracleRewards, fieldName, fieldValue);
+                    }
+
+                    // 打印关键字段的值
+                    logger.info("记录ID: {} 的字段值:", pg.getId());
+                    logger.info("UPLOAD_TIME: [{}]", fieldValues.get("uploadTime"));
+                    logger.info("GET_DATE: [{}]", fieldValues.get("awardsDate"));
+                    logger.info("CRTE_TIME: [{}]", fieldValues.get("crteTime"));
+                    logger.info("UPDT_TIME: [{}]", fieldValues.get("updtTime"));
+                    logger.info("DELETED_TIME: [{}]", fieldValues.get("deletedTime"));
+                    logger.info("USCID: [{}]", fieldValues.get("uscid"));
+                    logger.info("ORG_NAME: [{}]", fieldValues.get("orgName"));
+
+                    String uscid = (String) fieldValues.get("uscid");
+                    if (uscid == null || uscid.trim().isEmpty() || uscid.trim().equals(" ")) {
+                        logger.debug("跳过空USCID记录，ID: {}", pg.getId());
+                        continue;
+                    }
+                    // if (!"12352230490632333M".equals(uscid.trim())) {
+                    // // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
+                    // continue;
+                    // }
+
+                    // logger.info("准备同步记录到Oracle，ORIGINAL_ID: {}, USCID: {}",
+                    // fieldValues.get("originalId"), uscid);
+
+                    try {
+                        // 根据ORIGINAL_ID和USCID的组合判断是否存在，因为这两个字段的组合是唯一的
+                        String originalId = (String) fieldValues.get("originalId");
+                        if (originalId == null || originalId.trim().isEmpty() || originalId.trim().equals(" ")) {
+                            logger.warn("ORIGINAL_ID为空，跳过处理，记录ID: {}", pg.getId());
+                            continue;
+                        }
+
+                        QueryWrapper<OraclePersonRewards> qw = new QueryWrapper<>();
+                        qw.eq("ORIGINAL_ID", originalId);
+                        qw.eq("USCID", uscid);
+                        logger.debug("正在Oracle中查询是否存在记录，ORIGINAL_ID: {}, USCID: {}", originalId, uscid);
+                        OraclePersonRewards exist = oraclePersonRewardsMapper.selectOne(qw);
+
+                        if (exist != null) {
+                            logger.info("找到已存在记录，准备更新，RID: {}", exist.getRid());
+                            // 更新时，必须使用已存在记录的RID，并重新创建一个对象，避免使用已设置的RID（可能已被字段映射设置）
+                            OraclePersonRewards updateObj = new OraclePersonRewards();
+                            updateObj.setRid(exist.getRid()); // 使用已存在记录的RID
+                            // 重新设置所有字段，确保使用最新的映射值
+                            for (Map.Entry<String, Function<PostgresPersonDetailCustom, String>> entry : mapping
+                                    .entrySet()) {
+                                String fieldName = entry.getKey();
+                                if (!"RID".equals(fieldName)) { // RID已经设置，跳过
+                                    String fieldValue = entry.getValue().apply(pg);
+                                    personRewardsFieldMapper.setOracleField(updateObj, fieldName, fieldValue);
+                                }
+                            }
+                            oraclePersonRewardsMapper.updateById(updateObj);
+                            updateCount++;
+                            logger.info("更新成功");
+                        } else {
+                            logger.info("未找到已存在记录，准备插入新记录");
+                            oraclePersonRewardsMapper.insert(oracleRewards);
+                            insertCount++;
+                            logger.info("插入成功");
+                        }
+                    } catch (Exception e) {
+                        logger.error("Oracle操作失败，ORIGINAL_ID: {}, USCID: {}, 错误: {}",
+                                fieldValues.get("originalId"), uscid, e.getMessage(), e);
+                    }
+
+                } catch (Exception e) {
+                    logger.error("字段映射失败，记录ID: {}, 错误: {}", pg.getId(), e.getMessage(), e);
+                    continue;
+                }
+            }
+
+            logger.info("同步完成，总处理: {}条，更新: {}条，插入: {}条", processCount, updateCount,
+                    insertCount);
+        } catch (Exception e) {
+            logger.error("同步过程发生异常: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    /**
+     * 全量同步Postgres学术社团任职到Oracle，original_id存在则update，不存在则insert
+     * 只同步USCID有值且为指定机构代码的数据
+     */
+    public void syncSocietyInfoAll() {
+        logger.info("开始执行syncSocietyInfoAll同步...");
+
+        try {
+            // 先从PostgreSQL获取detail_id等于指定值的记录的id列表
+            QueryWrapper<PostgresPersonDetailCustom> pgQueryWrapper = new QueryWrapper<>();
+            pgQueryWrapper.eq("detail_id", "person_detail_VXVwV5ve");
+            List<PostgresPersonDetailCustom> toDeleteList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
+            List<String> toDeleteIds = toDeleteList.stream()
+                    .map(PostgresPersonDetailCustom::getId)
+                    .collect(Collectors.toList());
+
+            // 使用批量删除工具方法删除Oracle表中的记录
+            batchDelete(toDeleteIds, batchIds -> {
+                QueryWrapper<OracleStaffCorp> oracleQueryWrapper = new QueryWrapper<>();
+                oracleQueryWrapper.in("ORIGINAL_ID", batchIds);
+                return oracleStaffCorpMapper.delete(oracleQueryWrapper);
+            });
+
+            // logger.info("正在从PostgreSQL查询社会任职数据...");
+            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
+            // logger.info("PostgreSQL查询完成，共获取{}条记录", pgList.size());
+
+            int processCount = 0;
+            int updateCount = 0;
+            int insertCount = 0;
+
+            for (PostgresPersonDetailCustom pg : pgList) {
+                // logger.debug("正在处理第{}条记录，ID: {}", ++processCount, pg.getId());
+
+                // 检查detail_id是否符合条件
+                if (!"person_detail_VXVwV5ve".equals(pg.getDetailId())) {
+                    // logger.debug("跳过非目标detail_id记录，当前detail_id: {}, ID: {}", pg.getDetailId(),
+                    // pg.getId());
+                    continue;
+                }
+
+                // 跳过原表中的del_flag不为1的记录
+                Integer delFlag = pg.getDelFlag();
+                if (delFlag != null && delFlag != 1) {
+                    // logger.debug("跳过del_flag不为1记录，ID: {}", pg.getId());
+                    continue;
+                }
+
+                Map<String, Function<PostgresPersonDetailCustom, String>> mapping = personStaffCorpFieldMapper.FIELD_MAPPING;
+                OracleStaffCorp oracleStaffCorp = new OracleStaffCorp();
+
+                try {
+                    // 记录所有字段的映射过程
+                    Map<String, Object> fieldValues = new HashMap<>();
+                    for (Map.Entry<String, Function<PostgresPersonDetailCustom, String>> entry : mapping.entrySet()) {
+                        String fieldName = entry.getKey();
+                        String fieldValue = entry.getValue().apply(pg);
+                        fieldValues.put(fieldName, fieldValue);
+
+                        // 打印每个字段的映射结果
+                        // logger.info("字段映射 - {}: [{}]", fieldName, fieldValue);
+
+                        personStaffCorpFieldMapper.setOracleField(oracleStaffCorp, fieldName, fieldValue);
+                    }
+
+                    // 打印关键字段的值
+                    // logger.info("记录ID: {} 的字段值:", pg.getId());
+                    // logger.info("UPLOAD_TIME: [{}]", fieldValues.get("UPLOAD_TIME"));
+                    // logger.info("START_TIME: [{}]", fieldValues.get("START_TIME"));
+                    // logger.info("END_TIME: [{}]", fieldValues.get("END_TIME"));
+                    // logger.info("CRTE_TIME: [{}]", fieldValues.get("CRTE_TIME"));
+                    // logger.info("UPDT_TIME: [{}]", fieldValues.get("UPDT_TIME"));
+                    // logger.info("DELETED_TIME: [{}]", fieldValues.get("DELETED_TIME"));
+                    // logger.info("USCID: [{}]", fieldValues.get("USCID"));
+                    // logger.info("ORG_NAME: [{}]", fieldValues.get("ORG_NAME"));
+
+                    String uscid = (String) fieldValues.get("USCID");
+                    if (uscid == null || uscid.trim().isEmpty()) {
+                        // logger.debug("跳过空USCID记录，ID: {}", pg.getId());
+                        continue;
+                    }
+                    // if (!"12352230490632333M".equals(uscid.trim())) {
+                    // // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
+                    // continue;
+                    // }
+
+                    // logger.info("准备同步记录到Oracle，ORIGINAL_ID: {}, USCID: {}",
+                    // fieldValues.get("ORIGINAL_ID"), uscid);
+
+                    try {
+                        // 根据ORIGINAL_ID和USCID的组合判断是否存在，因为这两个字段的组合是唯一的
+                        String originalId = (String) fieldValues.get("ORIGINAL_ID");
+                        if (originalId == null || originalId.trim().isEmpty() || originalId.trim().equals(" ")) {
+                            logger.warn("ORIGINAL_ID为空，跳过处理，记录ID: {}", pg.getId());
+                            continue;
+                        }
+
+                        QueryWrapper<OracleStaffCorp> qw = new QueryWrapper<>();
+                        qw.eq("ORIGINAL_ID", originalId);
+                        qw.eq("USCID", uscid);
+                        // logger.debug("正在Oracle中查询是否存在记录，ORIGINAL_ID: {}, USCID: {}", originalId,
+                        // uscid);
+                        OracleStaffCorp exist = oracleStaffCorpMapper.selectOne(qw);
+
+                        if (exist != null) {
+                            // logger.info("找到已存在记录，准备更新，RID: {}", exist.getRid());
+                            // 更新时，必须使用已存在记录的RID，并重新创建一个对象，避免使用已设置的RID（可能已被字段映射设置）
+                            OracleStaffCorp updateObj = new OracleStaffCorp();
+                            updateObj.setRid(exist.getRid()); // 使用已存在记录的RID
+                            // 重新设置所有字段，确保使用最新的映射值
+                            for (Map.Entry<String, Function<PostgresPersonDetailCustom, String>> entry : mapping
+                                    .entrySet()) {
+                                String fieldName = entry.getKey();
+                                if (!"RID".equals(fieldName)) { // RID已经设置，跳过
+                                    String fieldValue = entry.getValue().apply(pg);
+                                    personStaffCorpFieldMapper.setOracleField(updateObj, fieldName, fieldValue);
+                                }
+                            }
+                            oracleStaffCorpMapper.updateById(updateObj);
+                            updateCount++;
+                            // logger.info("更新成功");
+                        } else {
+                            // logger.info("未找到已存在记录，准备插入新记录");
+                            oracleStaffCorpMapper.insert(oracleStaffCorp);
+                            insertCount++;
+                            // logger.info("插入成功");
+                        }
+                    } catch (Exception e) {
+                        logger.error("Oracle操作失败，ORIGINAL_ID: {}, USCID: {}, 错误: {}",
+                                fieldValues.get("ORIGINAL_ID"), uscid, e.getMessage(), e);
+                    }
+
+                } catch (Exception e) {
+                    logger.error("字段映射失败，记录ID: {}, 错误: {}", pg.getId(), e.getMessage(), e);
+                    continue;
+                }
+            }
+
+            // logger.info("同步完成，总处理: {}条，更新: {}条，插入: {}条", processCount, updateCount,
+            // insertCount);
+        } catch (Exception e) {
+            logger.error("同步过程发生异常: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    /**
+     * 全量同步Postgres外出培训及学术活动到Oracle，original_id存在则update，不存在则insert
+     * 只同步USCID有值且为指定机构代码的数据
+     */
+    public void syncOutInfoAll() {
+        logger.info("开始执行syncOutInfoAll同步...");
+
+        try {
+            logger.info("正在从PostgreSQL查询外出培训及学术活动数据...");
+            List<PostgresPersonDetailTraining> pgList = postgresPersonDetailTrainingMapper.selectList(null);
+            logger.info("PostgreSQL查询完成，共获取{}条记录", pgList.size());
+
+            int processCount = 0;
+            int updateCount = 0;
+            int insertCount = 0;
+
+            for (PostgresPersonDetailTraining pg : pgList) {
+                processCount++;
+                if (processCount % 100 == 0) {
+                    logger.info("正在处理第{}条记录，ID: {}", processCount, pg.getId());
+                }
+
+                // 跳过原表中的del_flag不为1的记录（在字段映射之前检查，避免不必要的处理）
+                Integer delFlag = pg.getDelFlag();
+                if (delFlag != null && delFlag != 1) {
+                    logger.debug("跳过del_flag不为1记录，ID: {}", pg.getId());
+                    continue;
+                }
+
+                Map<String, Function<PostgresPersonDetailTraining, String>> mapping = personStudyFieldMapper.FIELD_MAPPING;
+                OracleStaffStudy oracleStudy = new OracleStaffStudy();
+
+                try {
+                    // 记录所有字段的映射过程
+                    Map<String, Object> fieldValues = new HashMap<>();
+                    for (Map.Entry<String, Function<PostgresPersonDetailTraining, String>> entry : mapping.entrySet()) {
+                        String fieldName = entry.getKey();
+                        String fieldValue = entry.getValue().apply(pg);
+                        fieldValues.put(fieldName, fieldValue);
+
+                        // 打印每个字段的映射结果
+                        // logger.info("字段映射 - {}: [{}]", fieldName, fieldValue);
+
+                        personStudyFieldMapper.setOracleField(oracleStudy, fieldName, fieldValue);
+                    }
+
+                    // // 打印关键字段的值
+                    // logger.info("记录ID: {} 的字段值:", pg.getId());
+                    // logger.info("UPLOAD_TIME: [{}]", fieldValues.get("UPLOAD_TIME"));
+                    // logger.info("BEGNDATE: [{}]", fieldValues.get("BEGNDATE"));
+                    // logger.info("ENDDATE: [{}]", fieldValues.get("ENDDATE"));
+                    // logger.info("CRTE_TIME: [{}]", fieldValues.get("CRTE_TIME"));
+                    // logger.info("UPDT_TIME: [{}]", fieldValues.get("UPDT_TIME"));
+                    // logger.info("DELETED_TIME: [{}]", fieldValues.get("DELETED_TIME"));
+                    // logger.info("USCID: [{}]", fieldValues.get("USCID"));
+                    // logger.info("ORG_NAME: [{}]", fieldValues.get("ORG_NAME"));
+
+                    String uscid = (String) fieldValues.get("USCID");
+                    if (uscid == null || uscid.trim().isEmpty()) {
+                        // logger.debug("跳过空USCID记录，ID: {}", pg.getId());
+                        continue;
+                    }
+
+                    try {
+                        // 根据ORIGINAL_ID和USCID的组合判断是否存在，因为这两个字段的组合是唯一的
+                        String originalId = (String) fieldValues.get("ORIGINAL_ID");
+                        if (originalId == null || originalId.trim().isEmpty() || originalId.trim().equals(" ")) {
+                            logger.warn("ORIGINAL_ID为空，跳过处理，记录ID: {}", pg.getId());
+                            continue;
+                        }
+
+                        QueryWrapper<OracleStaffStudy> qw = new QueryWrapper<>();
+                        qw.eq("ORIGINAL_ID", originalId);
+                        qw.eq("USCID", uscid);
+                        OracleStaffStudy exist = oracleStaffStudyMapper.selectOne(qw);
+
+                        if (exist != null) {
+                            // logger.info("找到已存在记录，准备更新，RID: {}", exist.getRid());
+                            // 更新时，必须使用已存在记录的RID，并重新创建一个对象，避免使用已设置的RID（可能已被字段映射设置）
+                            OracleStaffStudy updateObj = new OracleStaffStudy();
+                            updateObj.setRid(exist.getRid()); // 使用已存在记录的RID
+                            // 重新设置所有字段，确保使用最新的映射值
+                            for (Map.Entry<String, Function<PostgresPersonDetailTraining, String>> entry : mapping
+                                    .entrySet()) {
+                                String fieldName = entry.getKey();
+                                if (!"RID".equals(fieldName)) { // RID已经设置，跳过
+                                    String fieldValue = entry.getValue().apply(pg);
+                                    personStudyFieldMapper.setOracleField(updateObj, fieldName, fieldValue);
+                                }
+                            }
+                            oracleStaffStudyMapper.updateById(updateObj);
+                            updateCount++;
+                            // logger.info("更新成功");
+                        } else {
+                            // logger.info("未找到已存在记录，准备插入新记录");
+                            oracleStaffStudyMapper.insert(oracleStudy);
+                            insertCount++;
+                            // logger.info("插入成功");
+                        }
+                    } catch (Exception e) {
+                        logger.error("Oracle操作失败，ORIGINAL_ID: {}, USCID: {}, 错误: {}",
+                                fieldValues.get("ORIGINAL_ID"), uscid, e.getMessage(), e);
+                    }
+
+                } catch (Exception e) {
+                    logger.error("字段映射失败，记录ID: {}, 错误: {}", pg.getId(), e.getMessage(), e);
+                    continue;
+                }
+            }
+
+            logger.info("同步完成，总处理: {}条，更新: {}条，插入: {}条", processCount, updateCount, insertCount);
+        } catch (Exception e) {
+            logger.error("同步过程发生异常: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    /**
+     * 全量同步Postgres上级单位进修信息到Oracle，original_id存在则update，不存在则insert
+     * 只同步USCID有值且为指定机构代码的数据
+     * Oracle表：HUM_PSN_TRAIN
+     */
+    public void syncSuperviseInfoAll() {
+        logger.info("开始执行syncSuperviseInfoAll同步...");
+
+        try {
+            // 先从PostgreSQL获取detail_id等于指定值的记录的id列表
+            QueryWrapper<PostgresPersonDetailCustom> pgQueryWrapper = new QueryWrapper<>();
+            pgQueryWrapper.eq("detail_id", "person_detail_ZrcjY4VG");
+            List<PostgresPersonDetailCustom> toDeleteList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
+            List<String> toDeleteIds = toDeleteList.stream()
+                    .map(PostgresPersonDetailCustom::getId)
+                    .collect(Collectors.toList());
+
+            // 使用批量删除工具方法删除Oracle表中的记录
+            batchDelete(toDeleteIds, batchIds -> {
+                QueryWrapper<OraclePersonTrain> oracleQueryWrapper = new QueryWrapper<>();
+                oracleQueryWrapper.in("ORIGINAL_ID", batchIds);
+                return oraclePersonTrainMapper.delete(oracleQueryWrapper);
+            });
+
+            logger.info("正在从PostgreSQL查询上级单位进修数据...");
+            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
+            logger.info("PostgreSQL查询完成，共获取{}条记录", pgList.size());
+
+            int processCount = 0;
+            int updateCount = 0;
+            int insertCount = 0;
+
+            for (PostgresPersonDetailCustom pg : pgList) {
+                logger.debug("正在处理第{}条记录，ID: {}", ++processCount, pg.getId());
+
+                // 检查detail_id是否符合条件
+                if (!"person_detail_ZrcjY4VG".equals(pg.getDetailId())) {
+                    // logger.debug("跳过非目标detail_id记录，当前detail_id: {}, ID: {}", pg.getDetailId(),
+                    // pg.getId());
+                    continue;
+                }
+                // 跳过原表中的del_flag不为1的记录
+                Integer delFlag = pg.getDelFlag();
+                if (delFlag != null && delFlag != 1) {
+                    // logger.debug("跳过del_flag不为1记录，ID: {}", pg.getId());
+                    continue;
+                }
+
+                Map<String, Function<PostgresPersonDetailCustom, String>> mapping = personTrainingFieldMapper.FIELD_MAPPING;
+                OraclePersonTrain oraclePersonTrain = new OraclePersonTrain();
+
+                try {
+                    // 记录所有字段的映射过程
+                    Map<String, Object> fieldValues = new HashMap<>();
+                    for (Map.Entry<String, Function<PostgresPersonDetailCustom, String>> entry : mapping.entrySet()) {
+                        String fieldName = entry.getKey();
+                        String fieldValue = entry.getValue().apply(pg);
+                        fieldValues.put(fieldName, fieldValue);
+
+                        // 打印每个字段的映射结果
+                        logger.info("字段映射 - {}: [{}]", fieldName, fieldValue);
+
+                        personTrainingFieldMapper.setOracleField(oraclePersonTrain, fieldName, fieldValue);
+                    }
+
+                    // 打印关键字段的值
+                    logger.info("记录ID: {} 的字段值:", pg.getId());
+                    logger.info("UPLOAD_TIME: [{}]", fieldValues.get("UPLOAD_TIME"));
+                    logger.info("TRAIN_BEGNDATE: [{}]", fieldValues.get("TRAIN_BEGNDATE"));
+                    logger.info("TRAIN_ENDDATE: [{}]", fieldValues.get("TRAIN_ENDDATE"));
+                    logger.info("CRTE_TIME: [{}]", fieldValues.get("CRTE_TIME"));
+                    logger.info("UPDT_TIME: [{}]", fieldValues.get("UPDT_TIME"));
+                    logger.info("DELETED_TIME: [{}]", fieldValues.get("DELETED_TIME"));
+                    logger.info("USCID: [{}]", fieldValues.get("USCID"));
+                    logger.info("ORG_NAME: [{}]", fieldValues.get("ORG_NAME"));
+
+                    String uscid = (String) fieldValues.get("USCID");
+                    if (uscid == null || uscid.trim().isEmpty() || uscid.trim().equals(" ")) {
+                        logger.debug("跳过空USCID记录，ID: {}", pg.getId());
+                        continue;
+                    }
+                    // if (!"12352230490632333M".equals(uscid.trim())) {
+                    // // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
+                    // continue;
+                    // }
+
+                    // logger.info("准备同步记录到Oracle，ORIGINAL_ID: {}, USCID: {}",
+                    // fieldValues.get("ORIGINAL_ID"), uscid);
+
+                    try {
+                        // 根据ORIGINAL_ID和USCID的组合判断是否存在，因为这两个字段的组合是唯一的
+                        String originalId = (String) fieldValues.get("ORIGINAL_ID");
+                        if (originalId == null || originalId.trim().isEmpty() || originalId.trim().equals(" ")) {
+                            logger.warn("ORIGINAL_ID为空，跳过处理，记录ID: {}", pg.getId());
+                            continue;
+                        }
+
+                        QueryWrapper<OraclePersonTrain> qw = new QueryWrapper<>();
+                        qw.eq("ORIGINAL_ID", originalId);
+                        qw.eq("USCID", uscid);
+                        // logger.debug("正在Oracle中查询是否存在记录，ORIGINAL_ID: {}, USCID: {}", originalId,
+                        // uscid);
+                        OraclePersonTrain exist = oraclePersonTrainMapper.selectOne(qw);
+
+                        if (exist != null) {
+                            // logger.info("找到已存在记录，准备更新，RID: {}", exist.getRid());
+                            // 更新时，必须使用已存在记录的RID，并重新创建一个对象，避免使用已设置的RID（可能已被字段映射设置）
+                            OraclePersonTrain updateObj = new OraclePersonTrain();
+                            updateObj.setRid(exist.getRid()); // 使用已存在记录的RID
+                            // 重新设置所有字段，确保使用最新的映射值
+                            for (Map.Entry<String, Function<PostgresPersonDetailCustom, String>> entry : mapping
+                                    .entrySet()) {
+                                String fieldName = entry.getKey();
+                                if (!"RID".equals(fieldName)) { // RID已经设置，跳过
+                                    String fieldValue = entry.getValue().apply(pg);
+                                    personTrainingFieldMapper.setOracleField(updateObj, fieldName, fieldValue);
+                                }
+                            }
+                            oraclePersonTrainMapper.updateById(updateObj);
+                            updateCount++;
+                            // logger.info("更新成功");
+                        } else {
+                            // logger.info("未找到已存在记录，准备插入新记录");
+                            oraclePersonTrainMapper.insert(oraclePersonTrain);
+                            insertCount++;
+                            // logger.info("插入成功");
+                        }
+                    } catch (Exception e) {
+                        logger.error("Oracle操作失败，ORIGINAL_ID: {}, USCID: {}, 错误: {}",
+                                fieldValues.get("ORIGINAL_ID"), uscid, e.getMessage(), e);
+                    }
+
+                } catch (Exception e) {
+                    logger.error("字段映射失败，记录ID: {}, 错误: {}", pg.getId(), e.getMessage(), e);
+                    continue;
+                }
+            }
+
+            logger.info("同步完成，总处理: {}条，更新: {}条，插入: {}条", processCount, updateCount, insertCount);
+        } catch (Exception e) {
+            logger.error("同步过程发生异常: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    /**
+     * 全量同步Postgres学术兼职标到Oracle，original_id存在则update，不存在则insert
+     * 只同步USCID有值且为指定机构代码的数据
+     */
+    public void syncAcademicInfoAll() {
+        logger.info("开始执行syncAcademicInfoAll同步...");
+
+        try {
+            // 先从PostgreSQL获取detail_id等于指定值的记录的id列表
+            QueryWrapper<PostgresPersonDetailCustom> pgQueryWrapper = new QueryWrapper<>();
+            pgQueryWrapper.eq("detail_id", "person_detail_JWsgfpYe");
+            List<PostgresPersonDetailCustom> toDeleteList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
+            List<String> toDeleteIds = toDeleteList.stream()
+                    .map(PostgresPersonDetailCustom::getId)
+                    .collect(Collectors.toList());
+
+            // 使用批量删除工具方法删除Oracle表中的记录
+            batchDelete(toDeleteIds, batchIds -> {
+                QueryWrapper<OracleStaffCorp> oracleQueryWrapper = new QueryWrapper<>();
+                oracleQueryWrapper.in("ORIGINAL_ID", batchIds);
+                return oracleStaffCorpMapper.delete(oracleQueryWrapper);
+            });
+
+            // logger.info("正在从PostgreSQL查询学术兼职数据...");
+            List<PostgresPersonDetailCustom> pgList = postgresPersonDetailCustomMapper.selectList(pgQueryWrapper);
+            // logger.info("PostgreSQL查询完成，共获取{}条记录", pgList.size());
+
+            int processCount = 0;
+            int updateCount = 0;
+            int insertCount = 0;
+
+            for (PostgresPersonDetailCustom pg : pgList) {
+                // logger.debug("正在处理第{}条记录，ID: {}", ++processCount, pg.getId());
+
+                // 检查detail_id是否符合条件
+                if (!"person_detail_JWsgfpYe".equals(pg.getDetailId())) {
+                    // logger.debug("跳过非目标detail_id记录，当前detail_id: {}, ID: {}", pg.getDetailId(),
+                    // pg.getId());
+                    continue;
+                }
+
+                // 跳过原表中的del_flag不为1的记录
+                Integer delFlag = pg.getDelFlag();
+                if (delFlag != null && delFlag != 1) {
+                    // logger.debug("跳过del_flag不为1记录，ID: {}", pg.getId());
+                    continue;
+                }
+
+                Map<String, Function<PostgresPersonDetailCustom, String>> mapping = personStaffCorpFieldMapper.FIELD_MAPPING;
+                OracleStaffCorp oracleStaffCorp = new OracleStaffCorp();
+
+                try {
+                    // 记录所有字段的映射过程
+                    Map<String, Object> fieldValues = new HashMap<>();
+                    for (Map.Entry<String, Function<PostgresPersonDetailCustom, String>> entry : mapping.entrySet()) {
+                        String fieldName = entry.getKey();
+                        String fieldValue = entry.getValue().apply(pg);
+                        fieldValues.put(fieldName, fieldValue);
+
+                        // 打印每个字段的映射结果
+                        // logger.info("字段映射 - {}: [{}]", fieldName, fieldValue);
+
+                        personStaffCorpFieldMapper.setOracleField(oracleStaffCorp, fieldName, fieldValue);
+                    }
+
+                    // 打印关键字段的值
+                    // logger.info("记录ID: {} 的字段值:", pg.getId());
+                    // logger.info("UPLOAD_TIME: [{}]", fieldValues.get("UPLOAD_TIME"));
+                    // logger.info("START_TIME: [{}]", fieldValues.get("START_TIME"));
+                    // logger.info("END_TIME: [{}]", fieldValues.get("END_TIME"));
+                    // logger.info("CRTE_TIME: [{}]", fieldValues.get("CRTE_TIME"));
+                    // logger.info("UPDT_TIME: [{}]", fieldValues.get("UPDT_TIME"));
+                    // logger.info("DELETED_TIME: [{}]", fieldValues.get("DELETED_TIME"));
+                    // logger.info("USCID: [{}]", fieldValues.get("USCID"));
+                    // logger.info("ORG_NAME: [{}]", fieldValues.get("ORG_NAME"));
+
+                    String uscid = (String) fieldValues.get("USCID");
+                    if (uscid == null || uscid.trim().isEmpty()) {
+                        // logger.debug("跳过空USCID记录，ID: {}", pg.getId());
+                        continue;
+                    }
+                    // if (!"12352230490632333M".equals(uscid.trim())) {
+                    // // logger.debug("跳过非目标USCID记录，当前USCID: {}, ID: {}", uscid, pg.getId());
+                    // continue;
+                    // }
+
+                    // logger.info("准备同步记录到Oracle，ORIGINAL_ID: {}, USCID: {}",
+                    // fieldValues.get("ORIGINAL_ID"), uscid);
+
+                    try {
+                        // 根据ORIGINAL_ID和USCID的组合判断是否存在，因为这两个字段的组合是唯一的
+                        String originalId = (String) fieldValues.get("ORIGINAL_ID");
+                        if (originalId == null || originalId.trim().isEmpty() || originalId.trim().equals(" ")) {
+                            logger.warn("ORIGINAL_ID为空，跳过处理，记录ID: {}", pg.getId());
+                            continue;
+                        }
+
+                        QueryWrapper<OracleStaffCorp> qw = new QueryWrapper<>();
+                        qw.eq("ORIGINAL_ID", originalId);
+                        qw.eq("USCID", uscid);
+                        // logger.debug("正在Oracle中查询是否存在记录，ORIGINAL_ID: {}, USCID: {}", originalId,
+                        // uscid);
+                        OracleStaffCorp exist = oracleStaffCorpMapper.selectOne(qw);
+
+                        if (exist != null) {
+                            // logger.info("找到已存在记录，准备更新，RID: {}", exist.getRid());
+                            // 更新时，必须使用已存在记录的RID，并重新创建一个对象，避免使用已设置的RID（可能已被字段映射设置）
+                            OracleStaffCorp updateObj = new OracleStaffCorp();
+                            updateObj.setRid(exist.getRid()); // 使用已存在记录的RID
+                            // 重新设置所有字段，确保使用最新的映射值
+                            for (Map.Entry<String, Function<PostgresPersonDetailCustom, String>> entry : mapping
+                                    .entrySet()) {
+                                String fieldName = entry.getKey();
+                                if (!"RID".equals(fieldName)) { // RID已经设置，跳过
+                                    String fieldValue = entry.getValue().apply(pg);
+                                    personStaffCorpFieldMapper.setOracleField(updateObj, fieldName, fieldValue);
+                                }
+                            }
+                            oracleStaffCorpMapper.updateById(updateObj);
+                            updateCount++;
+                            // logger.info("更新成功");
+                        } else {
+                            // logger.info("未找到已存在记录，准备插入新记录");
+                            oracleStaffCorpMapper.insert(oracleStaffCorp);
+                            insertCount++;
+                            // logger.info("插入成功");
+                        }
+                    } catch (Exception e) {
+                        logger.error("Oracle操作失败，ORIGINAL_ID: {}, USCID: {}, 错误: {}",
+                                fieldValues.get("ORIGINAL_ID"), uscid, e.getMessage(), e);
+                    }
+
+                } catch (Exception e) {
+                    logger.error("字段映射失败，记录ID: {}, 错误: {}", pg.getId(), e.getMessage(), e);
+                    continue;
+                }
+            }
+
+            // logger.info("同步完成，总处理: {}条，更新: {}条，插入: {}条", processCount, updateCount,
+            // insertCount);
+        } catch (Exception e) {
+            logger.error("同步过程发生异常: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+}

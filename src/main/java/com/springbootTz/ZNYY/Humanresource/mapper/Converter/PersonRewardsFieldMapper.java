@@ -1,0 +1,179 @@
+package com.springbootTz.ZNYY.Humanresource.mapper.Converter;
+
+import com.springbootTz.ZNYY.Humanresource.entity.PostgresPersonDetailCustom;
+import com.springbootTz.ZNYY.Humanresource.entity.PostgresPerson;
+import com.springbootTz.ZNYY.Humanresource.entity.OraclePersonRewards;
+import com.springbootTz.ZNYY.Humanresource.tool.DepartmentQueryTool;
+import com.springbootTz.ZNYY.Humanresource.tool.OrgCodeConcatTool;
+import com.springbootTz.ZNYY.Humanresource.tool.OrgCodeQueryTool;
+import com.springbootTz.ZNYY.Humanresource.tool.JsonKeyValueTool;
+import com.springbootTz.ZNYY.Humanresource.mapper.postgresql.PostgresPersonMapper;
+import com.springbootTz.ZNYY.Humanresource.mapper.postgresql.PostgresPersonDetailCustomMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.function.Function;
+
+/**
+ * 11. PersonRewardsFieldMapper - 人员奖励称号信息
+ * 数据说明：人员获得的奖励和荣誉称号信息
+ * PostgreSQL表：ehr_org_person_detail_custom (detail_id =
+ * "person_detail_IvMVko5s")
+ * Oracle表：HUM_PSN_REWARDS
+ * 同步方法：syncHonorInfoAll()
+ */
+@Component
+public class PersonRewardsFieldMapper {
+    @Autowired
+    private DepartmentQueryTool departmentQueryTool;
+    @Autowired
+    private OrgCodeQueryTool orgCodeQueryTool;
+    @Autowired
+    private OrgCodeConcatTool orgCodeConcatTool;
+    @Autowired
+    private JsonKeyValueTool jsonKeyValueTool;
+    @Autowired
+    private PostgresPersonMapper postgresPersonMapper;
+    @Autowired
+    private PostgresPersonDetailCustomMapper postgresPersonDetailCustomMapper;
+
+    private static final String SYS_PRDR_CODE = "FJZZZYKJYXGS";
+    private static final String SYS_PRDR_NAME = "福建众智政友科技有限公司";
+    private static final String DATA_CLCT_PRDR_NAME = "福建众智政友科技有限公司";
+
+    private static <T> Function<T, String> toSafeString(Function<T, ?> func) {
+        return t -> {
+            Object v = func.apply(t);
+            return v == null ? "" : v.toString();
+        };
+    }
+
+    private String getOrgNameByPersonId(String personId) {
+        if (personId == null || personId.isEmpty())
+            return null;
+        PostgresPerson person = postgresPersonMapper.selectById(personId);
+        if (person == null)
+            return null;
+        String deptId = person.getDeptId();
+        if (deptId == null || deptId.isEmpty())
+            return null;
+        return departmentQueryTool.getOrgNameByDeptId(deptId);
+    }
+
+    /**
+     * Oracle字段名 -> 映射逻辑（输入PostgresPersonDetailCustom，输出String）
+     */
+    public final Map<String, Function<PostgresPersonDetailCustom, String>> FIELD_MAPPING = new LinkedHashMap<String, Function<PostgresPersonDetailCustom, String>>() {
+        {
+            put("rid", toSafeString(p -> {
+                String orgName = getOrgNameByPersonId(p.getPersonId());
+                if (orgName == null || orgName.isEmpty())
+                    return " ";
+                return orgCodeConcatTool.concatCodeAndParams(orgName, SYS_PRDR_CODE, p.getId());
+            }));
+            put("orgName", toSafeString(p -> {
+                String orgName = getOrgNameByPersonId(p.getPersonId());
+                return orgName == null ? " " : orgName;
+            }));
+            put("uscid", toSafeString(p -> {
+                String orgName = getOrgNameByPersonId(p.getPersonId());
+                if (orgName == null || orgName.isEmpty())
+                    return " ";
+                String uscid = orgCodeQueryTool.getCodeByDisplay(orgName);
+                return uscid == null ? " " : uscid;
+            }));
+            put("uploadTime",
+                    toSafeString(p -> new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())));
+            put("sysPrdrCode", toSafeString(p -> SYS_PRDR_CODE));
+            put("sysPrdrName", toSafeString(p -> SYS_PRDR_NAME));
+            put("dataClctPrdrName", toSafeString(p -> DATA_CLCT_PRDR_NAME));
+            put("originalId", toSafeString(p -> p.getId() == null ? " " : p.getPersonId()));
+            put("staffId", toSafeString(p -> p.getPersonId() == null ? " " : p.getPersonId()));
+            put("staffNo", toSafeString(p -> {
+                PostgresPerson person = postgresPersonMapper.selectById(p.getPersonId());
+                return person == null ? " " : person.getNumber();
+            }));
+            put("staffName", toSafeString(p -> {
+                PostgresPerson person = postgresPersonMapper.selectById(p.getPersonId());
+                return person == null ? " " : person.getName();
+            }));
+            put("crteTime", toSafeString(p -> "2025-06-30 00:00:00"));
+            put("updtTime",
+                    toSafeString(p -> p.getModifyTime() == null
+                            ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
+                            : p.getModifyTime().toString()));
+            put("deleted", toSafeString(p -> {
+                Integer delFlag = p.getDelFlag();
+                return (delFlag != null && delFlag == 1) ? "0" : "1";
+            }));
+            put("deletedTime", toSafeString(p -> new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())));
+            put("subject", toSafeString(p -> {
+                String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_B5ksxjsx");
+                return v == null ? " " : v;
+            }));
+            put("awardsItemCode", toSafeString(p -> {
+                String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_K2QY7IwE");
+                return v == null ? " " : v;
+            }));
+            put("awardsItemName", toSafeString(p -> {
+                String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_K2QY7IwE");
+                return v == null ? " " : v;
+            }));
+            put("awardsDate", toSafeString(p -> {
+                String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_qdKqLV3F");
+                // 日期字段为空时返回默认无效日期
+                return (v == null || v.trim().isEmpty()) ? "1900-01-01 00:00:00" : v.trim();
+            }));
+            put("awardsUnit", toSafeString(p -> {
+                String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_VcziFtzn");
+                return v == null ? " " : v;
+            }));
+            put("awardsGradeCode", toSafeString(p -> {
+                String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_FnIv3tfj");
+                // 获奖级别代码不能为空，如果为空返回"-"
+                return (v == null || v.trim().isEmpty()) ? "-" : v.trim();
+            }));
+            put("awardsGradeName", toSafeString(p -> {
+                String v = jsonKeyValueTool.getValueByKey(p.getCustomFields(), "person_FnIv3tfj");
+                // 获奖级别名称不能为空，如果为空返回"-"
+                return (v == null || v.trim().isEmpty()) ? "-" : v.trim();
+            }));
+        }
+    };
+
+    public void setOracleField(OraclePersonRewards oracle, String fieldName, String value) {
+        try {
+            java.lang.reflect.Field field = OraclePersonRewards.class.getDeclaredField(fieldName);
+            field.setAccessible(true);
+
+            // 如果值为null或空字符串，统一设置为空格字符串
+            if (value == null || value.trim().isEmpty()) {
+                value = " ";
+            }
+
+            if (field.getType() == Date.class) {
+                if (value.trim().equals(" ")) {
+                    field.set(oracle, new Date()); // 如果是空值，使用当前时间
+                } else {
+                    field.set(oracle, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(value));
+                }
+            } else if (field.getType() == String.class) {
+                // 确保字符串值不超过Oracle VARCHAR2(255)的限制
+                if (value.length() > 255) {
+                    value = value.substring(0, 255);
+                }
+                field.set(oracle, value);
+            } else {
+                // 对于其他类型，如果是空值就设置为空格字符串
+                field.set(oracle, value.trim().equals(" ") ? " " : value);
+            }
+        } catch (Exception e) {
+            System.err.println("设置字段 " + fieldName + " 时出错，值为: " + value);
+            e.printStackTrace();
+        }
+    }
+}
